@@ -1,6 +1,11 @@
+// Dependencies
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+
+// CSS
+import './index.scss';
+
+// Components
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
