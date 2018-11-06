@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 
 // CSS
-import "./plugins-page.scss";
+import "./plugins.page.scss";
 
 // Services
 import PedalboardsService from '../../services/pedalboardsService';
 
 // Componenets
-import Plugin from './plugin/plugin';
+import Plugin from '../../components/plugin/plugin';
 
 class PluginsPage extends Component {
   constructor(props) {
@@ -19,11 +19,12 @@ class PluginsPage extends Component {
 
   componentDidMount() {
     PedalboardsService.getPlugins()
-      .then(response => {
-        console.log(response.json());
-        // this.setState({
-        //   plugins: response.items
-        // });
+      .then(response => response.json())
+      .then(data => {
+        console.log(data.items);
+        this.setState({
+          plugins: data.items
+        });
       })
       .catch(error => console.log(error));
   }
@@ -36,9 +37,11 @@ class PluginsPage extends Component {
           <p>Here be plugins</p>
           <hr />
         </header>
-        {this.state.plugins ? 
-          this.state.plugins.map(plugin => <Plugin data={plugin} />) :
-          null}
+        <div className="plugin-container">
+          {this.state.plugins ?
+            this.state.plugins.map(plugin => <Plugin {...plugin} />) :
+            <p>Aucun plugin n'est disponible</p>}
+        </div>
       </div>
     );
   }

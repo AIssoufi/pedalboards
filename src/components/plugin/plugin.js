@@ -1,23 +1,36 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+
+import './plugin.scss';
 
 const Plugin = props => (
-  <div className="plugin-container">
-    <div className="plugin">
-      <a href="#toto">
-        <img
-          src={props.screenshotUrl}
-          alt="Plugin screenshot"
-        />
-      </a>
-      <div className="category-container">
-        {props.categories.map(category => <a href="#toto" className="category">{category}</a>)}
-      </div>
-      <hr />
-      <div className="info-container">
-        <a href="#toto" className="info">{props.label}</a>
-        <a href="#toto" className="info brand">{props.brand}</a>
-      </div>
+  <div className="plugin">
+    <Link to={{
+      pathname: "/pedalboard/details",
+      state: {
+        payload: props
+      }
+    }}>
+      <img
+        src={props.screenshotUrl}
+        alt="Plugin screenshot"
+      />
+    </Link>
+    <div className="category-container">
+      {props.categories.map(category => <a href="#toto" className="category">{category}</a>)}
+    </div>
+    <hr />
+    <div className="info-container">
+      <Link
+        to={{
+          pathname: "/pedalboard/details",
+          state: {
+            payload: props
+          }
+        }}
+        className="info">{props.label}</Link>
+      <a href="#toto" className="info brand">{props.brand}</a>
     </div>
   </div>
 );
