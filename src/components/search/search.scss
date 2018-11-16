@@ -1,0 +1,23 @@
+.search-container {
+  display: flex;
+  flex-flow: row nowrap;
+  box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.1);
+  margin: 20px auto 40px auto;
+  max-width: 450px;
+
+  input {
+    flex: 1 1 auto;
+    border: none;
+    padding: 5px 10px;
+    font-size: 1.5rem;
+  }
+  button {
+    width: 40px;
+    height: 40px;
+    padding: 10px;
+    color: #ffffff;
+    background-color: #883996;
+    border: none;
+    cursor: pointer;
+  }
+}

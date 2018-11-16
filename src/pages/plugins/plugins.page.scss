@@ -2,6 +2,8 @@
   background-color: rgb(246, 246, 246);
   text-align: center;
   header {
+    margin-bottom: 60px;
+
     h2 {
       color: #883996;
       text-transform: uppercase;
@@ -26,5 +28,6 @@
   .plugin-container {
     display: flex;
     flex-flow: row wrap;
+    justify-content: space-around;
   }
 }

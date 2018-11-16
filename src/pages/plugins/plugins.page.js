@@ -1,3 +1,4 @@
+// Dependencies
 import React, { Component } from 'react';
 
 // CSS
@@ -8,12 +9,16 @@ import PedalboardsService from '../../services/pedalboardsService';
 
 // Componenets
 import Plugin from '../../components/plugin/plugin';
+import Search from '../../components/search/search';
 
 class PluginsPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      plugins: []
+      plugins: [],
+      filter: {
+        category: props.location && props.location.search || null
+      }
     }
   }
 
@@ -23,10 +28,15 @@ class PluginsPage extends Component {
       .then(data => {
         console.log(data.items);
         this.setState({
-          plugins: data.items
+          plugins: data.items,
+          category: this.props.location && this.props.location.search || null
         });
       })
       .catch(error => console.log(error));
+  }
+
+  getURLSearchParams() {
+
   }
 
   render() {
@@ -37,6 +47,7 @@ class PluginsPage extends Component {
           <p>Here be plugins</p>
           <hr />
         </header>
+        <Search onChange={null} onSubmit={null} />
         <div className="plugin-container">
           {this.state.plugins ?
             this.state.plugins.map(plugin => <Plugin {...plugin} />) :
