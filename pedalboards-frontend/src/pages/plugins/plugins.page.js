@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import "./plugins.page.scss";
 
 // Services
-import PedalboardsService from '../../services/pedalboardsService';
+import PedalboardsService from '../../services/pedalboards.service';
 
 // Componenets
 import Plugin from '../../components/plugin/plugin';
@@ -17,7 +17,7 @@ class PluginsPage extends Component {
     this.state = {
       plugins: [],
       filter: {
-        category: props.location && props.location.search || null
+        category: props.location ? props.location.search : null
       }
     }
   }
@@ -26,10 +26,10 @@ class PluginsPage extends Component {
     PedalboardsService.getPlugins()
       .then(response => response.json())
       .then(data => {
-        console.log(data.items);
+        console.log(data.data);
         this.setState({
-          plugins: data.items,
-          category: this.props.location && this.props.location.search || null
+          plugins: data.data,
+          category: this.props.location ? this.props.location.search : null
         });
       })
       .catch(error => console.log(error));

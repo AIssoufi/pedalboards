@@ -1,0 +1,30 @@
+{
+  "name": "pedalboards",
+  "version": "1.0.0",
+  "description": "Projet MBDS",
+  "scripts": {
+    "start-core-service": "cd pedalboards-core-service && npm run start:dev",
+    "start-cms": "cd pedalboards-cms",
+    "start-fontend": "cd pedalboards-frontend && npm run start",
+    "start": "concurrently \"npm:start-core-service\" \"npm:start-fontend\" \"npm:start-cms\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/issoufi/pedalboards.git"
+  },
+  "keywords": [
+    "MBDS",
+    "2018",
+    "MIAGE"
+  ],
+  "author": "Issoufi ADAM <issoufi.adam1@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/issoufi/pedalboards/issues"
+  },
+  "homepage": "https://gitlab.com/issoufi/pedalboards#readme",
+  "dependencies": {
+    "concurrently": "^4.1.0"
+  }
+}

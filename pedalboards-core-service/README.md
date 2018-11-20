@@ -1,0 +1,1 @@
+mongoimport --db mbds --collection pedalboards --drop --file fakePluginsResponse.json

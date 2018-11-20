@@ -13,10 +13,6 @@ export default class Search extends Component {
     onSubmit: PropTypes.func.isRequired
   }
 
-  constructor(props) {
-    super(props);
-  }
-
   handleFormChange = event => {
 
   }
