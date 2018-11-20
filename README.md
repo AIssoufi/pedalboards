@@ -1,3 +1,8 @@
+## Lancer le projet
+```bash
+npm run start
+```
+
 ## Architecture
 
 | Dossier                  	| Description                                                                  	| Technos     	|
