@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 import "./pedalboard-details.scss";
 
@@ -23,10 +24,15 @@ const PedalboardDetails = props => (
     <div className="plugin-media-container">
       <img className="plugin-media" src={props.screenshotUrl} alt="Plugin screenshot" />
     </div>
-    <div className="category-container">
-      {
-        props.categories.map((categorie, index) => <a href={`/plugins?category=${categorie}`} key={index} className="plugin-category">{categorie}</a>)
-      }
+    <div className="category-container">{
+      props.categories.map((categorie, index) => <Link
+        to={{
+          pathname: '/plugins',
+          search: `?categories=${categorie}`
+        }}
+        key={index}
+        className="plugin-category">{categorie}</Link>)
+    }
     </div>
     <p className="pedalboard-description" dangerouslySetInnerHTML={{ __html: props.description }} />
 

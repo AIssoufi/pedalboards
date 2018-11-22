@@ -86,9 +86,9 @@ app.get('/api/plugins', function (req, res) {
 	// idem si present on prend la valeur, sinon 10
 	const pagesize = parseInt(req.query.pagesize || 10, 10);
 
-	const name = req.query.name || '';
+	const filter = req.query.filterby || null;
 
-	findPlugins(page, pagesize, name)
+	findPlugins(page, pagesize, filter)
 		.then(response => res.status(200).json({
 			msg: "plugins recherchés avec succès",
 			data: response.data,

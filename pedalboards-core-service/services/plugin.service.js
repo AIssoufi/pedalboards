@@ -16,13 +16,22 @@ const countPlugins = name => connexionMongo()
 		collection.find())
 	.then(collection => collection.count());
 
-const findPlugins = (page = 1, pagesize = 10, name) => connexionMongo()
-	.then(collection => name ?
-		collection.find({ "name": { $regex: `.*${name}.*`, $options: "i" } }) :
+const findPlugins = (page = 1, pagesize = 10, filter) => connexionMongo()
+	.then(collection => filter ?
+		collection.find({
+			$or: Object.keys(filter).map(key => {
+				return {
+					[key]: {
+						$regex: `.*${filter[key]}.*`,
+						$options: "i"
+					}
+				}
+			})
+		}) :
 		collection.find())
 	.then(collection => Promise.all([
 		collection.count(),
-		collection.skip(page * pagesize)
+		collection.skip(page * pagesize - pagesize)
 			.limit(pagesize)
 			.toArray()
 	])).then(responses => {

@@ -13,11 +13,13 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <Switch>
-          <Route exact path="/plugins" component={PluginsPage} />
-          <Route path="/pedalboard/details" component={PedalboardDetailsPage} />
-          <Redirect to="/plugins" />
-        </Switch>
+        <main className="main-container">
+          <Switch>
+            <Route exact path="/plugins" component={PluginsPage} />
+            <Route path="/plugin/:id" component={PedalboardDetailsPage} />
+            <Redirect to="/plugins" />
+          </Switch>
+        </main>
       </Router>
     );
   }

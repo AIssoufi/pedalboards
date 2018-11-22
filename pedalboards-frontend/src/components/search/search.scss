@@ -4,9 +4,15 @@
   box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.1);
   margin: 20px auto 40px auto;
   max-width: 450px;
-
+  select {
+    width: auto;
+    height: 40px;
+    border: none;
+    color: #ffffff;
+    background-color: #883996;
+  }
   input {
-    flex: 1 1 auto;
+    width: 100%;
     border: none;
     padding: 5px 10px;
     font-size: 1.5rem;

@@ -1,26 +1,25 @@
 // Dependencies
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import _ from 'lodash';
 
 // CSS
 import './search.scss';
 
 export default class Search extends Component {
-  static propTypes = {
-    onChange: PropTypes.func.isRequired,
-    onSubmit: PropTypes.func.isRequired
+  constructor(props) {
+    super(props);
+    this.fromRef = createRef();
   }
-
-  handleFormChange = event => {
-
+  static propTypes = {
+    onSubmit: PropTypes.func.isRequired
   }
 
   handleFormSubmit = event => {
     event.preventDefault();
-
-    const formNode = event.target;
+    const formNode = this.fromRef.current;
     const formData = new FormData(formNode);
 
     this.props.onSubmit(formData);
@@ -28,12 +27,22 @@ export default class Search extends Component {
 
   render() {
     return (
-      <form className="search-container" onSubmit={this.handleFormSubmit}>
+      <form
+        className="search-container"
+        onSubmit={this.handleFormSubmit}
+        ref={this.fromRef}>
+
+        <select name="label" defaultValue="-1">
+          <option value="-1" disabled>Search by ...</option>
+          <option value="label">lebel</option>
+          <option value="brand">brand</option>
+          <option value="categories">categorie</option>
+        </select>
         <input
           type="text"
-          name="search"
+          name="value"
           placeholder="Search Plugins"
-          onChange={this.handleFormChange} />
+          onChange={_.debounce(this.handleFormSubmit, 900)} />
         <button type="submit"><FontAwesomeIcon icon={faSearch} /></button>
       </form>
     );

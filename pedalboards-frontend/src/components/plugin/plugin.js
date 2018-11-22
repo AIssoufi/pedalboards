@@ -6,36 +6,41 @@ import './plugin.scss';
 
 const Plugin = props => (
   <div className="plugin">
-    <Link to={{
-      pathname: "/pedalboard/details",
-      state: {
-        payload: props
-      }
-    }}>
+    <Link to={`/plugin/${props._id}`}>
       <img
         src={props.screenshotUrl}
         alt="Plugin screenshot"
       />
     </Link>
     <div className="category-container">
-      {props.categories.map(category => <a href="#toto" className="category">{category}</a>)}
+      {props.categories.map(category => <Link
+        key={category}
+        to={{
+          pathname: '/plugins',
+          search: `?categories=${category}`
+        }}
+        className="category">{category}</Link>)}
     </div>
     <hr />
     <div className="info-container">
       <Link
         to={{
-          pathname: "/pedalboard/details",
-          state: {
-            payload: props
-          }
+          pathname: '/plugins',
+          search: `?label=${props.label}`
         }}
         className="info">{props.label}</Link>
-      <a href="#toto" className="info brand">{props.brand}</a>
+      <Link
+        to={{
+          pathname: '/plugins',
+          search: `?brand=${props.brand}`
+        }}
+        className="info brand">{props.brand}</Link>
     </div>
   </div>
 );
 
 Plugin.propTypes = {
+  _id: PropTypes.string.isRequired,
   author: PropTypes.shape({
     avatarUrl: PropTypes.string,
     name: PropTypes.string
