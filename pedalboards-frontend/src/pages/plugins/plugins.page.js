@@ -10,6 +10,7 @@ import PedalboardsService from 'services/pedalboards.service';
 // Componenets
 import Plugin from 'components/plugin/plugin';
 import Search from 'components/search/search';
+import Pagination from 'components/pagination';
 
 class PluginsPage extends Component {
   constructor(props) {
@@ -18,7 +19,8 @@ class PluginsPage extends Component {
       plugins: [],
       elementCount: 0,
       displayNumber: 10,
-      currentPage: 1
+      currentPage: 1,
+      countPlugins: -1
     }
   }
 
@@ -34,12 +36,13 @@ class PluginsPage extends Component {
       )).then(response => {
         this.setState({
           plugins: response.data,
-          elementCount: response.count
+          elementCount: response.count,
+          countPlugins: response.numberPages
         });
       })
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (this.props.location && prevProps.location && this.props.location.search !== prevProps.location.search) {
       PedalboardsService.findPlugins(
         new URLSearchParams(this.props.location.search),
@@ -48,14 +51,11 @@ class PluginsPage extends Component {
       ).then(response => {
         this.setState({
           plugins: response.data,
-          elementCount: response.count
+          elementCount: response.count,
+          countPlugins: response.numberPages
         });
       }).catch(error => console.log(error));
     }
-  }
-
-  getNumberOfPages() {
-    return Math.ceil(this.state.elementCount / this.state.displayNumber);
   }
 
   handleSearchSubmit = formData => {
@@ -72,9 +72,26 @@ class PluginsPage extends Component {
     ).then(response => {
       this.setState({
         plugins: response.data,
-        elementCount: response.count
+        elementCount: response.count,
+        countPlugins: response.numberPages
       });
     }).catch(error => console.log(error));
+  }
+
+  setCurrentPage = (pageNumber) => {
+    if (isNaN(pageNumber) || pageNumber >= this.state.elementCount || pageNumber <= 0) return;
+
+    PedalboardsService.getPlugins(
+      pageNumber,
+      this.state.displayNumber
+    ).then(response => {
+      this.setState({
+        plugins: response.data,
+        elementCount: response.count,
+        currentPage: response.currentPage,
+        countPlugins: response.numberPages
+      });
+    });
   }
 
   render() {
@@ -86,11 +103,21 @@ class PluginsPage extends Component {
           <hr />
         </header>
         <Search onChange={null} onSubmit={this.handleSearchSubmit} />
+        <Pagination
+          currentPage={this.state.currentPage}
+          elementCount={this.state.countPlugins}
+          onCurrentPageChange={this.setCurrentPage}
+        />
         <div className="plugin-container">
           {this.state.plugins ?
             this.state.plugins.map(plugin => <Plugin key={plugin._id} {...plugin} />) :
             <p>Aucun plugin n'est disponible</p>}
         </div>
+        <Pagination
+          currentPage={this.state.currentPage}
+          elementCount={this.state.countPlugins}
+          onCurrentPageChange={this.setCurrentPage}
+        />
       </div>
     );
   }

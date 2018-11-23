@@ -1,0 +1,38 @@
+.navigation {
+  display: flex;
+  justify-content: center;
+  .numero-de-page {
+    margin: 40px 20px;
+    button {
+      margin: 0 3px;
+      color: #FFF;
+      background-color: #883996;
+      border: 1px solid #883996;
+      border-radius: 5px;
+      &:hover{
+        color: #883996;
+        background-color: #FFF;
+        cursor: pointer;
+      }
+    }
+    .current-page {
+      // color: #883996;
+      font-weight: bold;
+      font-size: 1.5em;
+    }
+  }
+  .page-precedente, .page-suivante {
+    display: flex;
+    align-items: center;
+    &:hover{
+      color: #883996;
+      cursor: pointer;
+    }
+    p {
+      margin: 0 10px;
+    }
+    svg {
+      font-size: 2em;
+    }
+  }
+}

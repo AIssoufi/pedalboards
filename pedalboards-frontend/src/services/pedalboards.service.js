@@ -11,8 +11,7 @@ class PedalboardsService {
     url.searchParams.append("page", page);
     url.searchParams.append("pagesize", pagesize);
 
-    return fetch(`${this.url}/api/plugins`)
-      .then(response => response.json());
+    return fetch(url).then(response => response.json());
   }
 
   async findPlugins(searchParams, page = 1, pagesize = 10) {

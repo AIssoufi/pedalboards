@@ -92,7 +92,9 @@ app.get('/api/plugins', function (req, res) {
 		.then(response => res.status(200).json({
 			msg: "plugins recherchés avec succès",
 			data: response.data,
-			count: response.count
+			count: response.count,
+			currentPage: page,
+			numberPages: Math.ceil(response.count / pagesize)
 		}))
 		.catch(error => res.status(400).json({
 			msg: "erreur : " + error
