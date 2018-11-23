@@ -6,7 +6,7 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash';
 
 // CSS
-import './search.scss';
+import './style.scss';
 
 export default class Search extends Component {
   constructor(props) {

@@ -1,8 +1,10 @@
+// Dependencies
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
-import './plugin.scss';
+// CSS
+import './style.scss';
 
 const Plugin = props => (
   <div className="plugin">

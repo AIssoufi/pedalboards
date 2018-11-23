@@ -1,8 +1,10 @@
+// Dependencies
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
-import "./pedalboard-details.scss";
+// CSS
+import "./style.scss";
 
 const PedalboardDetails = props => (
   <div className="pedalboard">

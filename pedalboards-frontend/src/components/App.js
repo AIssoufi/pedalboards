@@ -6,8 +6,10 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-d
 import './App.css';
 
 // Components
-import PluginsPage from './pages/plugins/plugins.page';
-import PedalboardDetailsPage from './pages/pedalboard-details/pedalboard-details.page';
+import {
+  Plugins,
+  PedalboardDetails
+} from 'components/containers';
 
 class App extends Component {
   render() {
@@ -15,8 +17,8 @@ class App extends Component {
       <Router>
         <main className="main-container">
           <Switch>
-            <Route exact path="/plugins" component={PluginsPage} />
-            <Route path="/plugin/:id" component={PedalboardDetailsPage} />
+            <Route exact path="/plugins" component={Plugins} />
+            <Route path="/plugin/:id" component={PedalboardDetails} />
             <Redirect to="/plugins" />
           </Switch>
         </main>

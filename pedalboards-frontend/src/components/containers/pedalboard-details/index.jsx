@@ -3,13 +3,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 // Components
-import PedalboardDetails from 'components/pedalboard-details/pedalboard-details';
+import { PedalboardDetails } from 'components/presentationals';
 
 // Services
 import PedalboardsService from 'services/pedalboards.service';
 
 // CSS
-import "./pedalboard-details.page.scss";
+import "./style.scss";
 
 class PedalboardDetailsPage extends Component {
   constructor(props) {
@@ -25,7 +25,6 @@ class PedalboardDetailsPage extends Component {
       }));
   }
   render() {
-    console.log(this.state.plugin);
     return (
       <div className="pedalboard-details-container">
         {this.state.plugin ? <PedalboardDetails {...this.state.plugin} /> : <p>Pas de données disponible</p>}

@@ -24,7 +24,6 @@ class PedalboardsService {
         url.searchParams.append(`filterby[${pair[0]}]`, pair[1]);
       }
     }
-    console.log(url);
     return fetch(url).then(response => response.json());
   }
 

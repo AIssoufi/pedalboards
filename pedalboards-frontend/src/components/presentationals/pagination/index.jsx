@@ -47,6 +47,7 @@ export default class Pagination extends Component {
   }
 
   render() {
+    if (!this.props.elementCount || this.props.elementCount <= 0) return null;
     return (
       <div className="navigation">
         <div

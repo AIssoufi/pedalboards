@@ -2,15 +2,17 @@
 import React, { Component } from 'react';
 
 // CSS
-import "./plugins.page.scss";
+import "./style.scss";
 
 // Services
 import PedalboardsService from 'services/pedalboards.service';
 
 // Componenets
-import Plugin from 'components/plugin/plugin';
-import Search from 'components/search/search';
-import Pagination from 'components/pagination';
+import {
+  Plugin,
+  Search,
+  Pagination
+} from 'components/presentationals';
 
 class PluginsPage extends Component {
   constructor(props) {
