@@ -21,10 +21,19 @@ class PedalboardsService {
 
     if (searchParams instanceof URLSearchParams) {
       for (let pair of searchParams.entries()) {
+        console.log(pair);
         url.searchParams.append(`filterby[${pair[0]}]`, pair[1]);
       }
     }
-    return fetch(url).then(response => response.json());
+
+    // for (let params of url.searchParams.entries()) {
+    //   console.log(params);
+    // }
+    return fetch(url).then(response => response.json())
+      .then(reponse => {
+        console.log(reponse);
+        return reponse;
+      });
   }
 
   async getPlugin(id) {

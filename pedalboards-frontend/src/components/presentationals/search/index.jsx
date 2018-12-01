@@ -40,12 +40,11 @@ export default class Search extends Component {
           <button type="submit"><FontAwesomeIcon icon={faSearch} /></button>
         </div>
         <div className="filter">
-          <p>in</p>
-          <select name="label" defaultValue="-1">
-            <option value="-1">all</option>
-            <option value="label">lebel</option>
+          <label htmlFor="options">in</label>
+          <select id="options" name="label" defaultValue="brand" onChange={this.handleFormSubmit}>
             <option value="brand">brand</option>
             <option value="categories">categorie</option>
+            <option value="label">lebel</option>
           </select>
         </div>
 

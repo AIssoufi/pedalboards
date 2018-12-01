@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "description": "Projet MBDS",
   "scripts": {
+    "start-mongodb": "mongod",
     "start-core-service": "cd pedalboards-core-service && npm run start:dev",
     "start-cms": "cd pedalboards-cms",
     "start-fontend": "cd pedalboards-frontend && npm run start",
     "start": "concurrently \"npm:start-core-service\" \"npm:start-fontend\" \"npm:start-cms\"",
+    "start:dev": "concurrently \"npm:start-mongodb\" \"npm:start\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

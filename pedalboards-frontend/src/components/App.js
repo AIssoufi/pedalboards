@@ -18,7 +18,7 @@ class App extends Component {
         <main className="main-container">
           <Switch>
             <Route exact path="/plugins" component={Plugins} />
-            <Route path="/plugin/:id" component={PedalboardDetails} />
+            <Route exact path="/plugin/:id" component={PedalboardDetails} />
             <Redirect to="/plugins" />
           </Switch>
         </main>

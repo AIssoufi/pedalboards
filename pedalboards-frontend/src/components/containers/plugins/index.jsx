@@ -63,10 +63,9 @@ class PluginsPage extends Component {
   handleSearchSubmit = formData => {
     const label = formData.get('label');
     const value = formData.get('value');
-    if (!value) return;
-
     const searchParams = new URLSearchParams();
-    searchParams.append(label || 'label', value);
+
+    searchParams.append(label, value);
     PedalboardsService.findPlugins(
       searchParams,
       this.state.currentPage,
@@ -111,9 +110,9 @@ class PluginsPage extends Component {
           onCurrentPageChange={this.setCurrentPage}
         />
         <div className="plugin-container">
-          {this.state.plugins ?
+          {this.state.plugins && this.state.plugins.length > 0 ?
             this.state.plugins.map(plugin => <Plugin key={plugin._id} {...plugin} />) :
-            <p>Aucun plugin n'est disponible</p>}
+            <p>Aucun plugin ne correspond à votre recherche !</p>}
         </div>
         <Pagination
           currentPage={this.state.currentPage}
