@@ -1,7 +1,7 @@
 {
   "name": "pedalboards-core-service",
   "version": "1.0.0",
-  "description": "API RESTful",
+  "description": "Pedalboards-core-service est l'API RESTful de l'application web",
   "main": "index.js",
   "scripts": {
     "mongo:start": "mongod",

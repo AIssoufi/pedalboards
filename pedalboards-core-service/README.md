@@ -1,1 +1,3 @@
-mongoimport --db mbds --collection pedalboards --drop --file fakePluginsResponse.json
+Pedalboards-core-service est l'API RESTful de l'application web.
+
+// TODO

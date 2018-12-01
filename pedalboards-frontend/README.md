@@ -1,8 +1,8 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Pedalboards-frontend est la partie visibale par l'utilisateur final.
 
-## Available Scripts
+## Les scripts
 
-In the project directory, you can run:
+Dans ce projet, vous pouvez lancer:
 
 ### `npm start`
 

@@ -1,6 +1,6 @@
 {
-  "name": "pedalboards-frontend",
-  "description": "Pedalboards-frontend est la partie visibale par l'utilisateur final.",
+  "name": "pedalboards-cms",
+  "description": "Pedalbords-cms est la partie visible par les utilisateurs authentifié. Cette partie permet d'administrer (création, suppression, etc.) des pédales.",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
