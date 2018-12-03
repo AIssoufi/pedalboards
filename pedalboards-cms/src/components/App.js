@@ -8,7 +8,6 @@ import './App.css';
 // Components
 import {
   Plugins,
-  PedalboardDetails
 } from 'components/containers';
 
 class App extends Component {
@@ -18,7 +17,6 @@ class App extends Component {
         <main className="main-container">
           <Switch>
             <Route exact path="/plugins" component={Plugins} />
-            <Route exact path="/plugin/:id" component={PedalboardDetails} />
             <Redirect to="/plugins" />
           </Switch>
         </main>
