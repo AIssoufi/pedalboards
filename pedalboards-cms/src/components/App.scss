@@ -1,0 +1,14 @@
+.app-wrapper {
+  display: flex;
+  flex-flow: row nowrap;
+  height: 100vh;
+
+  .main-container {
+    display: flex;
+    justify-content: center;
+    background-color: #FFF;
+    width: 100%;
+    padding: 15px 10px;
+    overflow-x: auto;
+  }
+}

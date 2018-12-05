@@ -3,23 +3,27 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 
 // CSS
-import './App.css';
+import './App.scss';
 
 // Components
 import {
-  Plugins,
+  Header,
+  MyPlugins
 } from 'components/containers';
 
 class App extends Component {
   render() {
     return (
       <Router>
-        <main className="main-container">
-          <Switch>
-            <Route exact path="/plugins" component={Plugins} />
-            <Redirect to="/plugins" />
-          </Switch>
-        </main>
+        <div className="app-wrapper">
+          <Header />
+          <main className="main-container">
+            <Switch>
+              <Route exact path="/my-plugins" component={MyPlugins} />
+              <Redirect to="/my-plugins" />
+            </Switch>
+          </main>
+        </div>
       </Router>
     );
   }

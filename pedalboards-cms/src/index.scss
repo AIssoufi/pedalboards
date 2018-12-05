@@ -14,3 +14,25 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.btn {
+  text-decoration: none;
+  padding: 10px 10px;
+  color: #000;
+  cursor: pointer;
+  background-color: #FFF;
+  border: none;
+  border-radius: 10px;
+  font-size: .8rem;
+  &:hover {
+    background-color: #DDD;
+  }
+}
+
+.bg-primary {
+  color: $bg-text-primary-color;
+  background-color: $bg-primary-color;
+  &:hover {
+    background-color: darken($bg-primary-color, 10%);
+  }
+}

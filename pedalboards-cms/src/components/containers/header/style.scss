@@ -1,0 +1,15 @@
+@import 'styles/_colors.scss';
+
+.header-container {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  padding: 10px 0;
+  width: 200px;
+  background-color: $bg-primary-color;
+  img {
+    width: 100px;
+    height: auto;
+    border-radius: 50%;
+  }
+}

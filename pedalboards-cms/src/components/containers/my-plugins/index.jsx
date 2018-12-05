@@ -1,20 +1,17 @@
 // Dependencies
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+
+// Components
+import { Pagination } from 'components/presentationals';
+
+// Service
+import { PedalboardsService } from 'services';
 
 // CSS
-import "./style.scss";
+import './style.scss';
 
-// Services
-import PedalboardsService from 'services/pedalboards.service';
-
-// Componenets
-import {
-  Plugin,
-  Search,
-  Pagination
-} from 'components/presentationals';
-
-class PluginsPage extends Component {
+export default class MyPlugins extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -60,25 +57,6 @@ class PluginsPage extends Component {
     }
   }
 
-  handleSearchSubmit = formData => {
-    const label = formData.get('label');
-    const value = formData.get('value');
-    const searchParams = new URLSearchParams();
-
-    searchParams.append(label, value);
-    PedalboardsService.findPlugins(
-      searchParams,
-      this.state.currentPage,
-      this.state.displayNumber
-    ).then(response => {
-      this.setState({
-        plugins: response.data,
-        elementCount: response.count,
-        countPlugins: response.numberPages
-      });
-    }).catch(error => console.log(error));
-  }
-
   setCurrentPage = (pageNumber) => {
     if (isNaN(pageNumber) || pageNumber >= this.state.elementCount || pageNumber <= 0) return;
 
@@ -97,32 +75,33 @@ class PluginsPage extends Component {
 
   render() {
     return (
-      <div className="plugins-page-container">
+      <section className="my-plugin-container">
         <header>
-          <h2>Plugins</h2>
-          <p>Here be plugins</p>
-          <hr />
+          <h1>Mes plugins</h1>
+          <Link to="plugin/add" className="btn bg-primary">Ajouter un  plugin</Link>
         </header>
-        <Search onChange={null} onSubmit={this.handleSearchSubmit} />
-        <Pagination
-          currentPage={this.state.currentPage}
-          elementCount={this.state.countPlugins}
-          onCurrentPageChange={this.setCurrentPage}
-        />
-        <div className="plugin-container">
+        <main>
           {this.state.plugins && this.state.plugins.length > 0 ?
-            this.state.plugins.map(plugin => <Plugin key={plugin._id} {...plugin} />) :
-            <p>Aucun plugin ne correspond à votre recherche !</p>}
-        </div>
-        <Pagination
-          currentPage={this.state.currentPage}
-          elementCount={this.state.countPlugins}
-          onCurrentPageChange={this.setCurrentPage}
-        />
-      </div>
-    );
+            this.state.plugins.map(plugin => (
+              <div className="plugin">
+                <h2 className="title">{plugin.name}</h2>
+                <div className="controls">
+                  <Link to={`plugin/${plugin.id}`} className="btn bg-white">Voir</Link>
+                  <Link to={`plugin/edit/${plugin.id}`} className="btn bg-white">Éditer</Link>
+                  <button type="button" className="btn bg-white">Supprimer</button>
+                </div>
+              </div>)) :
+            <p>Vous n'avez ajouté aucun plugin</p>
+          }
+        </main>
+        <footer>
+          <Pagination
+            currentPage={this.state.currentPage}
+            elementCount={this.state.countPlugins}
+            onCurrentPageChange={this.setCurrentPage}
+          />
+        </footer>
+      </section>
+    )
   }
-
-};
-
-export default PluginsPage;
+}

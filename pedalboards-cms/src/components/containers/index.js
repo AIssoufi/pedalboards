@@ -1,7 +1,8 @@
-import Plugins from './plugins';
-import PedalboardDetails from './plugins';
+
+import MyPlugins from './my-plugins';
+import Header from './header';
 
 export {
-  Plugins,
-  PedalboardDetails
+  Header,
+  MyPlugins
 }

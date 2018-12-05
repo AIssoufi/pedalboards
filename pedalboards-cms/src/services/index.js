@@ -1,5 +1,5 @@
-import PedalboardService from './pedalboards.service';
+import PedalboardsService from './pedalboards.service';
 
 export {
-  PedalboardService
+  PedalboardsService
 }
