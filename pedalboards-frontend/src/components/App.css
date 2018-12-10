@@ -2,6 +2,8 @@ body {
   background-color: rgb(246, 246, 246);
 }
 .main-container {
+  padding-top: 90px;
+  padding-bottom: 15px;
   max-width: 1200px;
   margin: 0 auto;
 }

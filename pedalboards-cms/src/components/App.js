@@ -7,6 +7,7 @@ import './App.scss';
 
 // Components
 import {
+  AddPlugin,
   Header,
   MyPlugins
 } from 'components/containers';
@@ -20,6 +21,7 @@ class App extends Component {
           <main className="main-container">
             <Switch>
               <Route exact path="/my-plugins" component={MyPlugins} />
+              <Route exact path="/add-plugin" component={AddPlugin} />
               <Redirect to="/my-plugins" />
             </Switch>
           </main>

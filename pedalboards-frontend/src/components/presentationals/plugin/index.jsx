@@ -2,41 +2,58 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { Tooltip } from 'react-tippy';
 
 // CSS
 import './style.scss';
+import 'react-tippy/dist/tippy.css';
 
 const Plugin = props => (
   <div className="plugin">
     <Link to={`/plugin/${props._id}`}>
-      <img
-        src={props.screenshotUrl}
-        alt="Plugin screenshot"
-      />
+      <Tooltip
+        title={`<i>Click to discover<br>more details about ${props.name}.</i>`}
+        position="bottom">
+        <img
+          src={props.screenshotUrl}
+          alt="Plugin screenshot"
+        />
+      </Tooltip>
     </Link>
     <div className="category-container">
-      {props.categories.map(category => <Link
+      {props.categories.map(category => <Tooltip
         key={category}
-        to={{
-          pathname: '/plugins',
-          search: `?categories=${category}`
-        }}
-        className="category">{category}</Link>)}
+        title={`<b>Categorie</b><br><i>Click to filter plugin<br>by <b>${category}</b> categories.</i>`}
+        position="top"><Link
+
+          to={{
+            pathname: '/plugins',
+            search: `?categories=${category}`
+          }}
+          className="category">{category}</Link></Tooltip>)}
     </div>
     <hr />
     <div className="info-container">
-      <Link
-        to={{
-          pathname: '/plugins',
-          search: `?label=${props.label}`
-        }}
-        className="info">{props.label}</Link>
-      <Link
-        to={{
-          pathname: '/plugins',
-          search: `?brand=${props.brand}`
-        }}
-        className="info brand">{props.brand}</Link>
+      <Tooltip
+        title={`<b>Label</b><br><i>Click to filter plugin<br>by ${props.label} labels.</i>`}
+        position="top">
+        <Link
+          to={{
+            pathname: '/plugins',
+            search: `?label=${props.label}`
+          }}
+          className="info">{props.label}</Link>
+      </Tooltip>
+      <Tooltip
+        title={`<b>Brand</b><br><i>Click to filter plugin<br>by ${props.brand} brands.</i>`}
+        position="bottom">
+        <Link
+          to={{
+            pathname: '/plugins',
+            search: `?brand=${props.brand}`
+          }}
+          className="info brand">{props.brand}</Link>
+      </Tooltip>
     </div>
   </div>
 );
@@ -49,7 +66,7 @@ Plugin.propTypes = {
   }),
   brand: PropTypes.string,
   categories: PropTypes.arrayOf(PropTypes.string),
-  "controlPorts": PropTypes.arrayOf(PropTypes.shape({
+  controlPorts: PropTypes.arrayOf(PropTypes.shape({
     default: PropTypes.number,
     max: PropTypes.number,
     min: PropTypes.number,

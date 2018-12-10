@@ -73,22 +73,44 @@ export default class MyPlugins extends Component {
     });
   }
 
+  deletePlugin = id => {
+    PedalboardsService.deletePlugin(id, this.state.currentPage, this.state.displayNumber)
+      .then(response => {
+        this.setState({
+          plugins: response.data,
+          elementCount: response.count,
+          currentPage: response.currentPage,
+          countPlugins: response.numberPages,
+          deletedCount: response.deletedCount
+        });
+      })
+  }
+
   render() {
     return (
       <section className="my-plugin-container">
         <header>
           <h1>Mes plugins</h1>
-          <Link to="plugin/add" className="btn bg-primary">Ajouter un  plugin</Link>
+          <Link
+            to="add-plugin"
+            className="btn bg-primary">Ajouter un  plugin</Link>
         </header>
         <main>
           {this.state.plugins && this.state.plugins.length > 0 ?
             this.state.plugins.map(plugin => (
-              <div className="plugin">
+              <div className="plugin" key={plugin._id}>
                 <h2 className="title">{plugin.name}</h2>
                 <div className="controls">
-                  <Link to={`plugin/${plugin.id}`} className="btn bg-white">Voir</Link>
-                  <Link to={`plugin/edit/${plugin.id}`} className="btn bg-white">Éditer</Link>
-                  <button type="button" className="btn bg-white">Supprimer</button>
+                  <a
+                    href={`${process.env.REACT_APP_FRONTEND}/plugin/${plugin._id}`}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    className="btn bg-white">Voir</a>
+                  <Link to={`plugin/edit/${plugin._id}`} className="btn bg-white">Éditer</Link>
+                  <button
+                    type="button"
+                    className="btn bg-white"
+                    onClick={() => this.deletePlugin(plugin._id)}>Supprimer</button>
                 </div>
               </div>)) :
             <p>Vous n'avez ajouté aucun plugin</p>

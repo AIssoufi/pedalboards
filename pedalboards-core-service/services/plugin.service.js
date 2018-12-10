@@ -36,7 +36,13 @@ const findPlugins = (page = 1, pagesize = 10, filter) => connexionMongo()
 			.toArray()
 	])).then(responses => {
 		return {
-			data: responses[1],
+			data: responses[1].sort((a, b) => {
+				if (a.nom < b.nom)
+					return -1;
+				if (a.nom > b.nom)
+					return 1;
+				return 0;
+			}),
 			count: responses[0]
 		}
 	});
@@ -53,8 +59,24 @@ const updatePlugin = (id, formData) => connexionMongo()
 		{ "_id": ObjectID(id) },
 		formData));
 
-const deletePlugin = id => connexionMongo()
-	.then(collection => collection.deleteOne({ "_id": ObjectID(id) }));
+const deletePlugin = (id, page = 1, pagesize = 10, filter) => {
+	let deletedCount = -1;
+	return connexionMongo()
+		.then(collection => collection.deleteOne({ "_id": ObjectID(id) }))
+		.then(reponse => {
+			console.log("deletedCount : ", reponse.deletedCount);
+			deletedCount = reponse.deletedCount;
+			return findPlugins(page, pagesize, filter)
+		})
+		.then(response => {
+			console.log("newData : ", response.data);
+			return {
+				data: response.data,
+				count: response.count,
+				deletedCount
+			}
+		});
+}
 
 export {
 	connexionMongo,

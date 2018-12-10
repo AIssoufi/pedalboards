@@ -1,6 +1,6 @@
 class PedalboardsService {
   constructor() {
-    this.url = "http://localhost:8080";
+    this.url = process.env.REACT_APP_CORE_SERVICE;
     this.header = {
       "Content-Type": "application/json; charset=utf-8",
     }
@@ -57,8 +57,12 @@ class PedalboardsService {
     }).then(response => response.json());
   }
 
-  async deletePlugin(id) {
-    return fetch(`${this.url}/api/plugin/${id}`, {
+  async deletePlugin(id, page = 1, pagesize = 10) {
+    const url = new URL(`${this.url}/api/plugin/${id}`);
+    url.searchParams.append("page", page);
+    url.searchParams.append("pagesize", pagesize);
+
+    return fetch(url, {
       method: "DELETE"
     }).then(response => response.json());
   }

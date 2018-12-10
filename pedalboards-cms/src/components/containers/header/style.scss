@@ -6,11 +6,35 @@
   align-items: center;
   padding: 10px 0;
   width: 200px;
-  background-color: $bg-primary-color;
+  background-color: #000;
   color: #FFF;
   img {
     width: 100px;
     height: auto;
     border-radius: 50%;
+  }
+
+  nav {
+    width: 100%;
+    margin-top: 50px;
+    box-sizing: border-box;
+    display: flex;
+    flex-flow: column nowrap;
+    .nav-item {
+      color: #fff;
+      padding: 1.25em 0.75em;
+      transition: .3s;
+      font-size: 0.9375em;
+      text-align: center;
+      text-decoration: none;
+
+      &:hover {
+        background-color: #666;
+      }
+    }
+    .active {
+      color: #ff2200;
+      border-right: 5px solid #ff2200;
+    }
   }
 }

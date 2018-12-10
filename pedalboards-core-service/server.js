@@ -12,10 +12,26 @@ import {
 	deletePlugin
 } from './services/plugin.service';
 
+
+// Constants
+const PORT = process.env.PORT || 8080;
+const STATIC_FOLDER = 'public';
+const STATIC_FOLDER_PATH = __dirname + '/' + STATIC_FOLDER;
+
+// Grobal variable
 const app = express();
 const server = http.Server(app);
-const multerData = multer();
-const port = process.env.PORT || 8080;
+const storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		cb(null, STATIC_FOLDER_PATH + '/screenshots')
+	},
+	filename: function (req, file, cb) {
+		cb(null, `${file.fieldname}-${Date.now()}.${file.mimetype.split('/')[1]}`)
+	}
+});
+const multerData = multer({
+	storage: storage
+});
 
 
 // Paramètres standards du modyle bodyParser
@@ -27,14 +43,25 @@ app.use(bodyParser.json());
 // Ajout du support CROSS DOMAIN
 app.use(function (req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
+	res.header(
+		"Access-Control-Allow-Headers",
+		"Origin, X-Requested-With, Content-Type, Accept, Authorization");
 	next();
 });
 
-// Lance le serveur avec express
-server.listen(port);
+// Cette ligne indique le répertoire qui contient
+// les fichiers statiques: html, css, js, images etc.
+app.use(express.static(STATIC_FOLDER_PATH));
 
-console.log("Serveur lancé sur le port : " + port);
+const getServerAdress = () => `http://${server.address().address}:${server.address().port}`.replace('::', '127.0.0.1');
+
+
+// Lance le serveur avec express
+server.listen(PORT, function () {
+	console.log("static folder --> ", STATIC_FOLDER_PATH)
+	console.log('Serveur lancé sur --> ' + getServerAdress())
+});
 
 // Ici des routes en :
 // http GET (pour récupérer des données)
@@ -123,14 +150,38 @@ app.get('/api/plugin/:id', function (req, res) {
 
 // Creation d'un plugin par envoi d'un formulaire
 // On fera l'insert par un POST, c'est le standard REST
-app.post('/api/plugin', multerData.fields([]), function (req, res) {
+app.post('/api/plugin', multerData.single('image'), function (req, res) {
+	// ----
+	// req.file is the `avatar` file
+	// req.body will hold the text fields, if there were any
+	// ----
 	// On supposera qu'on ajoutera un plugin en 
 	// donnant son nom et sa cuisine. On va donc 
 	// recuperer les données du formulaire d'envoi
 	// les params sont dans req.body même si le formulaire
 	// est envoyé en multipart
 
-	createPlugin(req.body)
+	console.log("req : ", req);
+	console.log("req.file : ", req.file);
+	console.log("req.body : ", req.body);
+
+	const plugin = {
+		author: JSON.parse(req.body.author),
+		brand: req.body.brand,
+		categories: req.body.categories.trim().split(","),
+		controlPorts: JSON.parse(req.body.controlPorts),
+		description: req.body.description,
+		label: req.body.label,
+		name: req.body.name,
+		pedalboardCount: req.body.pedalboardCount,
+		screenshotUrl: getServerAdress() + "/screenshots/" + req.file.filename,
+		uri: req.body.uri,
+		version: req.body.version
+	}
+
+	console.log("plugin* : ", plugin);
+
+	createPlugin(plugin)
 		.then(data => res.status(201).json({
 			msg: "Ajout réussi",
 			data
@@ -160,11 +211,21 @@ app.put('/api/plugin/:id', multerData.fields([]), function (req, res) {
 // c'est le standard REST
 app.delete('/api/plugin/:id', function (req, res) {
 	const id = req.params.id;
+	// Si présent on prend la valeur du param, sinon 1
+	const page = parseInt(req.query.page || 1, 10);
+	// idem si present on prend la valeur, sinon 10
+	const pagesize = parseInt(req.query.pagesize || 10, 10);
 
-	deletePlugin(id)
-		.then(data => res.status(200).json({
+	const filter = req.query.filterby || null;
+
+	deletePlugin(id, page, pagesize, filter)
+		.then(response => res.status(200).json({
 			msg: "Suppression réussie",
-			data
+			data: response.data,
+			count: response.count,
+			deletedCount: response.deletedCount,
+			currentPage: page,
+			numberPages: Math.ceil(response.count / pagesize)
 		}))
 		.catch(error => res.status(400).json({
 			msg: "erreur lors de la suppression :" + error
