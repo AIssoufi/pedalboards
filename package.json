@@ -4,11 +4,11 @@
   "description": "Projet MBDS",
   "scripts": {
     "install-core-service": "cd pedalboards-core-service && npm install",
-    "install-cms": "cd pedalboards-cms",
+    "install-cms": "cd pedalboards-cms && npm install",
     "install-fontend": "cd pedalboards-frontend && npm install",
     "install": "concurrently \"npm:install-core-service\" \"npm:install-fontend\" \"npm:install-cms\"",
     "start-core-service": "cd pedalboards-core-service && npm run start:dev",
-    "start-cms": "cd pedalboards-cms",
+    "start-cms": "cd pedalboards-cms && npm run start",
     "start-fontend": "cd pedalboards-frontend && npm run start",
     "start-mongodb": "cd pedalboards-core-service && npm run mongo:start",
     "start": "concurrently \"npm:start-core-service\" \"npm:start-fontend\" \"npm:start-cms\"",
