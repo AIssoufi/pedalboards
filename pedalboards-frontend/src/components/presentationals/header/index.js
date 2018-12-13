@@ -32,13 +32,14 @@ export default class Header extends Component {
               <FontAwesomeIcon icon={faThList} />
               <span>Plugins</span>
             </NavLink>
-            <NavLink
+            <a
               className="toolbar-option"
-              to={process.env.REACT_APP_BACKEND + "/login"}
+              href={process.env.REACT_APP_BACKEND + "/login"}
+              rel="noopener noreferrer"
               target="_blank">
               <FontAwesomeIcon icon={faUser} />
               <span>Log In</span>
-            </NavLink>
+            </a>
 
           </div>
         </div>

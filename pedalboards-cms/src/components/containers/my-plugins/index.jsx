@@ -92,7 +92,7 @@ export default class MyPlugins extends Component {
         <header>
           <h1>Mes plugins</h1>
           <Link
-            to="add-plugin"
+            to="/plugin/add"
             className="btn bg-primary">Ajouter un  plugin</Link>
         </header>
         <main>

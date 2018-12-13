@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tippy';
+import PropTypes from 'prop-types';
 
 // CSS
 import 'react-tippy/dist/tippy.css';
@@ -12,6 +13,27 @@ import "./style.scss";
 import { PedalboardsService } from 'services';
 
 export default class AddPlugin extends Component {
+  static propTypes = {
+    edit: PropTypes.bool,
+    brand: PropTypes.string,
+    categories: PropTypes.arrayOf(PropTypes.string),
+    controlPorts: PropTypes.arrayOf(PropTypes.shape({
+      default: PropTypes.number,
+      max: PropTypes.number,
+      min: PropTypes.number,
+      name: PropTypes.string
+    })),
+    description: PropTypes.string,
+    label: PropTypes.string,
+    name: PropTypes.string,
+    screenshotUrl: PropTypes.string,
+    uri: PropTypes.string
+  }
+
+  static defaultValue = {
+    edit: false
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -25,12 +47,15 @@ export default class AddPlugin extends Component {
         default: 0.25,
         max: 0.00,
         min: 1.00
-      }, {
-        name: "Blend 3",
-        default: 0.25,
-        max: 0.00,
-        min: 1.00
       }]
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.controlPorts !== prevProps.controlPorts) {
+      this.setState({
+        controlPorts: this.props.controlPorts
+      })
     }
   }
 
@@ -44,10 +69,12 @@ export default class AddPlugin extends Component {
       name: ""
     }, null, 2));
 
-    PedalboardsService.createPlugin(formData)
-      .then(response => {
-        form.reset();
-      });
+    (this.props.edit ?
+      PedalboardsService.updatePlugin(formData) :
+      PedalboardsService.createPlugin(formData)
+    ).then(response => {
+      form.reset();
+    });
   }
 
   handleFormCPSubmit = event => {
@@ -90,6 +117,7 @@ export default class AddPlugin extends Component {
                 type="text"
                 name="label"
                 placeholder="Label"
+                defaultValue={this.props.label}
                 required
               />
             </div>
@@ -98,12 +126,14 @@ export default class AddPlugin extends Component {
                 type="text"
                 name="uri"
                 placeholder="URI"
+                defaultValue={this.props.uri}
                 required
               />
               <input
                 type="text"
                 name="version"
                 placeholder="Version"
+                defaultValue={this.props.version}
                 required
               />
             </div>
@@ -112,11 +142,13 @@ export default class AddPlugin extends Component {
                 type="text"
                 name="brand"
                 placeholder="Brand"
+                defaultValue={this.props.brand}
                 required />
               <input
                 type="text"
                 name="categories"
                 placeholder="Categorie A, categorie B, categorie C, etc."
+                defaultValue={this.props.categories ? this.props.categories.join(', ') : ''}
                 required
               />
             </div>
@@ -124,6 +156,7 @@ export default class AddPlugin extends Component {
               <textarea
                 placeholder="Description"
                 name="description"
+                defaultValue={this.props.description}
                 required></textarea>
             </div>
             <div className="row">
@@ -135,7 +168,7 @@ export default class AddPlugin extends Component {
                 position="left">
                 <button
                   type="submit"
-                  className="btn bg-primary"><FontAwesomeIcon icon={faPlus} /> Create</button>
+                  className="btn bg-primary"><FontAwesomeIcon icon={faPlus} /> {this.props.edit ? 'Update' : 'Create'}</button>
               </Tooltip>
             </div>
           </form>

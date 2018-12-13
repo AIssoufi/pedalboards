@@ -7,10 +7,13 @@ import './App.scss';
 
 // Components
 import {
-  AddPlugin,
+  EditPlugin,
   Header,
   MyPlugins
 } from 'components/containers';
+import {
+  AddPlugin,
+} from 'components/presentationals';
 
 class App extends Component {
   render() {
@@ -20,9 +23,10 @@ class App extends Component {
           <Header />
           <main className="main-container">
             <Switch>
-              <Route exact path="/my-plugins" component={MyPlugins} />
-              <Route exact path="/add-plugin" component={AddPlugin} />
-              <Redirect to="/my-plugins" />
+              <Route exact path="/plugins" component={MyPlugins} />
+              <Route exact path="/plugin/add" component={AddPlugin} />
+              <Route exact path="/plugin/edit/:id" component={EditPlugin} />
+              <Redirect to="/plugins" />
             </Switch>
           </main>
         </div>
