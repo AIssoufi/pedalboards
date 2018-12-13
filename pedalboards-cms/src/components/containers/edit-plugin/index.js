@@ -19,13 +19,11 @@ export default class EditPlugin extends Component {
     if (id) {
       PedalboardsService.getPlugin(id)
         .then(response => {
-          console.log("response : ", response.data);
           this.setState({
             plugin: response.data
           })
         })
     }
-
   }
 
   render() {

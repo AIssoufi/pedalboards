@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "mongo:start": "mongod",
-    "mongo:import": "mongoimport --db mbds --collection pedalboards --drop --file ./services/plugins.json",
+    "mongo:import": "mongoimport --db mbds --collection pedalboards --drop --file ./services/plugins.json --jsonArray",
     "mongo:install": "brew update && brew install mongodb && mkdir -p /data/db && chmod 777 /data/db",
     "start": "node index.js",
     "start:dev": "nodemon index.js",

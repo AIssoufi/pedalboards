@@ -4,7 +4,7 @@ Dans le cadre d'un projet [MBDS](http://www.mbds-fr.org/). Nous avons réalisé 
 ## Installation des dépendences
 
 ```bash
-npm run install
+npm install && npm run install
 ```
 
 Ce script va installer toutes les dépendances NPM des micro-services suivant :
@@ -33,7 +33,7 @@ Ce script fait la même chose que le script ci-dessus. Il **lance en plus le ser
 ### Installation de mongoDB
 
 ```bash
-cd pedalboards-core-service
+cd pedalboards-core-service 
 npm run mongo:install
 ```
 
