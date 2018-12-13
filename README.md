@@ -1,6 +1,12 @@
 # Magasin de plugins audio
 Dans le cadre d'un projet [MBDS](http://www.mbds-fr.org/). Nous avons réalisé un magasin de plugins audio.
 
+# Essayer le site en ligne
+
+Nous mettrons d'ici dimanche 16 décembre (inclus) une version en ligne.
+
+# Essayer le site en local
+
 ## Installation des dépendences
 
 ```bash
@@ -15,18 +21,15 @@ Ce script va installer toutes les dépendances NPM des micro-services suivant :
 ## Lancer le projet
 
 ```bash
-npm run start
-```
-
-Ce script va lancer l'application web et tous les services nécessaire a son fonctionnement **sauf le serveur monogDB**. Vous devrez lancer manuellement le serveur mongoDB.
-
-## Lancer le projet en mode développement
-
-```bash
 npm run start:dev
 ```
 
-Ce script fait la même chose que le script ci-dessus. Il **lance en plus le serveur monogDB**. 
+Ce script va lancer l'application web et tous les services nécessaire a son fonctionnement. 
+Les services lancé sont :
+* mongoDB
+* core-service
+* fontend
+* cms
 
 ## MongoDB (sur MAC)
 
