@@ -41,7 +41,7 @@ class PluginsPage extends Component {
           elementCount: response.count,
           countPlugins: response.numberPages
         });
-      })
+      }).catch(error => console.log("getPlugins of findPlugins faild : ", error));
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -56,7 +56,7 @@ class PluginsPage extends Component {
           elementCount: response.count,
           countPlugins: response.numberPages
         });
-      }).catch(error => console.log(error));
+      }).catch(error => console.log("findPlugins faild : ", error));
     }
   }
 
@@ -76,7 +76,7 @@ class PluginsPage extends Component {
         elementCount: response.count,
         countPlugins: response.numberPages
       });
-    }).catch(error => console.log(error));
+    }).catch(error => console.log("findPlugins faild : ", error));
   }
 
   setCurrentPage = (pageNumber) => {
@@ -92,7 +92,7 @@ class PluginsPage extends Component {
         currentPage: response.currentPage,
         countPlugins: response.numberPages
       });
-    });
+    }).catch(error => console.log("getPlugins faild : ", error));
   }
 
   render() {

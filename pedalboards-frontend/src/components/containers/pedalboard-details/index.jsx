@@ -22,7 +22,8 @@ class PedalboardDetailsPage extends Component {
     PedalboardsService.getPlugin(this.props.match.params.id)
       .then(response => this.setState({
         plugin: response.data
-      }));
+      }))
+      .catch(error => console.log("getPlugins faild : ", error));
   }
   render() {
     return (
