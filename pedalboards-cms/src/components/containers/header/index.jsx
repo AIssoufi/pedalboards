@@ -14,12 +14,12 @@ export default class Header extends Component {
         <button type="button" className="btn">Se déconnecter</button>
         <nav>
           <NavLink
-            to="/my-plugins"
+            to="/plugins"
             className="nav-item"
             activeClassName="active"
           >My plugins</NavLink>
           <NavLink
-            to="/add-plugin"
+            to="/plugin/add"
             className="nav-item"
             activeClassName="active"
           >Add plugn</NavLink>

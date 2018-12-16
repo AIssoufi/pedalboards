@@ -1,0 +1,9 @@
+.git
+dist
+node_modules
+build
+package-lock.json
+.editorconfig
+*.md
+*.yml
+app.json

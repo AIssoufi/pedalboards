@@ -2,5 +2,8 @@
 dist
 node_modules
 build
-README.md
 package-lock.json
+.editorconfig
+*.md
+*.yml
+app.json

@@ -6,6 +6,8 @@ const url = process.env.URL || 'mongodb://localhost:27017'; // Connection URL
 const dbName = process.env.DB || 'mbds'; // Database Name
 const collectionName = process.env.COLLECTION || 'pedalboards';
 
+const test = () => MongoClient.connect(url);
+
 const connexionMongo = () => MongoClient.connect(url)
 	.then(client => client.db(dbName))
 	.then(db => db.collection(collectionName))
@@ -85,5 +87,6 @@ export {
 	findPluginById,
 	createPlugin,
 	updatePlugin,
-	deletePlugin
+	deletePlugin,
+	test
 }

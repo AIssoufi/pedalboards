@@ -2,6 +2,7 @@
   "name": "pedalboards-frontend",
   "description": "Pedalboards-frontend est la partie visibale par l'utilisateur final.",
   "version": "0.1.0",
+  "homepage": "https://pedalboards-frontend.herokuapp.com",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.8",

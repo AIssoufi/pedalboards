@@ -9,12 +9,13 @@ import {
 	findPluginById,
 	createPlugin,
 	updatePlugin,
-	deletePlugin
+	deletePlugin,
+	test
 } from './services/plugin.service';
 
 
 // Constants
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 80;
 const STATIC_FOLDER = 'public';
 const STATIC_FOLDER_PATH = __dirname + '/' + STATIC_FOLDER;
 
@@ -73,11 +74,30 @@ server.listen(PORT, function () {
 // Ces routes forment l'API de l'application !!
 //----------------------------------------------
 
+app.get('/api/test', function (req, res) {
+	// Pour le moment on simule, mais après on devra
+	// réellement se connecte à la base de données
+	// et renvoyer une valeur pour dire si tout est ok
+	console.log("URL : ", process.env.URL)
+	console.log("BD : ", process.env.DB)
+	console.log("COLLECTION : ", process.env.COLLECTION)
+	test()
+		.then(rep => res.status(200).json({
+			msg: "connexion possible"
+		}))
+		.catch(error => res.status(401).json({
+			msg: "erreur de connexion err=" + error
+		}));
+});
+
 // Test de la connexion à la base
 app.get('/api/connection', function (req, res) {
 	// Pour le moment on simule, mais après on devra
 	// réellement se connecte à la base de données
 	// et renvoyer une valeur pour dire si tout est ok
+	console.log("URL : ", process.env.URL)
+	console.log("BD : ", process.env.DB)
+	console.log("COLLECTION : ", process.env.COLLECTION)
 	connexionMongo()
 		.then(rep => res.status(200).json({
 			msg: "connexion établie"
@@ -85,8 +105,6 @@ app.get('/api/connection', function (req, res) {
 		.catch(error => res.status(401).json({
 			msg: "erreur de connexion err=" + error
 		}));
-
-	console.log(process.env.URL, process.env.DB, process.env.COLLECTION)
 });
 
 app.get('/api/plugins/count', function (req, res) {

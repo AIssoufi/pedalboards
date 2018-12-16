@@ -7,7 +7,7 @@
     "mongo:start": "mongod",
     "mongo:import": "mongoimport --db mbds --collection pedalboards --drop --file ./services/plugins.json --jsonArray",
     "mongo:install": "brew update && brew install mongodb && mkdir -p /data/db && chmod 777 /data/db",
-    "start": "node index.js",
+    "start": "URL=mongodb:27017 node index.js",
     "start:dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

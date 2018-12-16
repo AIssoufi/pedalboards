@@ -1,6 +1,6 @@
 class PedalboardsService {
   constructor() {
-    this.url = "http://localhost:8080";
+    this.url = process.env.REACT_APP_CORE_SERVICE;
     this.header = {
       "Content-Type": "application/json; charset=utf-8",
     }
