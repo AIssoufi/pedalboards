@@ -7,8 +7,8 @@
     "mongo:start": "mongod",
     "mongo:import": "mongoimport --db mbds --collection pedalboards --drop --file ./services/plugins.json --jsonArray",
     "mongo:install": "brew update && brew install mongodb && mkdir -p /data/db && chmod 777 /data/db",
-    "start": "URL=mongodb:27017 node index.js",
-    "start:dev": "nodemon index.js",
+    "start": "URL=mongodb://test:m2mbds2018@ds135844.mlab.com:35844/mbds node index.js",
+    "start:dev": "PORT=8080 nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": {
