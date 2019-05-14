@@ -1,5 +1,13 @@
-# Magasin de plugins audio
-Dans le cadre d'un projet [MBDS](http://www.mbds-fr.org/). Nous avons réalisé un magasin de plugins audio.
+# Description
+Conception et réalisation d'une magasin de plugin audio (pédale d’effet virtuel) dans le cadre d’un projet universitaire en master 2. 
+
+## Environnement Technique
+- Langage : HTML 5, CSS 3, JavaScript (ES6 et 7)
+- OS : macOS
+- Library : ReactJS, ReduxJS, Styled Component, Express, mongodb, lodash
+- Base de données:  MongoDB
+- Outil : Docker, Postman, Git, SourceTree, GitLab, Trello, Visual Studio Code
+
 
 # Essayer le site en ligne
 
@@ -61,6 +69,6 @@ Après l'importation vous aurez:
 
 | Dossier                  	| Description                                                                  	| Technos     	|
 |--------------------------	|------------------------------------------------------------------------------	|-------------	|
-| pedalboards-cms          	| Le CMS permettant de gérer  les pedaliers (création,  suppressiosn, édition) 	| React       	|
-| pedalboards-core-service 	| L'API RESTful                                                                	|             	|
+| pedalboards-cms          	| Le CMS permettant de gérer  les pedaliers (création,  suppressiosn, édition) 	| ReactJS, ReduxJS, Styled Component    |
+| pedalboards-core-service 	| L'API RESTful                                                                	| Express, MongoDB    	|
 | pedalboards-frontend     	| L'application web des  pédaliers                                             	| React, Sass 	|
