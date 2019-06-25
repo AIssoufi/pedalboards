@@ -1,5 +1,7 @@
+@import 'styles/_globals.scss';
+
 .pedalboard {
-  background-color: #FFF;
+  background-color: $bg-text-primary-color;
   max-width: 770px;
   width: 100%;
   min-height: 265px;
@@ -18,7 +20,7 @@
       }
       a {
         font-size: 0.9em;
-        color: #444444;
+        color: $text-primary-color;
         text-decoration: none;
       }
     }
@@ -33,15 +35,15 @@
         text-align: center;
         line-height: 40px;
         margin: 3px;
-        background-color: #883996;
+        background-color: $bg-primary-color;
         text-decoration: none;
-        color: #ffffff;
+        color: $bg-text-primary-color;
         font-weight: bold;
         font-size: 1.5em;
         span {
           text-align: center;
           line-height: 40px;
-          color: #ffffff;
+          color: $bg-text-primary-color;
           font-weight: bold;
           font-size: 1.5em;
         }
@@ -49,10 +51,10 @@
     }
   }
 
-  &>h2 {
+  & > h2 {
     font-weight: bold;
     font-size: 1.5em;
-    color: #883996;
+    color: $bg-primary-color;
   }
 
   .plugin-media-container {
@@ -72,8 +74,8 @@
     justify-content: center;
       .plugin-category {
         padding: 5px;
-        background-color: #883996;
-        color: #ffffff;
+        background-color: $bg-primary-color;
+        color: $bg-text-primary-color;
         text-decoration: none;
         font-size: .8em;
         display: inline-block;

@@ -1,3 +1,5 @@
+@import 'styles/_globals.scss';
+
 .navigation {
   display: flex;
   justify-content: center;
@@ -5,18 +7,18 @@
     margin: 40px 20px;
     button {
       margin: 0 3px;
-      color: #FFF;
-      background-color: #883996;
-      border: 1px solid #883996;
+      color: $bg-text-primary-color;
+      background-color: $bg-primary-color;
+      border: 1px solid $bg-primary-color;
       border-radius: 5px;
       &:hover{
-        color: #883996;
-        background-color: #FFF;
+        color: $bg-primary-color;
+        background-color: $bg-text-primary-color;
         cursor: pointer;
       }
     }
     .current-page {
-      // color: #883996;
+      // color: $bg-primary-color;
       font-weight: bold;
       font-size: 1.5em;
     }
@@ -25,7 +27,7 @@
     display: flex;
     align-items: center;
     &:hover{
-      color: #883996;
+      color: $bg-primary-color;
       cursor: pointer;
     }
     p {
