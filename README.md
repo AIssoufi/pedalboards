@@ -1,5 +1,5 @@
-# Description
-Conception et réalisation d'une magasin de plugin audio (pédale d’effet virtuel) dans le cadre d’un projet universitaire en master 2. 
+# Déscription
+Conception et réalisation d'un magasin de plugin audio (pédale d’effet virtuel).
 
 ## Environnement Technique
 - Langage : HTML 5, CSS 3, JavaScript (ES6 et 7)
