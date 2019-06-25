@@ -29,9 +29,6 @@ const PedalboardDetailsPage = ({ match }) => {
     PedalboardService.getPlugin(pluginId)
       .then((response) => {
         setPlugin(response.data);
-      })
-      .catch((error) => {
-        console.log('getPlugins faild : ', error);
       });
   });
 

@@ -1,50 +1,44 @@
 // Dependencies
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 // Componenets
 import {
-  Plugin, Search, Pagination
+  Search, Pagination, PluginGrid
 } from 'components';
 
-// Services
+// Redux - selectors
+import { pluginSelector } from 'redux/selectors';
+
+// Redux - actions
 import {
-  PedalboardService
-} from 'services';
+  fetchPluginsAction, findPluginsAction
+} from 'redux/actions/plugin.action';
 
 // Style
 import './style.scss';
 
-const PluginsPage = ({ location }) => {
+const PluginsPage = ({
+  location, fetchPlugins, findPlugins, plugins,
+  elementCount, countPlugins, isFetching
+}) => {
   const displayNumber = 10;
-
-  const [plugins, setPlugins] = useState([]);
-  const [elementCount, setElementCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [countPlugins, setCountPlugins] = useState(-1);
 
   useEffect(() => {
     const { search } = location;
 
-    const fetchPlugin = () => (
-      search ? () => {
-        const searchParams = new URLSearchParams(search);
-
-        return PedalboardService.findPlugins(
-          searchParams,
-          currentPage,
-          displayNumber
-        );
-      } : PedalboardService.getPlugins(currentPage, displayNumber)
-    );
-
-    fetchPlugin().then((response) => {
-      const { data, count, numberPages } = response;
-
-      setPlugins(data);
-      setElementCount(count);
-      setCountPlugins(numberPages);
-    });
+    if (search) {
+      const searchParams = new URLSearchParams(search);
+      findPlugins(
+        searchParams,
+        currentPage,
+        displayNumber
+      );
+    } else {
+      fetchPlugins(currentPage, displayNumber);
+    }
   }, []);
 
   const handleSearchSubmit = (formData) => {
@@ -54,21 +48,11 @@ const PluginsPage = ({ location }) => {
 
     searchParams.append(label, value);
 
-    PedalboardService.findPlugins(
+    findPlugins(
       searchParams,
       currentPage,
       displayNumber
-    ).then((response) => {
-      const {
-        data, count, numberPages
-      } = response;
-
-      setPlugins(data);
-      setElementCount(count);
-      setCountPlugins(numberPages);
-    }).catch((error) => {
-      console.log('findPlugins faild : ', error);
-    });
+    );
   };
 
   const setCurrentPageHandler = (pageNumber) => {
@@ -78,20 +62,18 @@ const PluginsPage = ({ location }) => {
 
     if (pageNumberIsNotValide) return;
 
-    PedalboardService.getPlugins(
+    fetchPlugins(
       pageNumber,
       displayNumber
     ).then((response) => {
       const {
-        data, count, currentPage: newPage, numberPages
+        currentPage: newPage
       } = response;
 
-      setPlugins(data);
-      setElementCount(count);
       setCurrentPage(newPage);
-      setCountPlugins(numberPages);
     });
   };
+
 
   return (
     <div className="plugins-page-container">
@@ -109,13 +91,7 @@ const PluginsPage = ({ location }) => {
         elementCount={countPlugins}
         onCurrentPageChange={setCurrentPageHandler}
       />
-      <div className="plugin-container">
-        {plugins.length > 0
-          ? plugins.map(
-            p => <Plugin key={p._id} {...p} />
-          )
-          : <p>Aucun plugin ne correspond à votre recherche !</p>}
-      </div>
+      <PluginGrid isLoading={isFetching} plugins={plugins} />
       <Pagination
         currentPage={currentPage}
         elementCount={countPlugins}
@@ -125,10 +101,27 @@ const PluginsPage = ({ location }) => {
   );
 };
 
+const mapDispatchToProps = {
+  fetchPlugins: fetchPluginsAction,
+  findPlugins: findPluginsAction
+};
+
+const mapStateToProps = pluginSelector;
+
 PluginsPage.propTypes = {
   location: PropTypes.shape({
     search: PropTypes.string
-  }).isRequired
+  }).isRequired,
+  fetchPlugins: PropTypes.func.isRequired,
+  findPlugins: PropTypes.func.isRequired,
+  plugins: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string,
+    name: PropTypes.string,
+    brand: PropTypes.string
+  })).isRequired,
+  elementCount: PropTypes.number.isRequired,
+  countPlugins: PropTypes.number.isRequired,
+  isFetching: PropTypes.bool.isRequired
 };
 
-export default PluginsPage;
+export default connect(mapStateToProps, mapDispatchToProps)(PluginsPage);

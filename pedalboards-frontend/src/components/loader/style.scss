@@ -1,0 +1,10 @@
+@import 'styles/_globals.scss';
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  widows: 100%;
+  color: $bg-primary-color;
+}
