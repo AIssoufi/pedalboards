@@ -4,7 +4,7 @@ Conception et réalisation d'une magasin de plugin audio (pédale d’effet virt
 ## Environnement Technique
 - Langage : HTML 5, CSS 3, JavaScript (ES6 et 7)
 - OS : macOS
-- Library : ReactJS, ReduxJS, Styled Component, Express, mongodb, lodash
+- Library : ReactJS, ReduxJS, Sass, Express, mongodb, lodash
 - Base de données:  MongoDB
 - Outil : Docker, Postman, Git, SourceTree, GitLab, Trello, Visual Studio Code
 
@@ -22,7 +22,7 @@ Conception et réalisation d'une magasin de plugin audio (pédale d’effet virt
 ## Installation des dépendences
 
 ```bash
-npm install && npm run install
+npm install
 ```
 
 Ce script va installer toutes les dépendances NPM des micro-services suivant :
@@ -69,6 +69,6 @@ Après l'importation vous aurez:
 
 | Dossier                  	| Description                                                                  	| Technos     	|
 |--------------------------	|------------------------------------------------------------------------------	|-------------	|
-| pedalboards-cms          	| Le CMS permettant de gérer  les pedaliers (création,  suppressiosn, édition) 	| ReactJS, ReduxJS, Styled Component    |
+| pedalboards-cms          	| Le CMS permettant de gérer  les pedaliers (création,  suppressiosn, édition) 	| ReactJS, ReduxJS, Scss    |
 | pedalboards-core-service 	| L'API RESTful                                                                	| Express, MongoDB    	|
 | pedalboards-frontend     	| L'application web des  pédaliers                                             	| React, Sass 	|
