@@ -4,9 +4,9 @@ Conception et réalisation d'une magasin de plugin audio (pédale d’effet virt
 ## Environnement Technique
 - Langage : HTML 5, CSS 3, JavaScript (ES6 et 7)
 - OS : macOS
-- Library : ReactJS, ReduxJS, Sass, Express, mongodb, lodash
+- Library : ReactJS, ReduxJS (prochainement...), Recompose (prochainement...), Sass, Express, mongodb, lodash
 - Base de données:  MongoDB
-- Outil : Docker, Postman, Git, SourceTree, GitLab, Trello, Visual Studio Code
+- Outil : Docker, Postman, Git, SourceTree, GitLab, Visual Studio Code
 
 
 # Essayer le site en ligne
@@ -71,4 +71,4 @@ Après l'importation vous aurez:
 |--------------------------	|------------------------------------------------------------------------------	|-------------	|
 | pedalboards-cms          	| Le CMS permettant de gérer  les pedaliers (création,  suppressiosn, édition) 	| ReactJS, Sass    |
 | pedalboards-core-service 	| L'API RESTful                                                                	| Express, MongoDB    	|
-| pedalboards-frontend     	| L'application web des  pédaliers                                             	| React, Sass 	|
+| pedalboards-frontend     	| L'application web des  pédaliers                                             	| React, Sass, Redux (prochainement...), Recompose (prochainement...)	|
