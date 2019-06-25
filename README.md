@@ -69,6 +69,6 @@ Après l'importation vous aurez:
 
 | Dossier                  	| Description                                                                  	| Technos     	|
 |--------------------------	|------------------------------------------------------------------------------	|-------------	|
-| pedalboards-cms          	| Le CMS permettant de gérer  les pedaliers (création,  suppressiosn, édition) 	| ReactJS, ReduxJS, Scss    |
+| pedalboards-cms          	| Le CMS permettant de gérer  les pedaliers (création,  suppressiosn, édition) 	| ReactJS, Sass    |
 | pedalboards-core-service 	| L'API RESTful                                                                	| Express, MongoDB    	|
 | pedalboards-frontend     	| L'application web des  pédaliers                                             	| React, Sass 	|
