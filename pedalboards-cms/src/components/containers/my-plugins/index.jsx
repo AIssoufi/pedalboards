@@ -3,12 +3,12 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 // Components
-import { Pagination } from 'components/presentationals';
+import { Pagination } from 'components';
 
 // Service
 import { PedalboardsService } from 'services';
 
-// CSS
+// Style
 import './style.scss';
 
 export default class MyPlugins extends Component {

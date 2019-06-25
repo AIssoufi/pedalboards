@@ -6,14 +6,19 @@ import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
 
 // Components
-import PedalboardDetails from './index';
+import Plugin from './index';
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
   ReactDOM.render(
     <MemoryRouter>
-      <PedalboardDetails
-        author={{ name: "Lorem" }}
+      <Plugin
+        _id="ghjklmljhjkjhj"
+        author={{
+          avatarUrl: 'http://example.com',
+          name: 'Lorem'
+        }}
+        brand="lorem"
         categories={['A', 'B', 'C']}
         controlPorts={[{
           default: 1,
@@ -21,12 +26,19 @@ it('renders without crashing', () => {
           min: 3,
           name: 'lorem'
         }]}
-        description='lorem impsum'
-        label='lorem'
+        description="lorem impsum"
+        imageHeight={400}
+        imageWidth={400}
+        label="lorem"
+        name="I Love U"
         pedalboardCount={42}
-        screenshotUrl='http://example.com/screenshot'
-        uri='http://example.com'
+        screenshotUrl="http://example.com/screenshot"
+        stable
+        thumbnailUrl="http://example.com/thumbnail"
+        uri="http://example.com"
       />
-    </MemoryRouter>, div);
+
+    </MemoryRouter>, div
+  );
   ReactDOM.unmountComponentAtNode(div);
 });

@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
 
-// CSS
+// Style
 import './style.scss';
 
 export default class Header extends Component {

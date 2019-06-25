@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 
-// CSS
+// Style
 import './App.scss';
 
 // Components
@@ -10,10 +10,10 @@ import {
   EditPlugin,
   Header,
   MyPlugins
-} from 'components/containers';
+} from 'pages';
 import {
   AddPlugin,
-} from 'components/presentationals';
+} from 'components';
 
 class App extends Component {
   render() {

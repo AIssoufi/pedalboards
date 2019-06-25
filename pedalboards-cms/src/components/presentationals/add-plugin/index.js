@@ -5,7 +5,7 @@ import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tippy';
 import PropTypes from 'prop-types';
 
-// CSS
+// Style
 import 'react-tippy/dist/tippy.css';
 import "./style.scss";
 

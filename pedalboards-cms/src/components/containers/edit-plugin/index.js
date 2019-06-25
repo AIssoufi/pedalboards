@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 
 // Components
-import { AddPlugin } from 'components/presentationals';
+import { AddPlugin } from 'components';
 
 // Services
 import { PedalboardsService } from 'services';

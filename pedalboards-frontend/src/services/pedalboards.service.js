@@ -1,66 +1,59 @@
+// Helpers
+import { RequestHelper } from 'helpers';
+
+// Utils
+import { Env } from 'utils';
+
 class PedalboardsService {
   constructor() {
-    this.url = process.env.REACT_APP_CORE_SERVICE;
-    this.header = {
-      "Content-Type": "application/json; charset=utf-8",
-    }
+    this.url = Env.get('core_service');
   }
 
   async getPlugins(page = 1, pagesize = 10) {
     const url = new URL(`${this.url}/api/plugins`);
-    url.searchParams.append("page", page);
-    url.searchParams.append("pagesize", pagesize);
 
-    return fetch(url).then(response => response.json());
+    url.searchParams.append('page', page);
+    url.searchParams.append('pagesize', pagesize);
+
+    return RequestHelper.get(url);
   }
 
   async findPlugins(searchParams, page = 1, pagesize = 10) {
     const url = new URL(`${this.url}/api/plugins`);
-    url.searchParams.append("page", page);
-    url.searchParams.append("pagesize", pagesize);
+    url.searchParams.append('page', page);
+    url.searchParams.append('pagesize', pagesize);
 
     if (searchParams instanceof URLSearchParams) {
-      for (let pair of searchParams.entries()) {
-        console.log(pair);
+      for (const pair of searchParams.entries()) {
         url.searchParams.append(`filterby[${pair[0]}]`, pair[1]);
       }
     }
 
-    // for (let params of url.searchParams.entries()) {
-    //   console.log(params);
-    // }
-    return fetch(url).then(response => response.json())
-      .then(reponse => {
-        console.log(reponse);
-        return reponse;
-      });
+    return RequestHelper.get(url);
   }
 
   async getPlugin(id) {
-    return fetch(`${this.url}/api/plugin/${id}`)
-      .then(response => response.json());
+    const url = `${this.url}/api/plugin/${id}`;
+
+    return RequestHelper.get(url);
   }
 
   async updatePlugin(id, data) {
-    return fetch(`${this.url}/api/plugin/${id}`, {
-      method: "PUT",
-      header: this.header,
-      body: data
-    }).then(response => response.json());
+    const url = `${this.url}/api/plugin/${id}`;
+
+    return RequestHelper.put(url, data);
   }
 
   async createPlugin(data) {
-    return fetch(`${this.url}/api/plugin`, {
-      method: "POST",
-      header: this.header,
-      body: data
-    }).then(response => response.json());
+    const url = `${this.url}/api/plugin`;
+
+    return RequestHelper.post(url, data);
   }
 
   async deletePlugin(id) {
-    return fetch(`${this.url}/api/plugin/${id}`, {
-      method: "DELETE"
-    }).then(response => response.json());
+    const url = `${this.url}/api/plugin/${id}`;
+
+    return RequestHelper.remove(url);
   }
 }
 
