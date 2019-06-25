@@ -6,4 +6,4 @@ export {
   EditPlugin,
   Header,
   MyPlugins
-}
+};

@@ -1,6 +1,8 @@
 // Dependencies
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import {
+ BrowserRouter as Router, Route, Switch, Redirect 
+} from 'react-router-dom';
 
 // Style
 import './App.scss';
@@ -9,8 +11,9 @@ import './App.scss';
 import {
   EditPlugin,
   Header,
-  MyPlugins
+  MyPlugins,
 } from 'pages';
+
 import {
   AddPlugin,
 } from 'components';

@@ -44,8 +44,6 @@ const PluginsPage = ({ location }) => {
       setPlugins(data);
       setElementCount(count);
       setCountPlugins(numberPages);
-    }).catch((error) => {
-      console.log('getPlugins of findPlugins faild : ', error);
     });
   }, []);
 
@@ -92,8 +90,6 @@ const PluginsPage = ({ location }) => {
       setElementCount(count);
       setCurrentPage(newPage);
       setCountPlugins(numberPages);
-    }).catch((error) => {
-      console.log('getPlugins faild : ', error);
     });
   };
 

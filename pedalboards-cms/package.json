@@ -1,6 +1,11 @@
 {
+  "author": {
+    "name": "Issoufi Adam",
+    "email": "issoufi.adam@etu.unice.fr",
+    "url": "https://aissoufi.github.io/"
+  },
   "name": "pedalboards-cms",
-  "description": "Pedalbords-cms est la partie visible par les utilisateurs authentifié. Cette partie permet d'administrer (création, suppression, etc.) des pédales.",
+  "description": "Pedalbords-cms est la partie visible par les utilisateurs authentifiés. Cette partie permet d'administrer (création, suppression, etc.) des pédales.",
   "version": "0.1.0",
   "homepage": "https://pedalboards-cms.herokuapp.com",
   "private": true,
@@ -11,11 +16,17 @@
     "http-proxy-middleware": "^0.19.1",
     "node-sass": "^4.10.0",
     "prop-types": "^15.6.2",
-    "react": "^16.6.0",
-    "react-dom": "^16.6.0",
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.1",
     "react-tippy": "^1.2.3"
+  },
+  "devDependencies": {
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.14.2"
   },
   "scripts": {
     "start": "PORT=3002 react-scripts start",
@@ -31,16 +42,5 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ],
-  "author": {
-    "name": "Issoufi Adam",
-    "email": "issoufi.adam@etu.unice.fr",
-    "url": "https://aissoufi.github.io/"
-  },
-  "contributors": [
-    {
-      "name": "Maguette Yacine",
-      "email": "ndiayemaguette92@gmail.com"
-    }
   ]
 }

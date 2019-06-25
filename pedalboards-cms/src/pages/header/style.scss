@@ -1,4 +1,4 @@
-@import 'styles/_colors.scss';
+@import 'styles/_globals.scss';
 
 .header-container {
   display: flex;
@@ -7,7 +7,7 @@
   padding: 10px 0;
   width: 200px;
   background-color: #000;
-  color: #FFF;
+  color: $bg-text-primary-color;
   img {
     width: 100px;
     height: auto;
@@ -21,7 +21,7 @@
     display: flex;
     flex-flow: column nowrap;
     .nav-item {
-      color: #fff;
+      color: $bg-text-primary-color;
       padding: 1.25em 0.75em;
       transition: .3s;
       font-size: 0.9375em;
