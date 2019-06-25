@@ -1,4 +1,4 @@
-# Déscription
+# Description
 Conception et réalisation d'un magasin de plugin audio (pédale d’effet virtuel).
 
 ## Environnement Technique
