@@ -17,9 +17,9 @@ const Header = () => (
       </Link>
       <div className="toolbar-brand-container">
         <div className="toolbar-brand">
-          <Link className="logo" to="/">
-            Projet MBDS
-          </Link>
+          <a className="logo" href="http://aissoufi.github.io">
+            Realised by @aissoufi
+          </a>
         </div>
       </div>
       <div className="toolbar-option-container">
@@ -38,7 +38,7 @@ const Header = () => (
           target="_blank"
         >
           <FontAwesomeIcon icon={faUser} />
-          <span>Log In</span>
+          <span>Admin Panel</span>
         </a>
       </div>
     </div>

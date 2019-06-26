@@ -17,6 +17,7 @@ import './style.scss';
 
 const PedalboardDetailsPage = ({ match }) => {
   const initialPlugin = undefined;
+  const [isFetching, setIsFetching] = useState(false);
   const [plugin, setPlugin] = useState(initialPlugin);
 
   useEffect(() => {
@@ -26,16 +27,21 @@ const PedalboardDetailsPage = ({ match }) => {
       } = {}
     } = match;
 
+    setIsFetching(true);
+
     PedalboardService.getPlugin(pluginId)
       .then((response) => {
         setPlugin(response.data);
+      })
+      .finally(() => {
+        setIsFetching(false);
       });
-  });
+  }, []);
 
   return (
     <div className="pedalboard-details-container">
-      {plugin
-        ? <PedalboardDetails {...plugin} />
+      {isFetching || plugin
+        ? <PedalboardDetails isLoading={isFetching} {...plugin} />
         : <p>Pas de données disponible</p>
       }
     </div>

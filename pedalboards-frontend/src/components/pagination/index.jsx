@@ -59,7 +59,7 @@ const Pagination = ({
         tabIndex={0}
       >
         <FontAwesomeIcon icon={faAngleLeft} />
-        <p>Page pérécedente</p>
+        <p>PREVIOUS</p>
       </div>
       <div className="numero-de-page">
         {leftPageNumbers.map(pageNumber => (
@@ -89,7 +89,7 @@ const Pagination = ({
         role="button"
         tabIndex={-1}
       >
-        <p>Page suivante</p>
+        <p>NEXT</p>
         <FontAwesomeIcon icon={faAngleRight} />
       </div>
     </div>
