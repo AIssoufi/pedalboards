@@ -39,11 +39,13 @@ const PedalboardDetailsPage = ({ match }) => {
   }, []);
 
   return (
-    <div className="pedalboard-details-container">
-      {isFetching || plugin
-        ? <PedalboardDetails isLoading={isFetching} {...plugin} />
-        : <p>Pas de données disponible</p>
-      }
+    <div className="pedalboard-details-wrapper">
+      <div className="details-container">
+        {isFetching || plugin
+          ? <PedalboardDetails isLoading={isFetching} {...plugin} />
+          : <p>Pas de données disponible</p>
+        }
+      </div>
     </div>
   );
 };

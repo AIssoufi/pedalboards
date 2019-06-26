@@ -1,6 +1,19 @@
-.pedalboard-details-container {
+@import 'styles/_globals.scss';
+
+.pedalboard-details-wrapper {
   display: flex;
   justify-content: center;
   background-color: rgb(246, 246, 246);
   padding: 40px 0;
+
+  .details-container {
+    background-color: $bg-text-primary-color;
+    max-width: 770px;
+    width: 100%;
+    min-height: 265px;
+    padding: 15px;
+    box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.1);
+  }
 }
+
+

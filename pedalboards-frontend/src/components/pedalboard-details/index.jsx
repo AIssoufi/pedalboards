@@ -1,100 +1,93 @@
 // Dependencies
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
-// Component
-import { Loader } from 'components';
+// HOC
+import { withLoader } from 'hoc';
 
 // Style
 import './style.scss';
 
 const PedalboardDetails = ({
   author, uri, pedalboardCount, label, screenshotUrl, categories, controlPorts,
-  version, description, isLoading
+  version, description
 }) => (
-  <div className="pedalboard">
-    {isLoading
-      ? <Loader />
-      : (
-        <Fragment>
-          <header>
-            <div className="author">
-              <span className="author-name">
-                {' '}
-                {author.name}
-              </span>
-              <a href={uri} target="_blank" rel="noopener noreferrer">{uri}</a>
-            </div>
-            {pedalboardCount
-              ? (
-                <div className="count-container">
-                  <a className="count" href="#null">
-                    <span>{pedalboardCount}</span>
-                  </a>
-                  <span className="pedalboard-count-text">Pedalboards using it</span>
-                </div>
-              )
-              : null}
-          </header>
-          <h2>{label}</h2>
-          <div className="plugin-media-container">
-            <img className="plugin-media" src={screenshotUrl} alt="Plugin screenshot" />
+  <div className="pedalboard-details">
+    <header>
+      <div className="author">
+        <span className="author-name">
+          {' '}
+          {author.name}
+        </span>
+        <a href={uri} target="_blank" rel="noopener noreferrer">{uri}</a>
+      </div>
+      {pedalboardCount
+        ? (
+          <div className="count-container">
+            <a className="count" href="#null">
+              <span>{pedalboardCount}</span>
+            </a>
+            <span className="pedalboard-count-text">Pedalboards using it</span>
           </div>
-          <div className="category-container">
-            {categories.map((categorie, index) => (
-              <Link
-                to={{
-                  pathname: '/plugins',
-                  search: `?categories=${categorie}`
-                }}
-                key={`${categorie}-${index}`}
-                className="plugin-category"
-              >
-                {categorie}
+        )
+        : null}
+    </header>
+    <h2>{label}</h2>
+    <div className="plugin-media-container">
+      <img className="plugin-media" src={screenshotUrl} alt="Plugin screenshot" />
+    </div>
+    <div className="category-container">
+      {categories.map((categorie, index) => (
+        <Link
+          to={{
+            pathname: '/plugins',
+            search: `?categories=${categorie}`
+          }}
+          key={`${categorie}-${index}`}
+          className="plugin-category"
+        >
+          {categorie}
 
-              </Link>
-            ))}
-          </div>
-          <p
-            className="pedalboard-description"
-            dangerouslySetInnerHTML={{
-              __html: description
-            }}
-          />
-          <div className="plugin-control-ports">
-            <table>
-              <thead>
-                <tr>
-                  <th>Control</th>
-                  <th>Default</th>
-                  <th>Min</th>
-                  <th>Max</th>
-                </tr>
-              </thead>
-              <tbody>
-                {controlPorts.map((controlPort, index) => (
-                  <tr key={index}>
-                    <td>{controlPort.name}</td>
-                    <td>{controlPort.default}</td>
-                    <td>{controlPort.min}</td>
-                    <td>{controlPort.max}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        </Link>
+      ))}
+    </div>
+    <p
+      className="pedalboard-description"
+      dangerouslySetInnerHTML={{
+        __html: description
+      }}
+    />
+    <div className="plugin-control-ports">
+      <table>
+        <thead>
+          <tr>
+            <th>Control</th>
+            <th>Default</th>
+            <th>Min</th>
+            <th>Max</th>
+          </tr>
+        </thead>
+        <tbody>
+          {controlPorts.map((controlPort, index) => (
+            <tr key={index}>
+              <td>{controlPort.name}</td>
+              <td>{controlPort.default}</td>
+              <td>{controlPort.min}</td>
+              <td>{controlPort.max}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
 
-          <div className="plugin-misc-info-container">
-            <span className="plugin-uri">{uri}</span>
-            <span className="plugin-version">
-                v
-              {version}
-            </span>
-          </div>
-        </Fragment>
-      )
-    }
+    <div className="plugin-misc-info-container">
+      <span className="plugin-uri">{uri}</span>
+      <span className="plugin-version">
+          v
+          {version}
+      </span>
+    </div>
   </div>
 );
 
@@ -114,8 +107,7 @@ PedalboardDetails.propTypes = {
   pedalboardCount: PropTypes.number.isRequired,
   screenshotUrl: PropTypes.string.isRequired,
   uri: PropTypes.string.isRequired,
-  version: PropTypes.string.isRequired,
-  isLoading: PropTypes.bool.isRequired
+  version: PropTypes.string.isRequired
 };
 
-export default PedalboardDetails;
+export default withLoader(PedalboardDetails);
