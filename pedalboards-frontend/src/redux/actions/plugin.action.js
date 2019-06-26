@@ -25,7 +25,7 @@ const cancelPluginRequestAction = () => ({
   type: CANCEL_PLUGIN_REQUEST
 });
 
-function fetchPluginsAction({ currentPage, displayNumber }) {
+function fetchPluginsAction(currentPage, displayNumber) {
   return function callback(dispatch) {
     dispatch(requestPluginAction());
 
@@ -41,7 +41,7 @@ function fetchPluginsAction({ currentPage, displayNumber }) {
   };
 }
 
-function findPluginsAction({ searchParams, currentPage, displayNumber }) {
+function findPluginsAction(searchParams, currentPage, displayNumber) {
   return function callback(dispatch) {
     dispatch(requestPluginAction());
 

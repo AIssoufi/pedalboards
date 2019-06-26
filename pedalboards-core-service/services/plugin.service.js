@@ -2,8 +2,8 @@
 import { MongoClient, ObjectID } from 'mongodb';
 
 // Configuration
-const url = process.env.URL || 'mongodb://localhost:27017'; // Connection URL
-const dbName = process.env.DB || 'mbds'; // Database Name
+const url = process.env.URL || 'mongodb://localhost:27017';
+const dbName = process.env.DB || 'mbds';
 const collectionName = process.env.COLLECTION || 'pedalboards';
 
 const test = () => MongoClient.connect(url);
@@ -59,19 +59,18 @@ const createPlugin = formData => connexionMongo()
 const updatePlugin = (id, formData) => connexionMongo()
 	.then(collection => collection.replaceOne(
 		{ "_id": ObjectID(id) },
-		formData));
+		formData)
+	);
 
 const deletePlugin = (id, page = 1, pagesize = 10, filter) => {
 	let deletedCount = -1;
 	return connexionMongo()
 		.then(collection => collection.deleteOne({ "_id": ObjectID(id) }))
 		.then(reponse => {
-			console.log("deletedCount : ", reponse.deletedCount);
 			deletedCount = reponse.deletedCount;
 			return findPlugins(page, pagesize, filter)
 		})
 		.then(response => {
-			console.log("newData : ", response.data);
 			return {
 				data: response.data,
 				count: response.count,
@@ -89,4 +88,4 @@ export {
 	updatePlugin,
 	deletePlugin,
 	test
-}
+};

@@ -1,27 +1,37 @@
-var router = require('express').Router();
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, STATIC_FOLDER_PATH + '/screenshots')
-  },
-  filename: function (req, file, cb) {
-    cb(null, `${file.fieldname}-${Date.now()}.${file.mimetype.split('/')[1]}`)
-  }
-});
-const multerData = multer({
-  storage: storage
-});
+// Dependencies
+const router = require('express').Router();
 
+// Services
 import {
-  countPlugins,
-  findPlugins,
-  findPluginById,
-  createPlugin,
-  updatePlugin,
-  deletePlugin
+  countPlugins, findPlugins, findPluginById,
+  createPlugin, updatePlugin, deletePlugin
 } from '../services/plugin.service';
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const folderPath = `${STATIC_FOLDER_PATH}/screenshots`;
+    cb(null, folderPath)
+  },
+  filename: function (req, file, cb) {
+    const fullName = `${file.fieldname}-${Date.now()}.${file.mimetype.split('/')[1]}`;
+    cb(null, fullName);
+  }
+});
+
+const multerData = multer({
+  storage
+});
+
+/**
+ * Donne le nombre total de plugin
+ */
 router.get('/api/plugins/count', function (req, res) {
-  const name = req.query.name || '';
+  const defaultName = '';
+  const {
+    query: {
+      name = defaultName
+    } = {}
+  } = req;
 
   countPlugins(name)
     .then(data => res.status(200).json({
@@ -32,21 +42,26 @@ router.get('/api/plugins/count', function (req, res) {
     }));
 });
 
-// On va récupérer des plugins par un GET (standard REST) 
-// cette fonction d'API peut accepter des paramètres
-// pagesize = nombre de plugins par page
-// page = no de la page
-// Oui, on va faire de la pagination, pour afficher
-// par exemple les plugins 10 par 10
+
+/**
+ * Récupération de tous les plugins
+ */
 router.get('/api/plugins', function (req, res) {
-  // Si présent on prend la valeur du param, sinon 1
-  const page = parseInt(req.query.page || 1, 10);
-  // idem si present on prend la valeur, sinon 10
-  const pagesize = parseInt(req.query.pagesize || 10, 10);
+  const defaultPage = 1, defaultPageSize = 10, defaultFilter = null;
+  const {
+    query: {
+      page = defaultPage,
+      pagesize = defaultPageSize,
+      filterby: filter = defaultFilter
+    } = {}
+  } = req;
 
-  const filter = req.query.filterby || null;
+  // numéro de la page
+  const pageNumber = parseInt(page, 10);
+  // nombre de plugins par page
+  const pageSizeNumber = parseInt(pagesize, 10);
 
-  findPlugins(page, pagesize, filter)
+  findPlugins(pageNumber, pageSizeNumber, filter)
     .then(response => res.status(200).json({
       msg: "plugins recherchés avec succès",
       data: response.data,
@@ -59,11 +74,17 @@ router.get('/api/plugins', function (req, res) {
     }));
 });
 
-// Récupération d'un seul plugin par son id
+/**
+ * Récupération d'un seul plugin par son id
+ */
 router.get('/api/plugin/:id', function (req, res) {
-  const id = req.params.id;
+  const {
+    params: {
+      id: pluginId
+    } = {}
+  } = req;
 
-  findPluginById(id)
+  findPluginById(pluginId)
     .then(data => data ?
       res.status(200).json({
         msg: "Details du plugin envoyés",
@@ -79,23 +100,10 @@ router.get('/api/plugin/:id', function (req, res) {
 
 });
 
-// Creation d'un plugin par envoi d'un formulaire
-// On fera l'insert par un POST, c'est le standard REST
+/**
+ * Creation d'un plugin par envoi d'un formulaire
+ */
 router.post('/api/plugin', multerData.single('image'), function (req, res) {
-  // ----
-  // req.file is the `avatar` file
-  // req.body will hold the text fields, if there were any
-  // ----
-  // On supposera qu'on ajoutera un plugin en 
-  // donnant son nom et sa cuisine. On va donc 
-  // recuperer les données du formulaire d'envoi
-  // les params sont dans req.body même si le formulaire
-  // est envoyé en multipart
-
-  console.log("req : ", req);
-  console.log("req.file : ", req.file);
-  console.log("req.body : ", req.body);
-
   const plugin = {
     author: JSON.parse(req.body.author),
     brand: req.body.brand,
@@ -109,8 +117,6 @@ router.post('/api/plugin', multerData.single('image'), function (req, res) {
     version: req.body.version
   }
 
-  console.log("plugin* : ", plugin);
-
   createPlugin(plugin)
     .then(data => res.status(201).json({
       msg: "Ajout réussi",
@@ -121,8 +127,9 @@ router.post('/api/plugin', multerData.single('image'), function (req, res) {
     }));
 });
 
-// Modification d'un plugin, on fera l'update par
-// une requête http PUT, c'est le standard REST
+/**
+ * Modification d'un plugin
+ */
 router.put('/api/plugin/:id', multerData.fields([]), function (req, res) {
   const id = req.params.id;
 
@@ -136,17 +143,24 @@ router.put('/api/plugin/:id', multerData.fields([]), function (req, res) {
     }));
 });
 
-// Suppression d'un plugin
-// On fera la suppression par une requête http DELETE
-// c'est le standard REST
+/**
+ * Suppression d'un plugin
+ */
 router.delete('/api/plugin/:id', function (req, res) {
-  const id = req.params.id;
-  // Si présent on prend la valeur du param, sinon 1
-  const page = parseInt(req.query.page || 1, 10);
-  // idem si present on prend la valeur, sinon 10
-  const pagesize = parseInt(req.query.pagesize || 10, 10);
+  const defaultPage = 1, defaultPageSize = 10, defaultFilter = null;
+  const {
+    query: {
+      page = defaultPage,
+      pagesize = defaultPageSize,
+      filterby: filter = defaultFilter
+    } = {},
+    params: {
+      id
+    }
+  } = req;
 
-  const filter = req.query.filterby || null;
+  const page = parseInt(page, 10);
+  const pagesize = parseInt(pagesize, 10);
 
   deletePlugin(id, page, pagesize, filter)
     .then(response => res.status(200).json({
