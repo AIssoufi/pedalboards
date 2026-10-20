@@ -1,0 +1,2 @@
+# Checks the message against commitlint.config.mjs: Conventional Commits with a Refs trailer
+commitlint --edit "$1"
