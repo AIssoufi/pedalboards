@@ -135,13 +135,13 @@ runtime, against a local D1, and the CI checks that the deployed bundle holds no
 | Figure | Before (`04e4ed89`) | After |
 | --- | --- | --- |
 | Live site | none | `pedalboards.issoufi.fr` |
-| Core service tests, all passing | 22 | 77 |
-| Core service test run, median of 3 | 0.24 s | 2.45 s |
+| Core service tests, all passing | 22 | 81 |
+| Core service test run, median of 3 | 0.24 s | 1.77 s |
 | Core service direct dependencies | 5 + 3 dev | 1 + 3 dev |
 | Core service packages, production / all | 90 / 372 | 73 / 341 |
 | Production advisories of the core service | 30 | 0 |
 | Audit advisories of the workspace, critical / high / moderate / low | 28 / 112 / 72 / 25 | 27 / 103 / 69 / 24 |
 | Install after deleting `node_modules` | 1.93 s | 1.95 s |
-| Worker bundle, raw / gzipped | none | 1,167.57 KiB / 300.28 KiB |
+| Worker bundle, raw / gzipped | none | 1,167.60 KiB / 300.29 KiB |
 
 Decision: [0005. Deploy the frontend on Cloudflare Pages and a read-only API Worker on D1](decisions/0005-cloudflare-pages-and-d1-worker.md)

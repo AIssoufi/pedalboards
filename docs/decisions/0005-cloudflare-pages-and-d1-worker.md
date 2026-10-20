@@ -139,15 +139,15 @@ Made for issue [#27](https://github.com/AIssoufi/pedalboards/issues/27).
 | Figure | Before (`04e4ed89`) | After |
 | --- | --- | --- |
 | Live site | none, the Heroku apps answer `404` | `pedalboards.issoufi.fr`, once the Cloudflare side is set up |
-| Core service tests, all passing | 22 (`node --test`, MongoDB stand-in) | 77 (Vitest in the Workers runtime, local D1) |
-| Core service test run, median of 3 | 0.24 s | 2.45 s |
+| Core service tests, all passing | 22 (`node --test`, MongoDB stand-in) | 81 (Vitest in the Workers runtime, local D1) |
+| Core service test run, median of 3 | 0.24 s | 1.77 s |
 | Core service direct dependencies | 5 + 3 dev | 1 + 3 dev |
 | Core service packages, production / all | 90 / 372 | 73 / 341 |
 | Production advisories of the core service | 30 (3 / 15 / 5 / 7) | 0 |
 | Advisories of the core service, dev included | 69 (7 / 38 / 15 / 9) | 21 (2 / 8 / 11 / 0) |
 | Audit advisories of the workspace | 28 / 112 / 72 / 25 | 27 / 103 / 69 / 24 |
 | Install after deleting `node_modules`, median of 3 | 1.93 s | 1.95 s |
-| Worker bundle, raw / gzipped | none | 1,167.57 KiB / 300.28 KiB |
+| Worker bundle, raw / gzipped | none | 1,167.60 KiB / 300.29 KiB |
 
 ### How the figures were measured
 
