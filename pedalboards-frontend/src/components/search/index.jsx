@@ -35,7 +35,7 @@ const Search = ({ onSubmit }) => {
           onChange={_.debounce(handleFormSubmit, 900)}
         />
         <Tooltip
-          title={'<i>Click to launch the search</i>'}
+          html={<i>Click to launch the search</i>}
           position="top"
         >
           <button type="submit"><FontAwesomeIcon icon={faSearch} /></button>
@@ -44,7 +44,7 @@ const Search = ({ onSubmit }) => {
       <div className="filter">
         <label htmlFor="options">in</label>
         <Tooltip
-          title={'<i>Choose a search filter</i>'}
+          html={<i>Choose a search filter</i>}
           position="bottom"
           id="options"
         >

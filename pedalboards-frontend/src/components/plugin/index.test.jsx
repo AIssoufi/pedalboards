@@ -42,3 +42,53 @@ it('renders without crashing', () => {
   );
   ReactDOM.unmountComponentAtNode(div);
 });
+
+// popper.js positions the tooltips with document.createRange, which jsdom 11 lacks
+const createRangeStub = () => ({
+  setStart: () => {},
+  setEnd: () => {},
+  commonAncestorContainer: document.body
+});
+
+describe('tooltips', () => {
+  const originalCreateRange = document.createRange;
+  let div;
+
+  beforeEach(() => {
+    document.createRange = createRangeStub;
+    div = document.createElement('div');
+    document.body.appendChild(div);
+  });
+
+  afterEach(() => {
+    ReactDOM.unmountComponentAtNode(div);
+    document.body.removeChild(div);
+    document.createRange = originalCreateRange;
+  });
+
+  it('displays fields holding markup as literal text', () => {
+    const markup = '<b>x</b>';
+    ReactDOM.render(
+      <MemoryRouter>
+        <Plugin
+          _id="ghjklmljhjkjhj"
+          author={{ name: 'Lorem' }}
+          brand={markup}
+          categories={[markup]}
+          label={markup}
+          name={markup}
+          screenshotUrl="http://example.com/screenshot"
+        />
+      </MemoryRouter>, div
+    );
+    const tooltipped = div.querySelectorAll('[data-tooltipped]');
+    tooltipped.forEach(element => element.dispatchEvent(new MouseEvent('mouseenter')));
+    const tooltips = document.querySelectorAll('.tippy-tooltip-content');
+    expect(tooltipped).toHaveLength(4);
+    expect(tooltips).toHaveLength(4);
+    tooltips.forEach((tooltip) => {
+      expect(tooltip.textContent).toContain(markup);
+      expect(tooltip.innerHTML).not.toContain(markup);
+    });
+  });
+});
