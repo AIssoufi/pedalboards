@@ -174,7 +174,9 @@ Co-Authored-By: Claude <noreply@anthropic.com>
     message has a `Refs:` line already or is a merge or `fixup!` commit;
   - `commit-msg` runs commitlint and refuses a message that breaks the rules.
 - On another branch, or on a detached HEAD during a rebase, write the trailer yourself.
-  `git commit --no-verify` skips the `commit-msg` check.
+  `git commit --no-verify` skips the `commit-msg` check, but the CI still checks the commits.
+- The [commit messages workflow](.github/workflows/commit-messages.yml) checks every commit of a
+  pull request and its title, which needs no reference since the body says `Closes #<number>`.
 - Check a message by hand with `printf 'feat: x\n\nRefs: PEDAL-47\n' | pnpm exec commitlint`.
 
 ## Continuous integration
@@ -193,3 +195,13 @@ request to `master` and every push to `master`, with one job per app, which cach
 - `CI=true` runs Jest once instead of in watch mode, and turns the lint warnings of the build into
   errors.
 - To reproduce a failing job, run its steps in the app's folder.
+
+The [commit messages workflow](.github/workflows/commit-messages.yml) runs for every pull request
+to `master`, and again when its title changes. Its job, Commit messages:
+
+1. installs only the tools of the workspace root, without a pnpm cache:
+   `pnpm install --frozen-lockfile --filter pedalboards`;
+2. runs `pnpm test:commit-messages`;
+3. runs commitlint on the commits of the pull request, then on its title, except for the pull
+   requests of bots, such as Dependabot's `Bump x from 1 to 2`, whose commits pass as commits of
+   a bot.
