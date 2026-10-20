@@ -72,3 +72,12 @@ Après l'importation vous aurez:
 | pedalboards-cms          	| Le CMS permettant de gérer  les pedaliers (création,  suppressiosn, édition) 	| ReactJS, Sass    |
 | pedalboards-core-service 	| L'API RESTful                                                                	| Express, MongoDB    	|
 | pedalboards-frontend     	| L'application web des  pédaliers                                             	| React, Sass, Redux, Recompose	|
+
+## Node.js 24
+
+- The three apps install, test and build on Node.js 24, the current LTS.
+- The frontend and the CMS compile their styles with Dart Sass, installed under the `node-sass` name
+  (`"node-sass": "npm:sass@…"`): `sass-loader` 7 of Create React App 2 only loads a module called
+  `node-sass`, and `node-sass` itself has no build for Node.js 24. The alias goes away when an app
+  leaves Create React App ([#33](https://github.com/AIssoufi/pedalboards/issues/33) for the
+  frontend).
