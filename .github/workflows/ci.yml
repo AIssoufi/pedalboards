@@ -25,8 +25,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # dev-server-check: the app's dev script runs Vite, which the dev server check starts
           - name: Frontend
             directory: pedalboards-frontend
+            dev-server-check: true
           - name: CMS
             directory: pedalboards-cms
     defaults:
@@ -50,6 +52,13 @@ jobs:
         run: CI=true pnpm test
       - name: Build
         run: CI=true pnpm run build
+      - name: Test the dev server check
+        if: matrix.dev-server-check
+        run: pnpm --workspace-root run test:dev-server-check
+      # Checks that the dev server starts on a free port and serves the page and its scripts
+      - name: Dev server check
+        if: matrix.dev-server-check
+        run: pnpm run check:dev-server
 
   core-service:
     name: Core service

@@ -13,9 +13,10 @@ Run them in this folder, or from the root with `pnpm --filter pedalboards-fronte
 | `pnpm build`            | Builds the app into `build/`, the folder that Cloudflare Pages publishes |
 | `pnpm preview`          | Serves the content of `build/` to try the production build               |
 | `pnpm test`             | Runs the tests once, in jsdom; `pnpm vitest` runs them in watch mode     |
+| `pnpm check:dev-server` | Starts the dev server on a free port and checks that it serves the app   |
 
 - `pnpm dev` fails when port 3001 is taken, rather than moving to 3002, the port of the CMS.
-- The CI runs `pnpm test` and `pnpm build`.
+- The CI runs `pnpm test`, `pnpm build` and `pnpm check:dev-server`.
 
 ## Environment variables
 

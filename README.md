@@ -62,6 +62,7 @@ This script starts the API, the frontend and the CMS.
 | pedalboards-core-service 	| The REST API                                                                 	| Express, Cloudflare Workers, D1	|
 | pedalboards-frontend     	| The web app of the pedalboards ([README](pedalboards-frontend/README.md))	| React, Sass, Redux, Recompose, Vite, Vitest	|
 | tools/commit-messages    	| The commitlint rule and the hook script that check the [commit messages](#commit-messages), with their tests	| Node.js, commitlint	|
+| tools/dev-server-check   	| The check that a dev server starts and serves its app, with the tests of its helpers	| Node.js	|
 | .husky                   	| The git hooks that `pnpm install` turns on                                   	| husky	|
 
 The history of the project's tools and architecture, with its decision records, is in
@@ -82,7 +83,9 @@ The history of the project's tools and architecture, with its decision records, 
 | `pnpm start:<app>`          | Starts one of them: `core-service`, `frontend` or `cms`            |
 | `pnpm test`                 | Runs the tests below, then those of the three apps, once           |
 | `pnpm test:commit-messages` | Runs the tests of the [commit message](#commit-messages) tools     |
+| `pnpm test:dev-server-check`| Runs the tests of the helpers of the dev server check              |
 | `pnpm build`                | Builds the frontend and the CMS                                    |
+| `pnpm check:dev-server`     | Checks that the dev server of the frontend starts and serves it    |
 
 - `pnpm start` keeps the other processes running when one of them stops (`--no-bail`), as
   `concurrently` did.
@@ -99,7 +102,7 @@ The history of the project's tools and architecture, with its decision records, 
   and the `engines` field of every `package.json` requires it.
 - The frontend runs on Vite and Vitest
   ([decision record](docs/decisions/0006-vite-and-vitest.md)), so its development server starts
-  on Node.js 24.
+  on Node.js 24, and the CI checks it.
 - The development server of the CMS does not start on Node.js 24 yet: `webpack-dev-server` 3 of
   Create React App 2 loads `http-deceiver`, which calls `process.binding('http_parser')`, removed
   from Node.js. It works again when the CMS leaves Create React App
@@ -151,7 +154,7 @@ request to `master` and every push to `master`, with one job per app, which cach
 
 | Job          | Steps                                                                           |
 |--------------|---------------------------------------------------------------------------------|
-| Frontend     | `pnpm install --frozen-lockfile`, `CI=true pnpm test`, `CI=true pnpm run build` |
+| Frontend     | `pnpm install --frozen-lockfile`, `CI=true pnpm test`, `CI=true pnpm run build`, `pnpm --workspace-root run test:dev-server-check`, `pnpm run check:dev-server` |
 | CMS          | `pnpm install --frozen-lockfile`, `CI=true pnpm test`, `CI=true pnpm run build` |
 | Core service | `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm run build`, `pnpm run check:bundle` |
 
@@ -160,6 +163,8 @@ request to `master` and every push to `master`, with one job per app, which cach
   `pnpm run check:bundle` fails when that bundle holds a write route or a multipart parser.
 - `CI=true` runs the Jest of the CMS once instead of in watch mode, and turns the lint warnings of
   its build into errors. The frontend runs Vitest once (`vitest run`) and ignores it.
+- `pnpm run check:dev-server` starts the dev server of the frontend on a free port, checks that the
+  page answers with HTML and each of its scripts with JavaScript, then stops it.
 - To reproduce a failing job, run its steps in the app's folder.
 
 The [commit messages workflow](.github/workflows/commit-messages.yml) runs for every pull request
