@@ -18,36 +18,54 @@ const countPlugins = name => connexionMongo()
 		collection.find())
 	.then(collection => collection.count());
 
-const findPlugins = (page = 1, pagesize = 10, filter) => connexionMongo()
-	.then(collection => filter ?
-		collection.find({
-			$or: Object.keys(filter).map(key => {
-				return {
-					[key]: {
-						$regex: `.*${filter[key]}.*`,
-						$options: "i"
-					}
-				}
-			})
-		}) :
-		collection.find())
-	.then(collection => Promise.all([
-		collection.count(),
-		collection.skip(page * pagesize - pagesize)
+// Plugins are listed by name, whatever the case of the first letter, before the page is cut
+const PLUGIN_SORT = { name: 1 };
+const PLUGIN_COLLATION = { locale: 'en' };
+
+/**
+ * Builds the MongoDB query matching a plugin when one of the filtered fields holds the value.
+ *
+ * @param {Object<string, string>} [filter] - Filtered values by field, such as { brand: 'MDA' }.
+ * @returns {Object} The query, empty when there is no filter.
+ */
+const buildPluginQuery = filter => filter ?
+	{
+		$or: Object.keys(filter).map(key => ({
+			[key]: {
+				$regex: `.*${filter[key]}.*`,
+				$options: "i"
+			}
+		}))
+	} :
+	{};
+
+/**
+ * Reads one page of the plugins matching the filter, sorted by name across all the pages.
+ *
+ * @param {Object} params
+ * @param {import('mongodb').Collection} params.collection - Collection of the plugins.
+ * @param {number} params.page - Number of the page, from 1.
+ * @param {number} params.pagesize - Number of plugins per page.
+ * @param {Object<string, string>} [params.filter] - Filtered values by field.
+ * @returns {Promise<{ data: Object[], count: number }>} The plugins of the page and the number
+ * of plugins matching the filter.
+ */
+const findPluginPage = ({ collection, page, pagesize, filter }) => {
+	const cursor = collection.find(buildPluginQuery(filter))
+		.sort(PLUGIN_SORT)
+		.collation(PLUGIN_COLLATION);
+
+	// count ignores the skip and the limit, so it gives the number of matching plugins
+	return Promise.all([
+		cursor.count(),
+		cursor.skip(page * pagesize - pagesize)
 			.limit(pagesize)
 			.toArray()
-	])).then(responses => {
-		return {
-			data: responses[1].sort((a, b) => {
-				if (a.nom < b.nom)
-					return -1;
-				if (a.nom > b.nom)
-					return 1;
-				return 0;
-			}),
-			count: responses[0]
-		}
-	});
+	]).then(([count, data]) => ({ data, count }));
+};
+
+const findPlugins = (page = 1, pagesize = 10, filter) => connexionMongo()
+	.then(collection => findPluginPage({ collection, page, pagesize, filter }));
 
 const findPluginById = id => connexionMongo()
 	.then(collection => collection.findOne({ "_id": ObjectID(id) }));
@@ -83,6 +101,7 @@ export {
 	connexionMongo,
 	countPlugins,
 	findPlugins,
+	findPluginPage,
 	findPluginById,
 	createPlugin,
 	updatePlugin,
