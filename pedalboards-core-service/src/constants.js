@@ -54,6 +54,12 @@ export const PLUGIN_WRITABLE_COLUMNS = [
 /** Columns that hold JSON text */
 export const PLUGIN_JSON_COLUMNS = ['author', 'categories', 'controlPorts'];
 
+/** Prefix of the keys of the plugin images in the R2 bucket of the local entry */
+export const PLUGIN_IMAGE_KEY_PREFIX = 'plugins/';
+
+/** Route, under /api, that serves the plugin images in the local entry */
+export const PLUGIN_IMAGE_ROUTE = '/images';
+
 /** Headers that let the CMS and the preview deployments of the frontend call the API */
 export const CORS_HEADERS = {
 	'Access-Control-Allow-Origin': '*',
@@ -74,6 +80,7 @@ export const MESSAGES = {
 	pluginUpdated: 'Modification réussie',
 	pluginDeleted: 'Suppression réussie',
 	pluginExists: 'a plugin with this name already exists',
+	imageNotFound: 'image not found',
 	invalidInput: 'invalid parameters',
 	databaseError: 'erreur de connexion à la base de données',
 	routeNotFound: 'unknown route',
