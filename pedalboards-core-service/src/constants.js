@@ -60,6 +60,12 @@ export const PLUGIN_IMAGE_KEY_PREFIX = 'plugins/';
 /** Route, under /api, that serves the plugin images in the local entry */
 export const PLUGIN_IMAGE_ROUTE = '/images';
 
+/** Types of the images that the CMS may upload. SVG is left out: it can run scripts */
+export const PLUGIN_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+
+/** Largest uploaded image: 5 MiB, below MAX_FORM_BYTES */
+export const MAX_PLUGIN_IMAGE_BYTES = 5 * 1024 * 1024;
+
 /** Largest multipart form that the write routes read: room for the largest image and the text fields */
 export const MAX_FORM_BYTES = 6 * 1024 * 1024;
 
