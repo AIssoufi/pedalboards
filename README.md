@@ -6,16 +6,14 @@ Conception et réalisation d'un magasin de plugin audio (pédale d’effet virtu
 - OS : macOS
 - Library : ReactJS, ReduxJS, Recompose, Sass, Express, lodash
 - Database: Cloudflare D1
+- Hosting: Cloudflare Pages and Workers
 - Outil : Postman, Git, SourceTree, GitLab, Visual Studio Code
 
 
-# Essayer le site en ligne
+# Try the site online
 
-[Front End](https://pedalboards-frontend.herokuapp.com)
-
-[Back End](https://pedalboards-cms.herokuapp.com)
-
-[API Server](https://pedalboards-core-service.herokuapp.com)
+[pedalboards.issoufi.fr](https://pedalboards.issoufi.fr): the frontend, and its API under `/api`.
+The CMS is not deployed (see [Deployment](#deployment)).
 
 # Essayer le site en local
 
@@ -169,3 +167,25 @@ to `master`, and again when its title changes. Its job, Commit messages:
 3. runs commitlint on the commits of the pull request, then on its title, except for the pull
    requests of bots, such as Dependabot's `Bump x from 1 to 2`, whose commits pass as commits of
    a bot.
+
+## Deployment
+
+The site runs on Cloudflare at [pedalboards.issoufi.fr](https://pedalboards.issoufi.fr), on one
+origin ([decision record](docs/decisions/0005-cloudflare-pages-and-d1-worker.md)):
+
+| Part | Host | Built from | Configuration |
+| --- | --- | --- | --- |
+| Frontend | Pages project `pedalboards` | the repository root, `pnpm --filter pedalboards-frontend build` | [`wrangler.jsonc`](wrangler.jsonc) |
+| API | Worker `pedalboards-api` on `pedalboards.issoufi.fr/api/*`, D1 database `pedalboards` | `pedalboards-core-service`, `pnpm run deploy` | [`pedalboards-core-service/wrangler.jsonc`](pedalboards-core-service/wrangler.jsonc) |
+| CMS | not deployed | none | none |
+
+- Cloudflare builds and deploys both on each push to `master`, through its GitHub connection:
+  Pages for the frontend, Workers Builds for the API. Nothing in GitHub holds a Cloudflare token.
+- `pnpm run deploy` applies the D1 migrations that the remote database lacks, then deploys the
+  Worker.
+- The production frontend calls `/api` on its own origin: `.env.production` leaves
+  `REACT_APP_CORE_SERVICE` empty. Pages preview deployments set it to
+  `https://pedalboards.issoufi.fr` in the Pages settings.
+- `.env.production` leaves `REACT_APP_BACKEND` empty too, so the header hides its "Admin Panel"
+  link. The CMS and the write routes of the API stay in the repository: their local environment
+  is [#53](https://github.com/AIssoufi/pedalboards/issues/53).

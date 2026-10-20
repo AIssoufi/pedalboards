@@ -1,0 +1,11 @@
+// Cloudflare Pages project of the frontend. Pages builds it from the repository root, where the
+// pnpm lockfile is, with `pnpm --filter pedalboards-frontend build`. The API is the Worker of
+// pedalboards-core-service, which has its own wrangler.jsonc.
+{
+	"$schema": "pedalboards-core-service/node_modules/wrangler/config-schema.json",
+	"name": "pedalboards",
+	"compatibility_date": "2026-10-01",
+	// Without a 404.html in it, Pages serves index.html for unknown paths, so deep links such as
+	// /plugin/<id> load the app
+	"pages_build_output_dir": "pedalboards-frontend/build"
+}
