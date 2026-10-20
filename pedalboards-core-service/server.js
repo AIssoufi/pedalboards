@@ -18,6 +18,21 @@ import {
 const PORT = process.env.PORT || 80;
 const STATIC_FOLDER = 'public';
 const STATIC_FOLDER_PATH = __dirname + '/' + STATIC_FOLDER;
+// Generic message sent to the client, so a database error never reveals the server details
+const DB_CONNECTION_ERROR_MESSAGE = 'erreur de connexion à la base de données';
+
+/**
+ * Logs a database connection failure on the server and answers the client with a generic message.
+ * Only the error message is logged: the connection string, which may hold credentials, never is.
+ *
+ * @param {Object} params
+ * @param {import('express').Response} params.res - Response of the failed request.
+ * @param {Error} [params.error] - Error raised by the MongoDB driver.
+ */
+const sendDbConnectionError = ({ res, error }) => {
+	console.error('Database connection failed:', error && error.message);
+	res.status(401).json({ msg: DB_CONNECTION_ERROR_MESSAGE });
+};
 
 // Grobal variable
 const app = express();
@@ -78,16 +93,11 @@ app.get('/api/test', function (req, res) {
 	// Pour le moment on simule, mais après on devra
 	// réellement se connecte à la base de données
 	// et renvoyer une valeur pour dire si tout est ok
-	console.log("URL : ", process.env.URL)
-	console.log("BD : ", process.env.DB)
-	console.log("COLLECTION : ", process.env.COLLECTION)
 	test()
 		.then(rep => res.status(200).json({
 			msg: "connexion possible"
 		}))
-		.catch(error => res.status(401).json({
-			msg: "erreur de connexion err=" + error
-		}));
+		.catch(error => sendDbConnectionError({ res, error }));
 });
 
 // Test de la connexion à la base
@@ -95,16 +105,11 @@ app.get('/api/connection', function (req, res) {
 	// Pour le moment on simule, mais après on devra
 	// réellement se connecte à la base de données
 	// et renvoyer une valeur pour dire si tout est ok
-	console.log("URL : ", process.env.URL)
-	console.log("BD : ", process.env.DB)
-	console.log("COLLECTION : ", process.env.COLLECTION)
 	connexionMongo()
 		.then(rep => res.status(200).json({
 			msg: "connexion établie"
 		}))
-		.catch(error => res.status(401).json({
-			msg: "erreur de connexion err=" + error
-		}));
+		.catch(error => sendDbConnectionError({ res, error }));
 });
 
 app.get('/api/plugins/count', function (req, res) {

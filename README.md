@@ -65,6 +65,26 @@ Après l'importation vous aurez:
  - une base de données appelé `mbds`
  - une collection appelée `pedalboards`
 
+## Core service configuration
+
+- The core service reads its configuration from environment variables only.
+- For local runs, copy `.env.example` to `.env` (ignored by git and Docker):
+
+```bash
+cd pedalboards-core-service
+cp .env.example .env
+```
+
+| Variable     | Description                                   | Default                     |
+|--------------|-----------------------------------------------|-----------------------------|
+| `URL`        | MongoDB connection string                     | `mongodb://localhost:27017` |
+| `DB`         | Database name                                 | `mbds`                      |
+| `COLLECTION` | Collection that stores the pedalboards        | `pedalboards`               |
+| `PORT`       | HTTP port of the API                          | `80`                        |
+
+- Never commit a connection string that holds credentials: pass `URL` through the host environment
+  (`URL=... npm run start`, `docker run --env-file .env`).
+
 ## Architecture
 
 | Dossier                  	| Description                                                                  	| Technos     	|
