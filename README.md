@@ -18,8 +18,8 @@ A store of audio plugins: virtual effect pedals that visitors browse, search and
 
 ## Tech stack
 
-- Frontend: React 18, Redux 4, Recompose, React Router 4 and Sass, built with Vite 8 and tested with
-  Vitest 5 and Testing Library.
+- Frontend: React 18, Redux 4, React Router 4 and Sass, built with Vite 8 and tested with Vitest 5
+  and Testing Library.
 - CMS: React 16 and Sass on Create React App 2, tested with Jest.
 - API: Express 5 in a Cloudflare Worker, on a Cloudflare D1 database, tested with Vitest 5 in the
   Workers runtime.
@@ -30,7 +30,7 @@ A store of audio plugins: virtual effect pedals that visitors browse, search and
 
 | Folder                   | Description                                                                  | Tech        |
 |--------------------------|------------------------------------------------------------------------------|-------------|
-| pedalboards-frontend     | The web app where visitors browse the plugins ([README](pedalboards-frontend/README.md)) | React, Redux, Recompose, Sass, Vite, Vitest |
+| pedalboards-frontend     | The web app where visitors browse the plugins ([README](pedalboards-frontend/README.md)) | React, Redux, Sass, Vite, Vitest |
 | pedalboards-core-service | The REST API of the plugins ([README](pedalboards-core-service/README.md))   | Express, Cloudflare Workers, D1 |
 | pedalboards-cms          | The admin app that creates, edits and deletes the plugins, not deployed      | React, Sass, Create React App |
 | tools/commit-messages    | The commitlint rule and the hook script that check the [commit messages](#commit-messages), with their tests | Node.js, commitlint |
