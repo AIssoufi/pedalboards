@@ -1,0 +1,58 @@
+name: Commit messages
+
+# Checks the commits and the title of each pull request against commitlint.config.mjs. The
+# `edited` type runs the check again when the title changes
+on:
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+# A new push or a new title cancels the previous run of the pull request
+concurrency:
+  group: commit-messages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  commit-messages:
+    name: Commit messages
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # The whole history without the files of older commits: git log lists the commits of the
+      # pull request from its base, and only their messages are read
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          filter: blob:none
+      # Installs the pnpm version of the packageManager field of package.json
+      - uses: pnpm/action-setup@v6
+      # No pnpm cache: restoring the store of the whole workspace takes longer than downloading
+      # the few packages of the root
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      # Only the tools of the workspace root, such as commitlint, without the apps
+      - name: Install
+        run: pnpm install --frozen-lockfile --filter pedalboards
+      - name: Test the commit message tools
+        run: pnpm test:commit-messages
+      # Merge commits, fixup! commits and the commits of bots are ignored, as in the hook
+      - name: Lint the commits
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
+      # The title goes through the environment, so the shell never runs it as code. The pull
+      # requests of bots, such as Dependabot's "Bump x from 1 to 2", keep their own titles
+      - name: Lint the pull request title
+        if: github.event.pull_request.user.type != 'Bot'
+        env:
+          PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+          TITLE_CONFIG: tools/commit-messages/pull-request-title.config.mjs
+        run: |
+          printf '%s\n' "$PULL_REQUEST_TITLE" |
+            pnpm exec commitlint --config "$TITLE_CONFIG" --verbose

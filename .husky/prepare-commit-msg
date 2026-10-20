@@ -1,0 +1,2 @@
+# Adds "Refs: <branch>" to a commit made on a ticket branch, such as PEDAL-47
+node tools/commit-messages/prepare-commit-msg.mjs "$1" "$2"

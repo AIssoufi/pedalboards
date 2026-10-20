@@ -98,6 +98,8 @@ cp .env.example .env
 | pedalboards-cms          	| Le CMS permettant de gérer  les pedaliers (création,  suppressiosn, édition) 	| ReactJS, Sass    |
 | pedalboards-core-service 	| L'API RESTful                                                                	| Express, MongoDB    	|
 | pedalboards-frontend     	| L'application web des  pédaliers                                             	| React, Sass, Redux, Recompose	|
+| tools/commit-messages    	| The commitlint rule and the hook script that check the [commit messages](#commit-messages), with their tests	| Node.js, commitlint	|
+| .husky                   	| The git hooks that `pnpm install` turns on                                   	| husky	|
 
 The history of the project's tools and architecture, with its decision records, is in
 [`docs/evolution.md`](docs/evolution.md).
@@ -111,14 +113,15 @@ The history of the project's tools and architecture, with its decision records, 
 - Each app declares every package it imports: unlike npm, pnpm does not put the dependencies of
   dependencies within its reach.
 
-| Root script        | What it does                                                       |
-|--------------------|--------------------------------------------------------------------|
-| `pnpm start`       | Starts the API (port 8080), the frontend (3001) and the CMS (3002) |
-| `pnpm start:dev`   | Starts MongoDB (`mongod`) too                                      |
-| `pnpm start:<app>` | Starts one of them: `core-service`, `frontend`, `cms` or `mongodb` |
-| `pnpm test`        | Runs the tests of the frontend and the CMS once                    |
-| `pnpm build`       | Builds the frontend and the CMS                                    |
-| `pnpm smoke`       | Checks that the API starts and answers, without MongoDB            |
+| Root script                 | What it does                                                       |
+|-----------------------------|--------------------------------------------------------------------|
+| `pnpm start`                | Starts the API (port 8080), the frontend (3001) and the CMS (3002) |
+| `pnpm start:dev`            | Starts MongoDB (`mongod`) too                                      |
+| `pnpm start:<app>`          | Starts one of them: `core-service`, `frontend`, `cms` or `mongodb` |
+| `pnpm test`                 | Runs the tests below, then those of the frontend and the CMS, once |
+| `pnpm test:commit-messages` | Runs the tests of the [commit message](#commit-messages) tools     |
+| `pnpm build`                | Builds the frontend and the CMS                                    |
+| `pnpm smoke`                | Checks that the API starts and answers, without MongoDB            |
 
 - `pnpm start` and `pnpm start:dev` keep the other processes running when one of them stops
   (`--no-bail`), as `concurrently` did.
@@ -144,6 +147,38 @@ The history of the project's tools and architecture, with its decision records, 
   modules with MD4, which OpenSSL 3 disables. The flag also goes away when an app leaves Create
   React App.
 
+## Commit messages
+
+Every commit follows [Conventional Commits](https://www.conventionalcommits.org/) and names its
+ticket in a `Refs: PEDAL-<number>` trailer, in the last paragraph of the message, next to
+`Co-Authored-By`:
+
+```text
+feat(cms): add the pedal editor
+
+Lets the user add, move and remove the pedals of a pedalboard.
+
+Refs: PEDAL-47
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+- [`commitlint.config.mjs`](commitlint.config.mjs) extends `@commitlint/config-conventional`, so
+  the header and the body lines stay within 100 characters, and adds the `ticket-reference-exists`
+  rule of [`tools/commit-messages`](tools/commit-messages). Older commits, where a blank line
+  follows `Refs:`, still pass.
+- Merge commits, `fixup!` and `squash!` commits, the commits signed off by a bot such as
+  Dependabot and the release commits (`chore(master): release 1.2.0`) need no reference.
+- `pnpm install` turns on two [husky](https://typicode.github.io/husky/) hooks, in
+  [`.husky`](.husky):
+  - `prepare-commit-msg` adds `Refs: <branch>` on a ticket branch, such as `PEDAL-47`, unless the
+    message has a `Refs:` line already or is a merge or `fixup!` commit;
+  - `commit-msg` runs commitlint and refuses a message that breaks the rules.
+- On another branch, or on a detached HEAD during a rebase, write the trailer yourself.
+  `git commit --no-verify` skips the `commit-msg` check, but the CI still checks the commits.
+- The [commit messages workflow](.github/workflows/commit-messages.yml) checks every commit of a
+  pull request and its title, which needs no reference since the body says `Closes #<number>`.
+- Check a message by hand with `printf 'feat: x\n\nRefs: PEDAL-47\n' | pnpm exec commitlint`.
+
 ## Continuous integration
 
 The [CI workflow](.github/workflows/ci.yml) runs on the Node.js version of `.nvmrc` for every pull
@@ -160,3 +195,13 @@ request to `master` and every push to `master`, with one job per app, which cach
 - `CI=true` runs Jest once instead of in watch mode, and turns the lint warnings of the build into
   errors.
 - To reproduce a failing job, run its steps in the app's folder.
+
+The [commit messages workflow](.github/workflows/commit-messages.yml) runs for every pull request
+to `master`, and again when its title changes. Its job, Commit messages:
+
+1. installs only the tools of the workspace root, without a pnpm cache:
+   `pnpm install --frozen-lockfile --filter pedalboards`;
+2. runs `pnpm test:commit-messages`;
+3. runs commitlint on the commits of the pull request, then on its title, except for the pull
+   requests of bots, such as Dependabot's `Bump x from 1 to 2`, whose commits pass as commits of
+   a bot.

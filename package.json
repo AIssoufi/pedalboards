@@ -13,7 +13,9 @@
     "start:cms": "pnpm --filter pedalboards-cms start",
     "start": "pnpm --workspace-root run --parallel --no-bail \"/^start:(core-service|frontend|cms)$/\"",
     "start:dev": "pnpm --workspace-root run --parallel --no-bail \"/^start:(mongodb|core-service|frontend|cms)$/\"",
-    "test": "CI=true pnpm --filter pedalboards-frontend --filter pedalboards-cms test",
+    "prepare": "husky",
+    "test": "pnpm test:commit-messages && CI=true pnpm --filter pedalboards-frontend --filter pedalboards-cms test",
+    "test:commit-messages": "node --test \"tools/commit-messages/**/*.test.mjs\"",
     "build": "pnpm --filter pedalboards-frontend --filter pedalboards-cms build",
     "smoke": "pnpm --filter pedalboards-core-service smoke"
   },
@@ -31,5 +33,12 @@
   "bugs": {
     "url": "https://gitlab.com/issoufi/pedalboards/issues"
   },
-  "homepage": "https://gitlab.com/issoufi/pedalboards#readme"
+  "homepage": "https://gitlab.com/issoufi/pedalboards#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@commitlint/lint": "^21.2.4",
+    "@commitlint/load": "^21.2.4",
+    "husky": "^9.1.7"
+  }
 }
