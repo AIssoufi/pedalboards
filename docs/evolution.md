@@ -180,3 +180,44 @@ they go when the CMS leaves Create React App
 ([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
 
 Decision: [0006. Build and test the frontend with Vite and Vitest](decisions/0006-vite-and-vitest.md)
+
+## Since 2026: the frontend on React 19
+
+The frontend moves from React 16.14 to React 19, and starts with `createRoot` in place of
+`ReactDOM.render`. `react-redux` moves to 9, still on Redux 4
+([#36](https://github.com/AIssoufi/pedalboards/issues/36) brings Redux 5), and React Router to
+5.3, which keeps the API of React Router 4 but drops the legacy context that React 19 removes
+(React Router 7 is [#35](https://github.com/AIssoufi/pedalboards/issues/35)). The tests render
+with Testing Library. Two dependencies that call APIs React 19 removes leave the frontend:
+`react-tippy`, replaced by a `Tooltip` component of the project that also shows on focus, and
+`recompose`. The unused `redux-devtools`, whose peer dependencies stop at React 16, leaves too.
+`react-fontawesome` moves to 0.2.6, which no longer relies on `defaultProps`. The tests and the
+browser console print no React warning.
+
+| Figure | Before (`cf297411`) | After |
+| --- | --- | --- |
+| React warnings in a frontend test run | 26 | 0 |
+| React warnings in the browser console, plugins, search and details at two widths | 30 | 0 |
+| Frontend tests, all passing | 191 | 280 |
+| Frontend test run, median of 3 | 0.9 s | 0.9 s |
+| Frontend build, median of 3 | 0.3 s | 0.3 s |
+| Frontend JS that the page loads, raw / gzipped | 358,515 B / 113,368 B | 392,322 B / 127,177 B |
+| Frontend CSS, raw / gzipped | 20,431 B / 3,217 B | 8,125 B / 2,083 B |
+| Frontend direct dependencies | 25 | 24 |
+| Install after deleting `node_modules`, median of 3 | 1.8 s | 1.8 s |
+| Frontend audit advisories, critical / high / moderate / low | 2 / 26 / 14 / 3 | 2 / 21 / 13 / 3 |
+| Workspace audit advisories, critical / high / moderate / low | 27 / 103 / 69 / 24 | 27 / 99 / 69 / 24 |
+| Lighthouse of `/plugins` in the built frontend, performance / accessibility / best practices / SEO | 75 / 83 / 100 / 91 | 70 / 83 / 100 / 91 |
+
+The base and the branch were measured in turn on an Apple M3 (8 cores), with Node.js 24.22.0 and
+pnpm 12.14.0, three runs each: `node_modules` deleted before each install, and the build output
+before each build. The JavaScript grows with React DOM 19, although the tooltip alone made
+it smaller (see [0007](decisions/0007-in-house-tooltip-and-loader.md)). The performance score
+follows: the first contentful paint goes from 2.7 s to 2.9 s in each run, and the largest one,
+a plugin screenshot loaded from a remote host, varies between runs (5.3 to 5.6 s before, 5.5 to
+7.3 s after), so the three scores of the branch are 70, 73 and 65. Apart from the ESLint
+configuration and plugins of its development dependencies, the frontend now reaches only the 6
+advisories of `lodash`: those of `recompose`, `react-router-dom` 4, `react-redux` 7 and
+`redux-devtools` are gone.
+
+Decision: [0007. Replace react-tippy and recompose with in-house code](decisions/0007-in-house-tooltip-and-loader.md)

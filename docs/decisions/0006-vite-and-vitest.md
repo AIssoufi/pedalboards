@@ -1,7 +1,8 @@
 # 0006. Build and test the frontend with Vite and Vitest
 
 - Date: 2026-10-20
-- Status: Accepted
+- Status: Accepted, amended by [0007](0007-in-house-tooltip-and-loader.md) for the
+  `packageExtensions` of `react-redux` and `react-tippy`
 
 ## Context
 
