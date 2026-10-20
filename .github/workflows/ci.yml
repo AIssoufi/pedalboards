@@ -69,6 +69,9 @@ jobs:
       # Installs the whole workspace from its single lockfile, even from the folder of one app
       - name: Install
         run: pnpm install --frozen-lockfile
-      # The API has no test runner yet: check that it starts and answers on a free port
+      # The tests of the API use the test runner of Node.js and need no database
+      - name: Test
+        run: pnpm test
+      # Check that the API starts and answers on a free port, without MongoDB
       - name: Smoke check
         run: pnpm run smoke

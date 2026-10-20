@@ -118,7 +118,7 @@ The history of the project's tools and architecture, with its decision records, 
 | `pnpm start`                | Starts the API (port 8080), the frontend (3001) and the CMS (3002) |
 | `pnpm start:dev`            | Starts MongoDB (`mongod`) too                                      |
 | `pnpm start:<app>`          | Starts one of them: `core-service`, `frontend`, `cms` or `mongodb` |
-| `pnpm test`                 | Runs the tests below, then those of the frontend and the CMS, once |
+| `pnpm test`                 | Runs the tests below, then those of the three apps, once           |
 | `pnpm test:commit-messages` | Runs the tests of the [commit message](#commit-messages) tools     |
 | `pnpm build`                | Builds the frontend and the CMS                                    |
 | `pnpm smoke`                | Checks that the API starts and answers, without MongoDB            |
@@ -188,10 +188,11 @@ request to `master` and every push to `master`, with one job per app, which cach
 |--------------|---------------------------------------------------------------------------------|
 | Frontend     | `pnpm install --frozen-lockfile`, `CI=true pnpm test`, `CI=true pnpm run build` |
 | CMS          | `pnpm install --frozen-lockfile`, `CI=true pnpm test`, `CI=true pnpm run build` |
-| Core service | `pnpm install --frozen-lockfile`, `pnpm run smoke`                              |
+| Core service | `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm run smoke`                 |
 
-- `pnpm run smoke` starts the API on a free port and checks that it answers, without MongoDB: the
-  core service has no test runner yet.
+- The core service tests its services with the test runner of Node.js (`node --test`), against a
+  stand-in for the MongoDB collection, and `pnpm run smoke` starts the API on a free port and
+  checks that it answers. Neither needs MongoDB.
 - `CI=true` runs Jest once instead of in watch mode, and turns the lint warnings of the build into
   errors.
 - To reproduce a failing job, run its steps in the app's folder.
