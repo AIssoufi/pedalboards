@@ -7,6 +7,9 @@ import { Tooltip } from 'react-tippy';
 // Utils
 import { buildPluginFilterLink } from 'utils/plugin-filter';
 
+// Components
+import FilterTooltipContent from './filter-tooltip-content';
+
 // Style
 import './style.scss';
 import 'react-tippy/dist/tippy.css';
@@ -36,19 +39,7 @@ const Plugin = ({
       {categories.map(category => (
         <Tooltip
           key={category}
-          html={(
-            <>
-              <b>Categorie</b>
-              <br />
-              <i>
-                Click to filter plugin
-                <br />
-                {'by '}
-                <b>{category}</b>
-                {' categories.'}
-              </i>
-            </>
-          )}
+          html={<FilterTooltipContent heading="Categorie" value={category} kind="categories" />}
           position="top"
         >
           <Link
@@ -63,17 +54,7 @@ const Plugin = ({
     <hr />
     <div className="info-container">
       <Tooltip
-        html={(
-          <>
-            <b>Label</b>
-            <br />
-            <i>
-              Click to filter plugin
-              <br />
-              {`by ${label} labels.`}
-            </i>
-          </>
-        )}
+        html={<FilterTooltipContent heading="Label" value={label} kind="labels" />}
         position="top"
       >
         <Link
@@ -84,17 +65,7 @@ const Plugin = ({
         </Link>
       </Tooltip>
       <Tooltip
-        html={(
-          <>
-            <b>Brand</b>
-            <br />
-            <i>
-              Click to filter plugin
-              <br />
-              {`by ${brand} brands.`}
-            </i>
-          </>
-        )}
+        html={<FilterTooltipContent heading="Brand" value={brand} kind="brands" />}
         position="bottom"
       >
         <Link
