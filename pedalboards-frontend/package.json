@@ -9,6 +9,9 @@
   "version": "0.1.0",
   "homepage": "https://pedalboards-frontend.herokuapp.com",
   "private": true,
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "start": "PORT=3001 NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
     "build": "NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
