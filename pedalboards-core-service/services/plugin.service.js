@@ -12,10 +12,36 @@ const connexionMongo = () => MongoClient.connect(url)
 	.then(client => client.db(dbName))
 	.then(db => db.collection(collectionName))
 
+// Characters with a meaning in a regular expression
+const REGEXP_SPECIAL_CHARACTERS = /[.*+?^${}()|[\]\\]/g;
+
+/**
+ * Escapes the searched text, so that a regular expression matches it literally.
+ *
+ * @param {*} value - Searched text, such as 'C++'. A missing value is an empty text.
+ * @returns {string} The text with a backslash before each special character.
+ * @example
+ * escapeRegExp('C++'); // 'C\\+\\+'
+ */
+const escapeRegExp = (value) => {
+	const isMissing = value === undefined || value === null;
+	const text = isMissing ? "" : String(value);
+
+	return text.replace(REGEXP_SPECIAL_CHARACTERS, "\\$&");
+};
+
+/**
+ * Builds the MongoDB query matching a plugin whose name holds the searched text.
+ *
+ * @param {string} [name] - Searched text, such as 'Gx'.
+ * @returns {Object} The query, empty when there is no text.
+ */
+const buildNameQuery = name => name ?
+	{ "name": { $regex: `.*${escapeRegExp(name)}.*`, $options: "i" } } :
+	{};
+
 const countPlugins = name => connexionMongo()
-	.then(collection => name ?
-		collection.find({ "name": { $regex: `.*${name}.*`, $options: "i" } }) :
-		collection.find())
+	.then(collection => collection.find(buildNameQuery(name)))
 	.then(collection => collection.count());
 
 // Plugins are listed by name, whatever the case of the first letter, before the page is cut
@@ -32,7 +58,7 @@ const buildPluginQuery = filter => filter ?
 	{
 		$or: Object.keys(filter).map(key => ({
 			[key]: {
-				$regex: `.*${filter[key]}.*`,
+				$regex: `.*${escapeRegExp(filter[key])}.*`,
 				$options: "i"
 			}
 		}))
@@ -98,6 +124,7 @@ const deletePlugin = (id, page = 1, pagesize = 10, filter) => {
 }
 
 export {
+	buildNameQuery,
 	connexionMongo,
 	countPlugins,
 	findPlugins,
@@ -106,5 +133,6 @@ export {
 	createPlugin,
 	updatePlugin,
 	deletePlugin,
+	escapeRegExp,
 	test
 };
