@@ -1,7 +1,15 @@
 {
   "name": "pedalboards",
   "version": "1.0.0",
-  "description": "Projet MBDS",
+  "description": "A store of audio plugins, virtual effect pedals: the web app, its API and its CMS",
+  "homepage": "https://github.com/AIssoufi/pedalboards#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIssoufi/pedalboards.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AIssoufi/pedalboards/issues"
+  },
   "packageManager": "pnpm@12.14.0",
   "engines": {
     "node": ">=24"
@@ -18,10 +26,6 @@
     "build": "pnpm --filter pedalboards-frontend --filter pedalboards-cms build",
     "check:dev-server": "pnpm --filter pedalboards-frontend check:dev-server"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@gitlab.com/issoufi/pedalboards.git"
-  },
   "keywords": [
     "MBDS",
     "2018",
@@ -29,10 +33,6 @@
   ],
   "author": "Issoufi ADAM <issoufi.adam1@gmail.com>",
   "license": "ISC",
-  "bugs": {
-    "url": "https://gitlab.com/issoufi/pedalboards/issues"
-  },
-  "homepage": "https://gitlab.com/issoufi/pedalboards#readme",
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
