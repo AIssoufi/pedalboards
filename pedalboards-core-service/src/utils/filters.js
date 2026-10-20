@@ -49,7 +49,8 @@ export const parseFilters = query => Object.entries(query).reduce((filters, [key
 		return filters;
 	}
 	const field = match[1];
-	if (!Object.hasOwn(PLUGIN_FILTER_CONDITIONS, field)) {
+	const isSearchableField = Object.hasOwn(PLUGIN_FILTER_CONDITIONS, field);
+	if (!isSearchableField) {
 		throw new InvalidInputError(`The field "${field}" cannot be searched`);
 	}
 	const text = parseSearchText(value);
