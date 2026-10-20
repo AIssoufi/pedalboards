@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { createApp } from './app.js';
 import { MESSAGES } from './constants.js';
+import { ConflictError } from './errors.js';
 import { createReadRouter } from './routes/read.js';
 
 // Ports of the test servers, apart from the one of the Worker entry
@@ -15,9 +16,13 @@ const brokenDb = {
 		throw new Error('D1_ERROR: no such table: plugins at offset 14 (SQLITE_ERROR)');
 	}
 };
-const failingRouter = Router().get('/fail', () => {
-	throw new Error('Unexpected failure');
-});
+const failingRouter = Router()
+	.get('/fail', () => {
+		throw new Error('Unexpected failure');
+	})
+	.get('/conflict', () => {
+		throw new ConflictError('Plugin id taken');
+	});
 
 createApp(createReadRouter(brokenDb)).listen(BROKEN_DATABASE_PORT);
 createApp(failingRouter).listen(FAILING_ROUTE_PORT);
@@ -55,5 +60,15 @@ describe('createApp', () => {
 		expect(status).toBe(500);
 		expect(JSON.parse(text)).toEqual({ msg: MESSAGES.internalError });
 		expect(text).not.toContain('Unexpected failure');
+	});
+
+	it('answers a plugin that already exists with 409, without logging it', async () => {
+		const logError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+		const { status, text } = await callServer({ port: FAILING_ROUTE_PORT, path: '/conflict' });
+
+		expect(status).toBe(409);
+		expect(JSON.parse(text)).toEqual({ msg: MESSAGES.pluginExists });
+		expect(logError).not.toHaveBeenCalled();
 	});
 });

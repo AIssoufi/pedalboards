@@ -1,5 +1,5 @@
 import { CORS_HEADERS, MESSAGES } from './constants.js';
-import { DatabaseError, InvalidInputError } from './errors.js';
+import { ConflictError, DatabaseError, InvalidInputError } from './errors.js';
 
 /**
  * Adds the CORS headers to every response.
@@ -21,8 +21,9 @@ export const sendRouteNotFound = (req, res) => {
 };
 
 /**
- * Answers a failed request with a short JSON message: 400 for an invalid parameter, 503 when the
- * database fails, 500 otherwise. The error itself is only logged, so a response never shows a stack.
+ * Answers a failed request with a short JSON message: 400 for an invalid parameter, 409 for a
+ * plugin that already exists, 503 when the database fails, 500 otherwise. The unexpected errors
+ * are only logged, so a response never shows a stack.
  *
  * @type {import('express').ErrorRequestHandler}
  */
@@ -31,6 +32,10 @@ export const sendError = (error, req, res, next) => {
 	const isInvalidInput = error instanceof InvalidInputError || error.status === 400;
 	if (isInvalidInput) {
 		res.status(400).json({ msg: MESSAGES.invalidInput });
+		return;
+	}
+	if (error instanceof ConflictError) {
+		res.status(409).json({ msg: MESSAGES.pluginExists });
 		return;
 	}
 	console.error(`${req.method} ${req.originalUrl} failed:`, error);

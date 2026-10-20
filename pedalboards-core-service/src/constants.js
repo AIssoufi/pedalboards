@@ -73,6 +73,7 @@ export const MESSAGES = {
 	pluginCreated: 'Ajout réussi',
 	pluginUpdated: 'Modification réussie',
 	pluginDeleted: 'Suppression réussie',
+	pluginExists: 'a plugin with this name already exists',
 	invalidInput: 'invalid parameters',
 	databaseError: 'erreur de connexion à la base de données',
 	routeNotFound: 'unknown route',
