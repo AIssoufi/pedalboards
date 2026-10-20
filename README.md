@@ -99,6 +99,9 @@ cp .env.example .env
 | pedalboards-core-service 	| L'API RESTful                                                                	| Express, MongoDB    	|
 | pedalboards-frontend     	| L'application web des  pédaliers                                             	| React, Sass, Redux, Recompose	|
 
+The history of the project's tools and architecture, with its decision records, is in
+[`docs/evolution.md`](docs/evolution.md).
+
 ## pnpm workspace
 
 - The three apps form a pnpm workspace ([`pnpm-workspace.yaml`](pnpm-workspace.yaml)) with a single
