@@ -1,0 +1,20 @@
+packages:
+  - pedalboards-cms
+  - pedalboards-core-service
+  - pedalboards-frontend
+
+# The command shims of pnpm set NODE_PATH when it is empty, so Create React App would ignore the
+# NODE_PATH=src/ of the apps' .env files (dotenv never overrides a variable), and their absolute
+# imports (import { withLoader } from 'hoc') would fail
+extendNodePath: false
+
+# No dependency needs its install script to work, so none runs:
+# - core-js, core-js-pure and nodemon only print a message;
+# - fsevents 1 has no build for Node.js 24, and chokidar watches files without it;
+# - @parcel/watcher only serves the watch mode of the sass command line, which no app uses.
+allowBuilds:
+  '@parcel/watcher': false
+  core-js: false
+  core-js-pure: false
+  fsevents: false
+  nodemon: false

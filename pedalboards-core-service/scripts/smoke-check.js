@@ -1,4 +1,4 @@
-// Smoke check of the core service, run by the CI and by `npm run smoke`: starts the server on a
+// Smoke check of the core service, run by the CI and by `pnpm smoke`: starts the server on a
 // free port, waits until it answers an HTTP request, then stops it. It needs no database.
 const { spawn } = require('child_process');
 const http = require('http');

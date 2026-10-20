@@ -19,13 +19,18 @@ Conception et réalisation d'un magasin de plugin audio (pédale d’effet virtu
 
 # Essayer le site en local
 
+## Prerequisites
+
+- pnpm 10 or later: it switches by itself to the version of the `packageManager` field of
+  `package.json`.
+
 ## Installation des dépendences
 
 ```bash
-npm install
+pnpm install
 ```
 
-Ce script va installer toutes les dépendances NPM des micro-services suivant :
+Cette commande va installer toutes les dépendances des micro-services suivants :
 * Pedalbords CMS
 * Pedalbords Core Service
 * Pedalboards Frontend
@@ -33,7 +38,7 @@ Ce script va installer toutes les dépendances NPM des micro-services suivant :
 ## Lancer le projet
 
 ```bash
-npm run start:dev
+pnpm start:dev
 ```
 
 Ce script va lancer l'application web et tous les services nécessaire a son fonctionnement. 
@@ -49,7 +54,7 @@ Les services lancé sont :
 
 ```bash
 cd pedalboards-core-service 
-npm run mongo:install
+pnpm mongo:install
 ```
 
 Ce script va installer le serveur mongodb sur votre machine.
@@ -57,7 +62,7 @@ Ce script va installer le serveur mongodb sur votre machine.
 ### Import de la BD
 ```bash
 cd pedalboards-core-service
-npm run mongo:import
+pnpm mongo:import
 ```
 
 Ce script va importer la base de données sur mongoDB.
@@ -83,7 +88,7 @@ cp .env.example .env
 | `PORT`       | HTTP port of the API                          | `80`                        |
 
 - Never commit a connection string that holds credentials: pass `URL` through the host environment
-  (`URL=... npm run start`, `docker run --env-file .env`).
+  (`URL=... pnpm start`, `docker run --env-file .env`).
 
 ## Architecture
 
@@ -92,6 +97,30 @@ cp .env.example .env
 | pedalboards-cms          	| Le CMS permettant de gérer  les pedaliers (création,  suppressiosn, édition) 	| ReactJS, Sass    |
 | pedalboards-core-service 	| L'API RESTful                                                                	| Express, MongoDB    	|
 | pedalboards-frontend     	| L'application web des  pédaliers                                             	| React, Sass, Redux, Recompose	|
+
+## pnpm workspace
+
+- The three apps form a pnpm workspace ([`pnpm-workspace.yaml`](pnpm-workspace.yaml)) with a single
+  lockfile, `pnpm-lock.yaml`, that `pnpm install` installs from the root or from any app's folder.
+- Run a script of one app with `pnpm <script>` in its folder, or with
+  `pnpm --filter <app> <script>` from the root (`pnpm --filter pedalboards-cms test`).
+- Each app declares every package it imports: unlike npm, pnpm does not put the dependencies of
+  dependencies within its reach.
+
+| Root script        | What it does                                                       |
+|--------------------|--------------------------------------------------------------------|
+| `pnpm start`       | Starts the API (port 8080), the frontend (3001) and the CMS (3002) |
+| `pnpm start:dev`   | Starts MongoDB (`mongod`) too                                      |
+| `pnpm start:<app>` | Starts one of them: `core-service`, `frontend`, `cms` or `mongodb` |
+| `pnpm test`        | Runs the tests of the frontend and the CMS once                    |
+| `pnpm build`       | Builds the frontend and the CMS                                    |
+| `pnpm smoke`       | Checks that the API starts and answers, without MongoDB            |
+
+- `pnpm start` and `pnpm start:dev` keep the other processes running when one of them stops
+  (`--no-bail`), as `concurrently` did.
+- `pnpm-workspace.yaml` runs no install script of the dependencies (`allowBuilds`), since none is
+  needed, and stops pnpm from setting `NODE_PATH` (`extendNodePath: false`), which would hide the
+  `NODE_PATH=src/` of the frontend and CMS `.env` files from Create React App.
 
 ## Node.js 24
 
@@ -108,16 +137,16 @@ cp .env.example .env
 ## Continuous integration
 
 The [CI workflow](.github/workflows/ci.yml) runs on Node.js 24 for every pull request to `master` and
-every push to `master`, with one job per app:
+every push to `master`, with one job per app, which caches the pnpm store:
 
-| Job          | Steps                                                  |
-|--------------|--------------------------------------------------------|
-| Frontend     | `npm ci`, `CI=true npm test`, `CI=true npm run build`  |
-| CMS          | `npm ci`, `CI=true npm test`, `CI=true npm run build`  |
-| Core service | `npm ci`, `npm run smoke`                              |
+| Job          | Steps                                                                           |
+|--------------|---------------------------------------------------------------------------------|
+| Frontend     | `pnpm install --frozen-lockfile`, `CI=true pnpm test`, `CI=true pnpm run build` |
+| CMS          | `pnpm install --frozen-lockfile`, `CI=true pnpm test`, `CI=true pnpm run build` |
+| Core service | `pnpm install --frozen-lockfile`, `pnpm run smoke`                              |
 
-- `npm run smoke` starts the API on a free port and checks that it answers, without MongoDB: the core
-  service has no test runner yet.
+- `pnpm run smoke` starts the API on a free port and checks that it answers, without MongoDB: the
+  core service has no test runner yet.
 - `CI=true` runs Jest once instead of in watch mode, and turns the lint warnings of the build into
   errors.
 - To reproduce a failing job, run its steps in the app's folder.

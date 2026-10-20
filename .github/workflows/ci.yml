@@ -38,18 +38,20 @@ jobs:
         working-directory: ${{ matrix.directory }}
     steps:
       - uses: actions/checkout@v7
+      # Installs the pnpm version of the packageManager field of package.json
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: ${{ matrix.directory }}/package-lock.json
+          cache: pnpm
+      # Installs the whole workspace from its single lockfile, even from the folder of one app
       - name: Install
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       # CI=true runs Jest once instead of in watch mode, and makes the build fail on lint warnings
       - name: Test
-        run: CI=true npm test
+        run: CI=true pnpm test
       - name: Build
-        run: CI=true npm run build
+        run: CI=true pnpm run build
 
   core-service:
     name: Core service
@@ -60,13 +62,15 @@ jobs:
         working-directory: pedalboards-core-service
     steps:
       - uses: actions/checkout@v7
+      # Installs the pnpm version of the packageManager field of package.json
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: pedalboards-core-service/package-lock.json
+          cache: pnpm
+      # Installs the whole workspace from its single lockfile, even from the folder of one app
       - name: Install
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       # The API has no test runner yet: check that it starts and answers on a free port
       - name: Smoke check
-        run: npm run smoke
+        run: pnpm run smoke

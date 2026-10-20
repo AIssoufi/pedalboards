@@ -2,18 +2,17 @@
   "name": "pedalboards",
   "version": "1.0.0",
   "description": "Projet MBDS",
+  "packageManager": "pnpm@12.14.0",
   "scripts": {
-    "install-core-service": "cd pedalboards-core-service && npm install",
-    "install-cms": "cd pedalboards-cms && npm install",
-    "install-fontend": "cd pedalboards-frontend && npm install",
-    "install": "concurrently \"npm:install-core-service\" \"npm:install-fontend\" \"npm:install-cms\"",
-    "start-core-service": "cd pedalboards-core-service && npm run start:dev",
-    "start-cms": "cd pedalboards-cms && npm run start",
-    "start-fontend": "cd pedalboards-frontend && npm run start",
-    "start-mongodb": "cd pedalboards-core-service && npm run mongo:start",
-    "start": "concurrently \"npm:start-core-service\" \"npm:start-fontend\" \"npm:start-cms\"",
-    "start:dev": "concurrently \"npm:start-mongodb\" \"npm:start\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:mongodb": "pnpm --filter pedalboards-core-service mongo:start",
+    "start:core-service": "pnpm --filter pedalboards-core-service start:dev",
+    "start:frontend": "pnpm --filter pedalboards-frontend start",
+    "start:cms": "pnpm --filter pedalboards-cms start",
+    "start": "pnpm --workspace-root run --parallel --no-bail \"/^start:(core-service|frontend|cms)$/\"",
+    "start:dev": "pnpm --workspace-root run --parallel --no-bail \"/^start:(mongodb|core-service|frontend|cms)$/\"",
+    "test": "CI=true pnpm --filter pedalboards-frontend --filter pedalboards-cms test",
+    "build": "pnpm --filter pedalboards-frontend --filter pedalboards-cms build",
+    "smoke": "pnpm --filter pedalboards-core-service smoke"
   },
   "repository": {
     "type": "git",
@@ -29,8 +28,5 @@
   "bugs": {
     "url": "https://gitlab.com/issoufi/pedalboards/issues"
   },
-  "homepage": "https://gitlab.com/issoufi/pedalboards#readme",
-  "dependencies": {
-    "concurrently": "^4.1.0"
-  }
+  "homepage": "https://gitlab.com/issoufi/pedalboards#readme"
 }
