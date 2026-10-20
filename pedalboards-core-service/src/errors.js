@@ -7,3 +7,8 @@ export class InvalidInputError extends Error {
 export class DatabaseError extends Error {
 	name = 'DatabaseError';
 }
+
+/** Raised when a new plugin takes the id of an existing one: the API answers 409 */
+export class ConflictError extends Error {
+	name = 'ConflictError';
+}

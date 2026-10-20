@@ -16,6 +16,7 @@
   },
   "scripts": {
     "start:core-service": "pnpm --filter pedalboards-core-service start",
+    "start:core-service:local": "pnpm --filter pedalboards-core-service start:local",
     "start:frontend": "pnpm --filter pedalboards-frontend dev",
     "start:cms": "pnpm --filter pedalboards-cms start",
     "start": "pnpm --workspace-root run --parallel --no-bail \"/^start:(core-service|frontend|cms)$/\"",

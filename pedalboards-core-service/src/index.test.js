@@ -2,8 +2,8 @@ import { exports } from 'cloudflare:workers';
 import { describe, expect, it } from 'vitest';
 
 import plugins from '../data/plugins.json';
-import { toPluginId } from '../scripts/seed-sql.js';
 import { MAX_PAGE_SIZE, MESSAGES } from './constants.js';
+import { toPluginId } from './utils/plugin-id.js';
 
 const API_URL = 'https://pedalboards.issoufi.fr/api';
 

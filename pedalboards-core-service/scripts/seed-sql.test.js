@@ -1,17 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildSeedSql, toPluginId, toSqlLiteral } from './seed-sql.js';
-
-describe('toPluginId', () => {
-	it('joins the lower case words with dashes', () => {
-		expect(toPluginId('MDA Overdrive')).toBe('mda-overdrive');
-		expect(toPluginId('Invada Stereo Phaser (sum L+R in)')).toBe('invada-stereo-phaser-sum-l-r-in');
-	});
-
-	it('drops the accents and the dashes at both ends', () => {
-		expect(toPluginId(' Écho à lampes! ')).toBe('echo-a-lampes');
-	});
-});
+import { buildSeedSql, toSqlLiteral } from './seed-sql.js';
 
 describe('toSqlLiteral', () => {
 	it('writes numbers, booleans and missing values as SQL literals', () => {
