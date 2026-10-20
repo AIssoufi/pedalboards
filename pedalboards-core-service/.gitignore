@@ -1,2 +1,5 @@
 # The root .gitignore covers the dependencies, the builds, the coverage and the logs
-.env
+# Local D1 database and state of wrangler dev
+.wrangler
+# Bundle written by pnpm build (wrangler deploy --dry-run)
+dist

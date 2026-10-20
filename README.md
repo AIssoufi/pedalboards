@@ -4,9 +4,9 @@ Conception et réalisation d'un magasin de plugin audio (pédale d’effet virtu
 ## Environnement Technique
 - Langage : HTML 5, CSS 3, JavaScript (ES6 et 7)
 - OS : macOS
-- Library : ReactJS, ReduxJS, Recompose, Sass, Express, mongodb, lodash
-- Base de données:  MongoDB
-- Outil : Docker, Postman, Git, SourceTree, GitLab, Visual Studio Code
+- Library : ReactJS, ReduxJS, Recompose, Sass, Express, lodash
+- Database: Cloudflare D1
+- Outil : Postman, Git, SourceTree, GitLab, Visual Studio Code
 
 
 # Essayer le site en ligne
@@ -39,64 +39,29 @@ Cette commande va installer toutes les dépendances des micro-services suivants 
 ## Lancer le projet
 
 ```bash
-pnpm start:dev
+pnpm start
 ```
 
-Ce script va lancer l'application web et tous les services nécessaire a son fonctionnement. 
-Les services lancé sont :
-* mongoDB
-* core-service
-* fontend
-* cms
+This script starts the API, the frontend and the CMS.
 
-## MongoDB (sur MAC)
+## Core service
 
-### Installation de mongoDB
-
-```bash
-cd pedalboards-core-service 
-pnpm mongo:install
-```
-
-Ce script va installer le serveur mongodb sur votre machine.
-
-### Import de la BD
-```bash
-cd pedalboards-core-service
-pnpm mongo:import
-```
-
-Ce script va importer la base de données sur mongoDB.
-Après l'importation vous aurez:
- - une base de données appelé `mbds`
- - une collection appelée `pedalboards`
-
-## Core service configuration
-
-- The core service reads its configuration from environment variables only.
-- For local runs, copy `.env.example` to `.env` (ignored by git):
-
-```bash
-cd pedalboards-core-service
-cp .env.example .env
-```
-
-| Variable     | Description                                   | Default                     |
-|--------------|-----------------------------------------------|-----------------------------|
-| `URL`        | MongoDB connection string                     | `mongodb://localhost:27017` |
-| `DB`         | Database name                                 | `mbds`                      |
-| `COLLECTION` | Collection that stores the pedalboards        | `pedalboards`               |
-| `PORT`       | HTTP port of the API                          | `80`                        |
-
-- Never commit a connection string that holds credentials: pass `URL` through the host environment
-  (`URL=... pnpm start`).
+- The API is a Cloudflare Worker: Express 5 on a D1 database. `pnpm start:core-service` applies
+  the migrations to a local D1, kept in `pedalboards-core-service/.wrangler`, then serves the
+  Worker with `wrangler dev` on port 8080, with no Cloudflare account.
+- It serves the read routes only: `GET /api/plugins`, `GET /api/plugins/count` and
+  `GET /api/plugin/:id`. Its [README](pedalboards-core-service/README.md) describes them, with
+  the write routes kept for the CMS.
+- The migrations, in `pedalboards-core-service/migrations`, create the `plugins` table and fill it
+  with the records of `data/plugins.json`. After a change to that file, run
+  `pnpm db:seed:generate` in `pedalboards-core-service` to write the seed migration again.
 
 ## Architecture
 
 | Dossier                  	| Description                                                                  	| Technos     	|
 |--------------------------	|------------------------------------------------------------------------------	|-------------	|
 | pedalboards-cms          	| Le CMS permettant de gérer  les pedaliers (création,  suppressiosn, édition) 	| ReactJS, Sass    |
-| pedalboards-core-service 	| L'API RESTful                                                                	| Express, MongoDB    	|
+| pedalboards-core-service 	| L'API RESTful                                                                	| Express, Cloudflare Workers, D1	|
 | pedalboards-frontend     	| L'application web des  pédaliers                                             	| React, Sass, Redux, Recompose	|
 | tools/commit-messages    	| The commitlint rule and the hook script that check the [commit messages](#commit-messages), with their tests	| Node.js, commitlint	|
 | .husky                   	| The git hooks that `pnpm install` turns on                                   	| husky	|
@@ -116,15 +81,13 @@ The history of the project's tools and architecture, with its decision records, 
 | Root script                 | What it does                                                       |
 |-----------------------------|--------------------------------------------------------------------|
 | `pnpm start`                | Starts the API (port 8080), the frontend (3001) and the CMS (3002) |
-| `pnpm start:dev`            | Starts MongoDB (`mongod`) too                                      |
-| `pnpm start:<app>`          | Starts one of them: `core-service`, `frontend`, `cms` or `mongodb` |
+| `pnpm start:<app>`          | Starts one of them: `core-service`, `frontend` or `cms`            |
 | `pnpm test`                 | Runs the tests below, then those of the three apps, once           |
 | `pnpm test:commit-messages` | Runs the tests of the [commit message](#commit-messages) tools     |
 | `pnpm build`                | Builds the frontend and the CMS                                    |
-| `pnpm smoke`                | Checks that the API starts and answers, without MongoDB            |
 
-- `pnpm start` and `pnpm start:dev` keep the other processes running when one of them stops
-  (`--no-bail`), as `concurrently` did.
+- `pnpm start` keeps the other processes running when one of them stops (`--no-bail`), as
+  `concurrently` did.
 - `pnpm-workspace.yaml` runs no install script of the dependencies (`allowBuilds`), since none is
   needed, and stops pnpm from setting `NODE_PATH` (`extendNodePath: false`), which would hide the
   `NODE_PATH=src/` of the frontend and CMS `.env` files from Create React App.
@@ -188,11 +151,11 @@ request to `master` and every push to `master`, with one job per app, which cach
 |--------------|---------------------------------------------------------------------------------|
 | Frontend     | `pnpm install --frozen-lockfile`, `CI=true pnpm test`, `CI=true pnpm run build` |
 | CMS          | `pnpm install --frozen-lockfile`, `CI=true pnpm test`, `CI=true pnpm run build` |
-| Core service | `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm run smoke`                 |
+| Core service | `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm run build`, `pnpm run check:bundle` |
 
-- The core service tests its services with the test runner of Node.js (`node --test`), against a
-  stand-in for the MongoDB collection, and `pnpm run smoke` starts the API on a free port and
-  checks that it answers. Neither needs MongoDB.
+- The core service runs its tests with Vitest in the Workers runtime, against a local D1 that the
+  migrations fill. `pnpm run build` bundles the Worker into `dist` without publishing it, and
+  `pnpm run check:bundle` fails when that bundle holds a write route or a multipart parser.
 - `CI=true` runs Jest once instead of in watch mode, and turns the lint warnings of the build into
   errors.
 - To reproduce a failing job, run its steps in the app's folder.
