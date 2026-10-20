@@ -13,6 +13,7 @@ import './style.scss';
 
 // The CMS is not deployed with the site: without its address, the header leaves its link out
 const ADMIN_PANEL_URL = getAdminPanelUrl(Env.get('backend'));
+const HAS_ADMIN_PANEL = ADMIN_PANEL_URL !== null;
 
 const Header = () => (
   <nav className="toolbar whiteframe">
@@ -38,7 +39,7 @@ const Header = () => (
           <FontAwesomeIcon icon={faThList} />
           <span>Plugins</span>
         </NavLink>
-        {ADMIN_PANEL_URL && (
+        {HAS_ADMIN_PANEL && (
           <a
             className="toolbar-option"
             href={ADMIN_PANEL_URL}
