@@ -165,7 +165,7 @@ Made for issue [#27](https://github.com/AIssoufi/pedalboards/issues/27).
 
 - **The Cloudflare side is set up by hand, once.** The owner creates the D1 database, the Workers
   Builds connection, the Pages project, its custom domain and the preview variable of the API
-  address. Then `database_id` goes into `pedalboards-core-service/wrangler.jsonc`.
+  address. The `database_id` of the D1 database is in `pedalboards-core-service/wrangler.jsonc`.
 - **Preview deployments of Pages** run on `*.pages.dev`, where `/api` does not exist. Their
   `REACT_APP_CORE_SERVICE` variable points at `https://pedalboards.issoufi.fr`, which the CORS
   headers of the Worker allow.

@@ -12,6 +12,7 @@
 		{
 			"binding": "DB",
 			"database_name": "pedalboards",
+			"database_id": "f7b72515-9e41-48a7-9f0b-f408f3c48ad4",
 			"migrations_dir": "migrations"
 		}
 	],
