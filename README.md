@@ -67,9 +67,8 @@ Après l'importation vous aurez:
 
 ## Core service configuration
 
-The core service reads its configuration from environment variables only, never from the code.
-`index.js` loads them from `pedalboards-core-service/.env` when that file exists; it is ignored by
-git, so create it from the example:
+- The core service reads its configuration from environment variables only.
+- For local runs, copy `.env.example` to `.env` (ignored by git and Docker):
 
 ```bash
 cd pedalboards-core-service
@@ -83,9 +82,8 @@ cp .env.example .env
 | `COLLECTION` | Collection that stores the pedalboards        | `pedalboards`               |
 | `PORT`       | HTTP port of the API                          | `80`                        |
 
-Never commit a connection string that holds credentials: pass it through the environment of the
-host (for example `URL=... npm run start`, or `docker run --env-file .env`, since `.env` is left out
-of the Docker image).
+- Never commit a connection string that holds credentials: pass `URL` through the host environment
+  (`URL=... npm run start`, `docker run --env-file .env`).
 
 ## Architecture
 
