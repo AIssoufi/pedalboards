@@ -21,13 +21,10 @@ allowBuilds:
   fsevents: false
   workerd: false
 
-# These packages import react or react-dom without declaring them, so pnpm gave them the hoisted
+# This package imports react and react-dom without declaring them, so pnpm gave it the hoisted
 # copy of another app, and the frontend bundle held two versions of React
 packageExtensions:
-  react-redux@7:
-    peerDependencies:
-      react-dom: ^16.8.3
   react-tippy@1:
     peerDependencies:
-      react: ^15.0.0 || ^16.0.0
-      react-dom: ^15.0.0 || ^16.0.0
+      react: ^15.0.0 || ^16.0.0 || ^18.0.0
+      react-dom: ^15.0.0 || ^16.0.0 || ^18.0.0

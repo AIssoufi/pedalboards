@@ -1,6 +1,6 @@
 // Dependencies
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { render, screen } from '@testing-library/react';
 
 // Stub
 import { MemoryRouter } from 'react-router-dom';
@@ -8,50 +8,51 @@ import { MemoryRouter } from 'react-router-dom';
 // Components
 import Plugin from './index';
 
-it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(
-    <MemoryRouter>
-      <Plugin
-        _id="ghjklmljhjkjhj"
-        author={{
-          avatarUrl: 'http://example.com',
-          name: 'Lorem'
-        }}
-        brand="lorem"
-        categories={['A', 'B', 'C']}
-        controlPorts={[{
-          default: 1,
-          max: 2,
-          min: 3,
-          name: 'lorem'
-        }]}
-        description="lorem impsum"
-        imageHeight={400}
-        imageWidth={400}
-        label="lorem"
-        name="I Love U"
-        pedalboardCount={42}
-        screenshotUrl="http://example.com/screenshot"
-        stable
-        thumbnailUrl="http://example.com/thumbnail"
-        uri="http://example.com"
-      />
+/**
+ * Renders the plugin card in a router.
+ *
+ * @param {Object} [props] - Props of the card.
+ * @returns {HTMLElement} The element that holds the card.
+ */
+const renderPlugin = props => render(<MemoryRouter><Plugin {...props} /></MemoryRouter>).container;
 
-    </MemoryRouter>, div
-  );
-  ReactDOM.unmountComponentAtNode(div);
+it('renders without crashing', () => {
+  renderPlugin({
+    _id: 'ghjklmljhjkjhj',
+    author: {
+      avatarUrl: 'http://example.com',
+      name: 'Lorem'
+    },
+    brand: 'lorem',
+    categories: ['A', 'B', 'C'],
+    controlPorts: [{
+      default: 1,
+      max: 2,
+      min: 3,
+      name: 'lorem'
+    }],
+    description: 'lorem impsum',
+    imageHeight: 400,
+    imageWidth: 400,
+    label: 'lorem',
+    name: 'I Love U',
+    pedalboardCount: 42,
+    screenshotUrl: 'http://example.com/screenshot',
+    stable: true,
+    thumbnailUrl: 'http://example.com/thumbnail',
+    uri: 'http://example.com'
+  });
+
+  expect(screen.getByRole('img', { name: 'Plugin screenshot' })).toBeDefined();
 });
 
 it('renders without props', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<MemoryRouter><Plugin /></MemoryRouter>, div);
+  const container = renderPlugin();
 
-  expect(div.querySelector('img')).toBeNull();
-  expect(div.querySelector('a')).toBeNull();
-  expect(div.querySelectorAll('.category, .info')).toHaveLength(0);
-  expect(div.textContent).not.toContain('undefined');
-  ReactDOM.unmountComponentAtNode(div);
+  expect(screen.queryByRole('img')).toBeNull();
+  expect(screen.queryByRole('link')).toBeNull();
+  expect(container.querySelectorAll('.category, .info')).toHaveLength(0);
+  expect(container.textContent).not.toContain('undefined');
 });
 
 it.each([
@@ -60,61 +61,37 @@ it.each([
   ['not an array', 'Delay'],
   ['holding blank or non-string values', ['', '  ', 42, null, 'Delay']]
 ])('shows only the usable categories when they are %s', (description, categories) => {
-  const div = document.createElement('div');
-  ReactDOM.render(<MemoryRouter><Plugin categories={categories} /></MemoryRouter>, div);
+  const container = renderPlugin({ categories });
 
-  const shownCategories = [...div.querySelectorAll('.category')].map(link => link.textContent);
+  const shownCategories = [...container.querySelectorAll('.category')]
+    .map(link => link.textContent);
   expect(shownCategories).toEqual(Array.isArray(categories) ? ['Delay'] : []);
-  ReactDOM.unmountComponentAtNode(div);
 });
 
 it('encodes the values of the filter links', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(
-    <MemoryRouter>
-      <Plugin brand="A&B" categories={['C++']} label="Gate Dynamics" />
-    </MemoryRouter>, div
-  );
+  renderPlugin({ brand: 'A&B', categories: ['C++'], label: 'Gate Dynamics' });
 
-  const hrefs = [...div.querySelectorAll('.category, .info')]
-    .map(link => link.getAttribute('href'));
+  const hrefs = screen.getAllByRole('link').map(link => link.getAttribute('href'));
   expect(hrefs).toEqual([
     '/plugins?categories=C%2B%2B',
     '/plugins?label=Gate+Dynamics',
     '/plugins?brand=A%26B'
   ]);
-  ReactDOM.unmountComponentAtNode(div);
 });
 
 describe('tooltips', () => {
-  let div;
-
-  beforeEach(() => {
-    div = document.createElement('div');
-    document.body.appendChild(div);
-  });
-
-  afterEach(() => {
-    ReactDOM.unmountComponentAtNode(div);
-    document.body.removeChild(div);
-  });
-
   it('displays fields holding markup as literal text', () => {
     const markup = '<b>x</b>';
-    ReactDOM.render(
-      <MemoryRouter>
-        <Plugin
-          _id="ghjklmljhjkjhj"
-          author={{ name: 'Lorem' }}
-          brand={markup}
-          categories={[markup]}
-          label={markup}
-          name={markup}
-          screenshotUrl="http://example.com/screenshot"
-        />
-      </MemoryRouter>, div
-    );
-    const tooltipped = div.querySelectorAll('[data-tooltipped]');
+    const container = renderPlugin({
+      _id: 'ghjklmljhjkjhj',
+      author: { name: 'Lorem' },
+      brand: markup,
+      categories: [markup],
+      label: markup,
+      name: markup,
+      screenshotUrl: 'http://example.com/screenshot'
+    });
+    const tooltipped = container.querySelectorAll('[data-tooltipped]');
     tooltipped.forEach(element => element.dispatchEvent(new MouseEvent('mouseenter')));
     const tooltips = document.querySelectorAll('.tippy-tooltip-content');
     expect(tooltipped).toHaveLength(4);
@@ -127,13 +104,8 @@ describe('tooltips', () => {
 });
 
 it('shows the screenshot without a link to the details when the plugin has no id', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(
-    <MemoryRouter><Plugin screenshotUrl="http://example.com/screenshot" /></MemoryRouter>,
-    div
-  );
+  renderPlugin({ screenshotUrl: 'http://example.com/screenshot' });
 
-  expect(div.querySelector('img').getAttribute('src')).toBe('http://example.com/screenshot');
-  expect(div.querySelector('a')).toBeNull();
-  ReactDOM.unmountComponentAtNode(div);
+  expect(screen.getByRole('img').getAttribute('src')).toBe('http://example.com/screenshot');
+  expect(screen.queryByRole('link')).toBeNull();
 });

@@ -1,49 +1,50 @@
 // Dependencies
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 // Components
 import Pagination from './index';
 
 it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<Pagination
-    currentPage={6}
-    elementCount={54}
-    onCurrentPageChange={() => { }}
-  />, div);
-  ReactDOM.unmountComponentAtNode(div);
+  render(<Pagination currentPage={6} elementCount={54} onCurrentPageChange={() => { }} />);
+
+  expect(screen.getByRole('button', { name: '6' })).toBeDefined();
 });
 
 describe('Pagination', () => {
-  let div;
+  let container;
 
-  const getItemTexts = () => [...div.querySelectorAll('.numero-de-page > *')]
+  /**
+   * Renders the pagination and keeps the element that holds it.
+   *
+   * @param {Object} [props] - Props of the pagination.
+   */
+  const renderPagination = (props) => {
+    ({ container } = render(<Pagination {...props} />));
+  };
+
+  const getItemTexts = () => [...container.querySelectorAll('.numero-de-page > *')]
     .map(item => item.textContent);
 
   beforeEach(() => {
-    div = document.createElement('div');
-    document.body.appendChild(div);
     vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
-    ReactDOM.unmountComponentAtNode(div);
-    div.remove();
     console.error.mockRestore();
   });
 
   it('shows the first, nearby and last pages with a gap for the others', () => {
-    ReactDOM.render(<Pagination currentPage={6} elementCount={54} />, div);
+    renderPagination({ currentPage: 6, elementCount: 54 });
 
     expect(getItemTexts()).toEqual(['1', '...', '5', '6', '7', '...', '54']);
-    expect(div.querySelector('.current-page').textContent).toBe('6');
-    expect([...div.querySelectorAll('.gap')].map(gap => gap.tagName)).toEqual(['SPAN', 'SPAN']);
+    expect(screen.getByRole('button', { name: '6' }).className).toBe('current-page');
+    expect(screen.getAllByText('...').map(gap => gap.tagName)).toEqual(['SPAN', 'SPAN']);
     expect(console.error).not.toHaveBeenCalled();
   });
 
   it('shows each page of a short list once', () => {
-    ReactDOM.render(<Pagination currentPage={1} elementCount={3} />, div);
+    renderPagination({ currentPage: 1, elementCount: 3 });
 
     expect(getItemTexts()).toEqual(['1', '2', '3']);
     expect(console.error).not.toHaveBeenCalled();
@@ -51,36 +52,31 @@ describe('Pagination', () => {
 
   it('calls back with the page number that is clicked', () => {
     const onCurrentPageChange = vi.fn();
-    ReactDOM.render(
-      <Pagination currentPage={6} elementCount={54} onCurrentPageChange={onCurrentPageChange} />,
-      div
-    );
+    renderPagination({ currentPage: 6, elementCount: 54, onCurrentPageChange });
 
-    const lastPage = [...div.querySelectorAll('button')]
-      .find(button => button.textContent === '54');
-    lastPage.click();
-    div.querySelector('.page-precedente').click();
-    div.querySelector('.page-suivante').click();
+    fireEvent.click(screen.getByRole('button', { name: '54' }));
+    fireEvent.click(screen.getByRole('button', { name: 'PREVIOUS' }));
+    fireEvent.click(screen.getByRole('button', { name: 'NEXT' }));
 
     expect(onCurrentPageChange.mock.calls).toEqual([[54], [5], [7]]);
   });
 
   it('renders nothing without props', () => {
-    ReactDOM.render(<Pagination />, div);
+    renderPagination();
 
-    expect(div.innerHTML).toBe('');
+    expect(container.innerHTML).toBe('');
   });
 
   it.each([0, -1, NaN, 2.5])('renders nothing for %p pages', (elementCount) => {
-    ReactDOM.render(<Pagination currentPage={1} elementCount={elementCount} />, div);
+    renderPagination({ currentPage: 1, elementCount });
 
-    expect(div.innerHTML).toBe('');
+    expect(container.innerHTML).toBe('');
   });
 
   it('shows the first page and clicks safely without a valid page or a callback', () => {
-    ReactDOM.render(<Pagination currentPage={NaN} elementCount={3} />, div);
+    renderPagination({ currentPage: NaN, elementCount: 3 });
 
-    expect(div.querySelector('.current-page').textContent).toBe('1');
-    expect(() => div.querySelector('.page-suivante').click()).not.toThrow();
+    expect(screen.getByRole('button', { name: '1' }).className).toBe('current-page');
+    expect(() => fireEvent.click(screen.getByRole('button', { name: 'NEXT' }))).not.toThrow();
   });
 });
