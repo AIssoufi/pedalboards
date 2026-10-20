@@ -4,8 +4,16 @@ import { NavLink, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faThList } from '@fortawesome/free-solid-svg-icons';
 
+// Utils
+import { Env } from 'utils';
+import { getAdminPanelUrl } from './utils';
+
 // Style
 import './style.scss';
+
+// The CMS is not deployed with the site: without its address, the header leaves its link out
+const ADMIN_PANEL_URL = getAdminPanelUrl(Env.get('backend'));
+const HAS_ADMIN_PANEL = ADMIN_PANEL_URL !== null;
 
 const Header = () => (
   <nav className="toolbar whiteframe">
@@ -31,15 +39,17 @@ const Header = () => (
           <FontAwesomeIcon icon={faThList} />
           <span>Plugins</span>
         </NavLink>
-        <a
-          className="toolbar-option"
-          href={`${process.env.REACT_APP_BACKEND}/login`}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          <FontAwesomeIcon icon={faUser} />
-          <span>Admin Panel</span>
-        </a>
+        {HAS_ADMIN_PANEL && (
+          <a
+            className="toolbar-option"
+            href={ADMIN_PANEL_URL}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <FontAwesomeIcon icon={faUser} />
+            <span>Admin Panel</span>
+          </a>
+        )}
       </div>
     </div>
   </nav>

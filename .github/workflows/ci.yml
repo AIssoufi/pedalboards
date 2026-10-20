@@ -69,9 +69,12 @@ jobs:
       # Installs the whole workspace from its single lockfile, even from the folder of one app
       - name: Install
         run: pnpm install --frozen-lockfile
-      # The tests of the API use the test runner of Node.js and need no database
+      # The tests of the API run in the Workers runtime, against a local D1 filled by the migrations
       - name: Test
         run: pnpm test
-      # Check that the API starts and answers on a free port, without MongoDB
-      - name: Smoke check
-        run: pnpm run smoke
+      # Bundles the Worker as Workers Builds deploys it, without publishing it
+      - name: Build
+        run: pnpm run build
+      # Checks that the bundle holds no write route nor multipart parser
+      - name: Check the bundle
+        run: pnpm run check:bundle

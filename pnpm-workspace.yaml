@@ -9,12 +9,14 @@ packages:
 extendNodePath: false
 
 # No dependency needs its install script to work, so none runs:
-# - core-js, core-js-pure and nodemon only print a message;
+# - core-js and core-js-pure only print a message;
 # - fsevents 1 has no build for Node.js 24, and chokidar watches files without it;
-# - @parcel/watcher only serves the watch mode of the sass command line, which no app uses.
+# - @parcel/watcher only serves the watch mode of the sass command line, which no app uses;
+# - esbuild and workerd (wrangler) only check the binary that their platform package installs.
 allowBuilds:
   '@parcel/watcher': false
   core-js: false
   core-js-pure: false
+  esbuild: false
   fsevents: false
-  nodemon: false
+  workerd: false

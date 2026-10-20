@@ -10,7 +10,7 @@ class PedalboardsService {
   }
 
   async getPlugins(page = 1, pagesize = 10) {
-    const url = new URL(`${this.url}/api/plugins`);
+    const url = new URL(`${this.url}/api/plugins`, window.location.origin);
 
     url.searchParams.append('page', page);
     url.searchParams.append('pagesize', pagesize);
@@ -19,7 +19,7 @@ class PedalboardsService {
   }
 
   async findPlugins(searchParams, page = 1, pagesize = 10) {
-    const url = new URL(`${this.url}/api/plugins`);
+    const url = new URL(`${this.url}/api/plugins`, window.location.origin);
     url.searchParams.append('page', page);
     url.searchParams.append('pagesize', pagesize);
 

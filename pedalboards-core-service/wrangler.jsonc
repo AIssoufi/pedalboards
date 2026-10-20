@@ -1,0 +1,22 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "pedalboards-api",
+	"main": "src/index.js",
+	"compatibility_date": "2026-10-01",
+	// Runs the Express app: node:http and the other Node.js modules it uses
+	"compatibility_flags": ["nodejs_compat"],
+	// The Worker answers the API paths of the site, in front of the Pages project that serves the frontend
+	"routes": [{ "pattern": "pedalboards.issoufi.fr/api/*", "zone_name": "issoufi.fr" }],
+	"workers_dev": false,
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "pedalboards",
+			"database_id": "f7b72515-9e41-48a7-9f0b-f408f3c48ad4",
+			"migrations_dir": "migrations"
+		}
+	],
+	"observability": { "enabled": true },
+	// The port that the frontend and the CMS call in development (their .env.development files)
+	"dev": { "port": 8080 }
+}

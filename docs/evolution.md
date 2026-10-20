@@ -118,3 +118,30 @@ Before, the convention was a habit that nothing checked.
 | Commit messages workflow run, next to the CI workflow | none | 22 s |
 
 Decision: [0002. Check the commit messages with commitlint and husky](decisions/0002-commit-message-checks.md)
+
+## Since 2026: deployed on Cloudflare, with a read-only API on D1
+
+The site moves from its Heroku apps, which answer `404`, to `pedalboards.issoufi.fr`. Its three
+parts are hosted as follows:
+- **the frontend**: a Cloudflare Pages project;
+- **the API**: a Worker on the `/api/*` paths of the same domain, running the read routes of the
+  core service on Express 5, on a D1 database seeded from `plugins.json`;
+- **the CMS**: not deployed. Its write routes stay in the repository, and
+  [#53](https://github.com/AIssoufi/pedalboards/issues/53) gives them a local environment.
+
+The MongoDB service is gone. The core service now tests its routes with Vitest in the Workers
+runtime, against a local D1, and the CI checks that the deployed bundle holds no write route.
+
+| Figure | Before (`04e4ed89`) | After |
+| --- | --- | --- |
+| Live site | none | `pedalboards.issoufi.fr` |
+| Core service tests, all passing | 22 | 81 |
+| Core service test run, median of 3 | 0.24 s | 1.77 s |
+| Core service direct dependencies | 5 + 3 dev | 1 + 3 dev |
+| Core service packages, production / all | 90 / 372 | 73 / 341 |
+| Production advisories of the core service | 30 | 0 |
+| Audit advisories of the workspace, critical / high / moderate / low | 28 / 112 / 72 / 25 | 27 / 103 / 69 / 24 |
+| Install after deleting `node_modules` | 1.93 s | 1.95 s |
+| Worker bundle, raw / gzipped | none | 1,167.60 KiB / 300.29 KiB |
+
+Decision: [0005. Deploy the frontend on Cloudflare Pages and a read-only API Worker on D1](decisions/0005-cloudflare-pages-and-d1-worker.md)
