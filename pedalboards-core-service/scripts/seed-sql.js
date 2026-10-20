@@ -38,11 +38,16 @@ export const toSqlLiteral = value => {
  *
  * @param {Object[]} plugins - Plugins of data/plugins.json.
  * @returns {string} The SQL of the migration.
- * @throws {Error} When two plugins get the same id.
+ * @throws {Error} When a plugin has no name to make its id from, or two plugins get the same id.
  */
 export const buildSeedSql = plugins => {
-	const ids = plugins.map(plugin => toPluginId(plugin.name));
-	const duplicateId = ids.find((id, index) => ids.indexOf(id) !== index);
+	const ids = plugins.map(plugin => toPluginId(String(plugin.name ?? '')));
+	const hasEmptyId = ids.includes('');
+	if (hasEmptyId) {
+		throw new Error('A plugin has no name to make its id from');
+	}
+	const isRepeatedId = (id, index) => ids.indexOf(id) !== index;
+	const duplicateId = ids.find(isRepeatedId);
 	if (duplicateId !== undefined) {
 		throw new Error(`Two plugins get the id "${duplicateId}"`);
 	}

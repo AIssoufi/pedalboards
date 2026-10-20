@@ -45,4 +45,11 @@ describe('buildSeedSql', () => {
 	it('refuses two plugins with the same id', () => {
 		expect(() => buildSeedSql([{ name: 'Gx Booster' }, { name: 'gx-booster' }])).toThrow('gx-booster');
 	});
+
+	it.each([['an empty', ''], ['a missing', undefined], ['a null', null], ['a symbols only', '***']])(
+		'refuses a plugin with %s name, which gives no id',
+		(label, name) => {
+			expect(() => buildSeedSql([{ name: 'Gx Booster' }, { name }])).toThrow('no name');
+		}
+	);
 });
