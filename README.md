@@ -74,7 +74,7 @@ Après l'importation vous aurez:
 ## Core service configuration
 
 - The core service reads its configuration from environment variables only.
-- For local runs, copy `.env.example` to `.env` (ignored by git and Docker):
+- For local runs, copy `.env.example` to `.env` (ignored by git):
 
 ```bash
 cd pedalboards-core-service
@@ -89,7 +89,7 @@ cp .env.example .env
 | `PORT`       | HTTP port of the API                          | `80`                        |
 
 - Never commit a connection string that holds credentials: pass `URL` through the host environment
-  (`URL=... pnpm start`, `docker run --env-file .env`).
+  (`URL=... pnpm start`).
 
 ## Architecture
 
