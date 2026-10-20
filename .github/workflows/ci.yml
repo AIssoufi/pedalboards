@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+# A new push to a pull request cancels its previous run. Each push to master gets its own group,
+# so a later push never cancels it, even while it waits in the queue
+concurrency:
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: true
+
+env:
+  # Current Node.js LTS, pinned so that a new LTS is adopted on purpose
+  NODE_VERSION: 24
+
+jobs:
+  react-app:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    # Jest 23 can hang instead of failing when a test crashes its worker
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Frontend
+            directory: pedalboards-frontend
+          - name: CMS
+            directory: pedalboards-cms
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ matrix.directory }}/package-lock.json
+      - name: Install
+        run: npm ci
+      # CI=true runs Jest once instead of in watch mode, and makes the build fail on lint warnings
+      - name: Test
+        run: CI=true npm test
+      - name: Build
+        run: CI=true npm run build
+
+  core-service:
+    name: Core service
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: pedalboards-core-service
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: pedalboards-core-service/package-lock.json
+      - name: Install
+        run: npm ci
+      # The API has no test runner yet: check that it starts and answers on a free port
+      - name: Smoke check
+        run: npm run smoke

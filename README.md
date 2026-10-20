@@ -84,3 +84,20 @@ Après l'importation vous aurez:
 - Their `start` and `build` scripts set `NODE_OPTIONS=--openssl-legacy-provider`: webpack 4 hashes
   modules with MD4, which OpenSSL 3 disables. The flag also goes away when an app leaves Create
   React App.
+
+## Continuous integration
+
+The [CI workflow](.github/workflows/ci.yml) runs on Node.js 24 for every pull request to `master` and
+every push to `master`, with one job per app:
+
+| Job          | Steps                                                  |
+|--------------|--------------------------------------------------------|
+| Frontend     | `npm ci`, `CI=true npm test`, `CI=true npm run build`  |
+| CMS          | `npm ci`, `CI=true npm test`, `CI=true npm run build`  |
+| Core service | `npm ci`, `npm run smoke`                              |
+
+- `npm run smoke` starts the API on a free port and checks that it answers, without MongoDB: the core
+  service has no test runner yet.
+- `CI=true` runs Jest once instead of in watch mode, and turns the lint warnings of the build into
+  errors.
+- To reproduce a failing job, run its steps in the app's folder.
