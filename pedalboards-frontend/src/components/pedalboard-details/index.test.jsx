@@ -31,3 +31,25 @@ it('renders without crashing', () => {
   );
   ReactDOM.unmountComponentAtNode(div);
 });
+
+it('displays a description holding markup as literal text', () => {
+  const div = document.createElement('div');
+  ReactDOM.render(
+    <MemoryRouter>
+      <PedalboardDetails
+        author={{ name: 'Lorem' }}
+        categories={['A']}
+        controlPorts={[]}
+        description="<b>x</b>"
+        label="lorem"
+        pedalboardCount={42}
+        screenshotUrl="http://example.com/screenshot"
+        uri="http://example.com"
+      />
+    </MemoryRouter>, div
+  );
+  const description = div.querySelector('.pedalboard-description');
+  expect(description.textContent).toBe('<b>x</b>');
+  expect(description.querySelector('b')).toBeNull();
+  ReactDOM.unmountComponentAtNode(div);
+});
