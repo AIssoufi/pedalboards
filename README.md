@@ -18,7 +18,7 @@ A store of audio plugins: virtual effect pedals that visitors browse, search and
 
 ## Tech stack
 
-- Frontend: React 18, Redux 4, React Router 4 and Sass, built with Vite 8 and tested with Vitest 5
+- Frontend: React 18, Redux 4, React Router 5 and Sass, built with Vite 8 and tested with Vitest 5
   and Testing Library.
 - CMS: React 16 and Sass on Create React App 2, tested with Jest.
 - API: Express 5 in a Cloudflare Worker, on a Cloudflare D1 database, tested with Vitest 5 in the
