@@ -3,6 +3,77 @@
 The tools and the architecture of the project over time, oldest first. Each step links the
 decision record that explains it.
 
+The figures of the eras before pnpm are counted from the files of the commit named in each table:
+the `package.json` and npm lockfiles, the test files, and `npm audit --package-lock-only` run on
+2026-10-20 on every era with the same advisory database. The advisories are the distinct GitHub
+advisories of the four npm lockfiles. No build or test time is given for these eras: their apps
+do not install on the Node.js versions in use today (`node-sass` 4 has no build for them), and
+nothing recorded a time when they ran.
+
+## 2018: three apps on Create React App 2, Express and MongoDB
+
+The project starts on 2018-11-05 as one React app, split on 2018-11-20 into three folders:
+- `pedalboards-frontend` and `pedalboards-cms`: Create React App 2.1.1, React 16.6,
+  React Router 4, styles in Sass compiled by `node-sass` 4;
+- `pedalboards-core-service`: a REST API on Express 4 and the MongoDB driver 3, run with
+  `nodemon` in development;
+- the root `package.json` installs and starts the three apps with `concurrently`.
+
+Each folder holds both an npm and a Yarn lockfile. In December 2018, Dockerfiles based on
+`node:11.0.0` package each app, and the API moves from a local MongoDB to a hosted one. The apps
+are deployed on Heroku, and nothing tests or builds them automatically.
+
+| Figure | End of the era (`3a002239`, 2018-12-17) |
+| --- | --- |
+| Direct dependencies (root + frontend + CMS + core service) | 30 (1 + 11 + 11 + 7) |
+| Lockfiles | 4 npm files of 39,271 lines, and 4 Yarn files of 20,887 lines |
+| Packages in the npm lockfiles | 4,660 |
+| Tests (frontend + CMS) | 9 (7 + 2), one per test file |
+| Audit advisories, critical / high / moderate / low | 31 / 121 / 77 / 24 |
+| CI | none |
+
+## 2019: Redux in the frontend, then a pause
+
+In June 2019, the frontend moves to React 16.8 and manages its state with Redux (`react-redux`,
+`redux-thunk`, `reselect`) and higher-order components from `recompose`, its components are
+regrouped into `components/` and `pages/`, and both React apps add the Airbnb ESLint config. The
+Yarn lockfiles are deleted, so npm alone installs the apps. In December 2019, Dependabot bumps
+`lodash` and `mixin-deep`, and the repository then gets no commit until October 2026.
+
+| Figure | Before (`3a002239`, 2018-12-17) | After (`7e3f5272`, 2019-12-28) |
+| --- | --- | --- |
+| Direct dependencies | 30 | 45 (1 + 22 + 15 + 7) |
+| Lockfiles | 8 files (4 npm, 4 Yarn), 60,158 lines | 4 npm files, 42,482 lines |
+| Packages in the npm lockfiles | 4,660 | 5,031 |
+| Tests (frontend + CMS) | 9 (7 + 2) | 9 (7 + 2) |
+| Audit advisories, critical / high / moderate / low | 31 / 121 / 77 / 24 | 30 / 120 / 75 / 25 |
+
+The next step came because, in 2026, the apps no longer installed on the current Node.js LTS, and
+no CI would have said so.
+
+## 2026: a CI on Node.js 24, with Dart Sass
+
+The frontend and the CMS compile their styles with Dart Sass in place of `node-sass`, and a GitHub
+Actions workflow installs, tests and builds the three apps on Node.js 24 for every pull request.
+On the same day, the core service stops holding its database URL in its `start` script: it reads
+it from the environment, documented in `.env.example`
+([#23](https://github.com/AIssoufi/pedalboards/pull/23)).
+
+| Figure | Before (`7e3f5272`) | After (`638b73b6`) |
+| --- | --- | --- |
+| `npm ci` of the frontend and the CMS on Node.js 24 | fails | passes |
+| Checks on a pull request | none | 3 CI jobs |
+| Tests run on a pull request | 0 | 9 (7 + 2), plus a start check of the core service |
+| CI run, whole workflow | none | 39 s |
+| Lockfiles | 4 npm files, 42,482 lines | 4 npm files, 41,965 lines |
+| Packages in the npm lockfiles | 5,031 | 4,981 |
+| Compiled CSS of the frontend and the CMS | reference | byte-identical |
+| Audit advisories, critical / high / moderate / low | 30 / 120 / 75 / 25 | 30 / 118 / 73 / 25 |
+
+Decisions:
+- [0003. Compile the styles with Dart Sass in place of node-sass](decisions/0003-dart-sass-in-place-of-node-sass.md)
+- [0004. Install, test and build the three apps in a GitHub Actions CI](decisions/0004-github-actions-ci.md)
+
 ## Since 2026: pnpm workspace on Node.js 24
 
 The three apps (frontend, CMS, core service) share one pnpm workspace and one lockfile, on the
