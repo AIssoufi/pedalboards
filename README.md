@@ -1,46 +1,81 @@
-# Description
-Conception et réalisation d'un magasin de plugin audio (pédale d’effet virtuel).
+# Pedalboards
 
-## Environnement Technique
-- Langage : HTML 5, CSS 3, JavaScript (ES6 et 7)
-- OS : macOS
-- Library : ReactJS, ReduxJS, Recompose, Sass, Express, lodash
-- Database: Cloudflare D1
-- Hosting: Cloudflare Pages and Workers
-- Tools: Postman, Git, SourceTree, GitLab, Visual Studio Code
+A store of audio plugins: virtual effect pedals that visitors browse, search and open one by one.
 
+**Live demo: [pedalboards.issoufi.fr](https://pedalboards.issoufi.fr)**
 
-# Try the site online
+![The plugins page of the live site: a search bar, a pagination and the first plugins shown as effect pedals](docs/images/plugins-page.png)
 
-[pedalboards.issoufi.fr](https://pedalboards.issoufi.fr): the frontend, and its API under `/api`.
-The CMS is not deployed (see [Deployment](#deployment)).
+- The frontend lists the plugins, filters them by brand, category, label or name, and shows the
+  details of each one.
+- The API online is read only: a Cloudflare Worker on a D1 database
+  ([decision record](docs/decisions/0005-cloudflare-pages-and-d1-worker.md)).
+- The CMS, which creates, edits and deletes the plugins, stays in the repository but is not
+  deployed (see [Deployment](#deployment)).
+- The project started in 2018 as a student project. Its tools and architecture since then, with
+  the reason for each change, are in [`docs/evolution.md`](docs/evolution.md) and the decision
+  records of [`docs/decisions`](docs/decisions).
 
-# Essayer le site en local
+## Tech stack
 
-## Prerequisites
+- Frontend: React 16, Redux 4, Recompose, React Router 4 and Sass, built with Vite 8 and tested with
+  Vitest 5.
+- CMS: React 16 and Sass on Create React App 2, tested with Jest.
+- API: Express 5 in a Cloudflare Worker, on a Cloudflare D1 database, tested with Vitest 5 in the
+  Workers runtime.
+- Hosting: Cloudflare Pages for the frontend, Cloudflare Workers for the API.
+- Tooling: Node.js 24, a pnpm workspace, GitHub Actions, commitlint and husky.
+
+## Architecture
+
+| Folder                   | Description                                                                  | Tech        |
+|--------------------------|------------------------------------------------------------------------------|-------------|
+| pedalboards-frontend     | The web app where visitors browse the plugins ([README](pedalboards-frontend/README.md)) | React, Redux, Recompose, Sass, Vite, Vitest |
+| pedalboards-core-service | The REST API of the plugins ([README](pedalboards-core-service/README.md))   | Express, Cloudflare Workers, D1 |
+| pedalboards-cms          | The admin app that creates, edits and deletes the plugins, not deployed      | React, Sass, Create React App |
+| tools/commit-messages    | The commitlint rule and the hook script that check the [commit messages](#commit-messages), with their tests | Node.js, commitlint |
+| tools/dev-server-check   | The check that a dev server starts and serves its app, with the tests of its helpers | Node.js |
+| docs                     | The [history of the project](docs/evolution.md) and its [decision records](docs/decisions) | Markdown |
+| .husky                   | The git hooks that `pnpm install` turns on                                   | husky |
+
+## Run it locally
+
+### Prerequisites
 
 - Node.js 24, the version of [`.nvmrc`](.nvmrc): `nvm use` selects it.
 - pnpm 10 or later: it switches by itself to the version of the `packageManager` field of
   `package.json`.
 
-## Installation des dépendences
+### Install
 
 ```bash
 pnpm install
 ```
 
-Cette commande va installer toutes les dépendances des micro-services suivants :
-* Pedalbords CMS
-* Pedalbords Core Service
-* Pedalboards Frontend
+This installs the dependencies of the three apps of the [pnpm workspace](#pnpm-workspace) and
+turns on the [git hooks](#commit-messages).
 
-## Lancer le projet
+### Start
 
 ```bash
 pnpm start
 ```
 
-This script starts the API, the frontend and the CMS.
+- It starts the API on [localhost:8080](http://localhost:8080), the frontend on
+  [localhost:3001](http://localhost:3001) and the CMS on [localhost:3002](http://localhost:3002).
+- The CMS development server does not start on Node.js 24 yet (see [Node.js 24](#nodejs-24)).
+
+### Test and build
+
+```bash
+pnpm test
+pnpm build
+```
+
+- `pnpm test` runs the tests of the tools and of the three apps once.
+- `pnpm build` builds the frontend and the CMS, and `pnpm --filter pedalboards-frontend preview`
+  serves the frontend build.
+- The [root scripts](#pnpm-workspace) list the others.
 
 ## Core service
 
@@ -53,20 +88,6 @@ This script starts the API, the frontend and the CMS.
 - The migrations, in `pedalboards-core-service/migrations`, create the `plugins` table and fill it
   with the records of `data/plugins.json`. After a change to that file, run
   `pnpm db:seed:generate` in `pedalboards-core-service` to write the seed migration again.
-
-## Architecture
-
-| Dossier                  	| Description                                                                  	| Technos     	|
-|--------------------------	|------------------------------------------------------------------------------	|-------------	|
-| pedalboards-cms          	| Le CMS permettant de gérer  les pedaliers (création,  suppressiosn, édition) 	| ReactJS, Sass    |
-| pedalboards-core-service 	| The REST API                                                                 	| Express, Cloudflare Workers, D1	|
-| pedalboards-frontend     	| The web app of the pedalboards ([README](pedalboards-frontend/README.md))	| React, Sass, Redux, Recompose, Vite, Vitest	|
-| tools/commit-messages    	| The commitlint rule and the hook script that check the [commit messages](#commit-messages), with their tests	| Node.js, commitlint	|
-| tools/dev-server-check   	| The check that a dev server starts and serves its app, with the tests of its helpers	| Node.js	|
-| .husky                   	| The git hooks that `pnpm install` turns on                                   	| husky	|
-
-The history of the project's tools and architecture, with its decision records, is in
-[`docs/evolution.md`](docs/evolution.md).
 
 ## pnpm workspace
 
