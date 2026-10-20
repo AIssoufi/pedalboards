@@ -1,17 +1,5 @@
+import { toPluginId } from '../src/utils/plugin-id.js';
 import { PLUGIN_COLUMNS } from './constants.js';
-
-/**
- * Turns a plugin name into the id of its page: lower case ASCII words joined by dashes.
- *
- * @param {string} name - Name of the plugin, such as `MDA Overdrive`.
- * @returns {string} The id, such as `mda-overdrive`.
- */
-export const toPluginId = name => name
-	.normalize('NFKD')
-	.replace(/\p{M}/gu, '')
-	.toLowerCase()
-	.replace(/[^a-z0-9]+/g, '-')
-	.replace(/^-+|-+$/g, '');
 
 /**
  * Writes a value as an SQL literal: objects and arrays become JSON text, booleans 1 or 0.
