@@ -7,7 +7,7 @@ Conception et réalisation d'un magasin de plugin audio (pédale d’effet virtu
 - Library : ReactJS, ReduxJS, Recompose, Sass, Express, lodash
 - Database: Cloudflare D1
 - Hosting: Cloudflare Pages and Workers
-- Outil : Postman, Git, SourceTree, GitLab, Visual Studio Code
+- Tools: Postman, Git, SourceTree, GitLab, Visual Studio Code
 
 
 # Try the site online
@@ -59,7 +59,7 @@ This script starts the API, the frontend and the CMS.
 | Dossier                  	| Description                                                                  	| Technos     	|
 |--------------------------	|------------------------------------------------------------------------------	|-------------	|
 | pedalboards-cms          	| Le CMS permettant de gérer  les pedaliers (création,  suppressiosn, édition) 	| ReactJS, Sass    |
-| pedalboards-core-service 	| L'API RESTful                                                                	| Express, Cloudflare Workers, D1	|
+| pedalboards-core-service 	| The REST API                                                                 	| Express, Cloudflare Workers, D1	|
 | pedalboards-frontend     	| L'application web des  pédaliers                                             	| React, Sass, Redux, Recompose	|
 | tools/commit-messages    	| The commitlint rule and the hook script that check the [commit messages](#commit-messages), with their tests	| Node.js, commitlint	|
 | .husky                   	| The git hooks that `pnpm install` turns on                                   	| husky	|
