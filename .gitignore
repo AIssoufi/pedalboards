@@ -9,6 +9,9 @@
 # production
 **/build
 
+# local state of wrangler, such as `wrangler pages dev` at the root
+**/.wrangler
+
 # misc
 .DS_Store
 .env.local
