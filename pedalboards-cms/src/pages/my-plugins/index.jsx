@@ -23,7 +23,6 @@ const MyPlugins = ({ location }) => {
   const [elementCount, setElementCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [countPlugins, setCountPlugins] = useState(-1);
-  const [deletedCount, setDeletedCount] = useState(null);
 
   useEffect(() => {
     const { search } = location;
@@ -75,14 +74,13 @@ const MyPlugins = ({ location }) => {
     PedalboardService.deletePlugin(id, currentPage, displayNumber)
       .then((response) => {
         const {
-          data, count, currentPage: newPage, numberPages, deletedCount: newDeletedCount
+          data, count, currentPage: newPage, numberPages
         } = response;
 
         setPlugins(data);
         setElementCount(count);
         setCurrentPage(newPage);
         setCountPlugins(numberPages);
-        setDeletedCount(newDeletedCount);
       });
   };
 
