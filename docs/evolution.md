@@ -27,3 +27,23 @@ npm in every folder through `concurrently`.
 | CI install step, frontend / CMS / core service | 11 s / 8 s / 5 s | 3 s / 3 s / 3 s |
 
 Decision: [0001. Move to pnpm workspaces and pin Node.js 24](decisions/0001-pnpm-workspaces-and-node-24.md)
+
+## Since 2026: checked commit messages
+
+Every commit follows Conventional Commits and names its ticket in a `Refs: PEDAL-<number>`
+trailer: commitlint checks it in a `commit-msg` hook of husky and in the CI of each pull request,
+which checks its title too, and a `prepare-commit-msg` hook adds the trailer on a ticket branch.
+Before, the convention was a habit that nothing checked.
+
+| Figure | Before | After |
+| --- | --- | --- |
+| Packages installed | 1,603 | 1,669 |
+| Direct dependencies | 45 | 50 |
+| Install after deleting `node_modules` | 1.93 s | 2.18 s |
+| Empty commit (`git commit --allow-empty`) | 0.02 s | 0.35 s |
+| Audit advisories, critical / high / moderate / low | 28 / 112 / 72 / 25 | 28 / 112 / 72 / 25 |
+| Tests of the commit message tools | none | 115, all passing |
+| CI workflow run | 35 s | 34 s |
+| Commit messages workflow run, next to the CI workflow | none | 22 s |
+
+Decision: [0002. Check the commit messages with commitlint and husky](decisions/0002-commit-message-checks.md)
