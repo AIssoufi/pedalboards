@@ -91,7 +91,7 @@ const Plugin = ({
 );
 
 Plugin.propTypes = {
-  _id: PropTypes.string.isRequired.isRequired,
+  _id: PropTypes.string.isRequired,
   author: PropTypes.shape({
     avatarUrl: PropTypes.string,
     name: PropTypes.string
