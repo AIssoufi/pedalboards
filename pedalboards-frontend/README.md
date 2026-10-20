@@ -1,7 +1,8 @@
 # Pedalboards frontend
 
 The web app that visitors use to browse the plugins, built with React, Redux and Sass on
-[Vite](https://vite.dev), and tested with [Vitest](https://vitest.dev).
+[Vite](https://vite.dev), and tested with [Vitest](https://vitest.dev) and
+[Testing Library](https://testing-library.com/docs/react-testing-library/intro).
 
 ## Scripts
 

@@ -18,8 +18,8 @@ A store of audio plugins: virtual effect pedals that visitors browse, search and
 
 ## Tech stack
 
-- Frontend: React 16, Redux 4, Recompose, React Router 4 and Sass, built with Vite 8 and tested with
-  Vitest 5.
+- Frontend: React 19, Redux 4, React Router 5 and Sass, built with Vite 8 and tested with Vitest 5
+  and Testing Library.
 - CMS: React 16 and Sass on Create React App 2, tested with Jest.
 - API: Express 5 in a Cloudflare Worker, on a Cloudflare D1 database, tested with Vitest 5 in the
   Workers runtime.
@@ -30,7 +30,7 @@ A store of audio plugins: virtual effect pedals that visitors browse, search and
 
 | Folder                   | Description                                                                  | Tech        |
 |--------------------------|------------------------------------------------------------------------------|-------------|
-| pedalboards-frontend     | The web app where visitors browse the plugins ([README](pedalboards-frontend/README.md)) | React, Redux, Recompose, Sass, Vite, Vitest |
+| pedalboards-frontend     | The web app where visitors browse the plugins ([README](pedalboards-frontend/README.md)) | React, Redux, Sass, Vite, Vitest |
 | pedalboards-core-service | The REST API of the plugins ([README](pedalboards-core-service/README.md))   | Express, Cloudflare Workers, D1 |
 | pedalboards-cms          | The admin app that creates, edits and deletes the plugins, not deployed      | React, Sass, Create React App |
 | tools/commit-messages    | The commitlint rule and the hook script that check the [commit messages](#commit-messages), with their tests | Node.js, commitlint |
@@ -116,9 +116,9 @@ pnpm build
 - `pnpm-workspace.yaml` runs no install script of the dependencies (`allowBuilds`), since none is
   needed, and stops pnpm from setting `NODE_PATH` (`extendNodePath: false`), which would hide the
   `NODE_PATH=src/` of the CMS `.env` file from Create React App.
-- Its `packageExtensions` declare the React peer dependencies that `react-redux` 7 and
-  `react-tippy` 1 leave out: without them, pnpm gave these packages the React of the CMS, and the
-  frontend bundle held two copies of React.
+- Its `packageExtensions` declare the React peer dependencies that `react-tippy` 1, the tooltips
+  of the CMS, leaves out: without them, pnpm would give this package the hoisted React of another
+  app rather than the React of the CMS.
 
 ## Node.js 24
 

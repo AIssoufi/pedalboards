@@ -1,6 +1,6 @@
 // Dependencies
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // Constants
@@ -14,16 +14,13 @@ const ADMIN_PANEL_LABEL = 'Admin Panel';
  * its module loads, so its module loads again after the address changes.
  *
  * @param {string} cmsUrl - Value of `VITE_BACKEND`.
- * @returns {Promise<HTMLDivElement>} The element that holds the header.
  */
 const renderHeader = async (cmsUrl) => {
   vi.stubEnv('VITE_BACKEND', cmsUrl);
   vi.resetModules();
   const { default: Header } = await import('./index');
 
-  const div = document.createElement('div');
-  ReactDOM.render(<MemoryRouter><Header /></MemoryRouter>, div);
-  return div;
+  render(<MemoryRouter><Header /></MemoryRouter>);
 };
 
 afterEach(() => {
@@ -31,16 +28,15 @@ afterEach(() => {
 });
 
 it('links to the admin panel of the CMS when the CMS has an address', async () => {
-  const header = await renderHeader(CMS_URL);
-  const adminPanelLink = header.querySelector(`a[href="${CMS_URL}${ADMIN_PANEL_PATH}"]`);
+  await renderHeader(CMS_URL);
 
-  expect(adminPanelLink).not.toBeNull();
-  expect(adminPanelLink.textContent).toBe(ADMIN_PANEL_LABEL);
+  const adminPanelLink = screen.getByRole('link', { name: ADMIN_PANEL_LABEL });
+  expect(adminPanelLink.getAttribute('href')).toBe(`${CMS_URL}${ADMIN_PANEL_PATH}`);
 });
 
 it('leaves the admin panel link out when the CMS has no address', async () => {
-  const header = await renderHeader('');
+  await renderHeader('');
 
-  expect(header.textContent).toContain('Plugins');
-  expect(header.textContent).not.toContain(ADMIN_PANEL_LABEL);
+  expect(screen.getByRole('link', { name: 'Plugins' })).toBeDefined();
+  expect(screen.queryByText(ADMIN_PANEL_LABEL)).toBeNull();
 });

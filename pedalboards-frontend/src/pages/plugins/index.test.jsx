@@ -1,7 +1,8 @@
 // Dependencies
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { act } from 'react-dom/test-utils';
+import {
+  act, fireEvent, render, screen
+} from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 // Stub
@@ -13,22 +14,24 @@ import store from '../../redux/store';
 // Components
 import Plugins, { PluginsPage } from './index';
 
-it('renders without crashing', () => {
+const EMPTY_GRID_TEXT = 'Aucun plugin ne correspond à votre recherche !';
+
+it('renders without crashing', async () => {
   // The store fetches the plugins: an answer keeps its promise from failing in a later test
   const emptyAnswer = { data: [], count: 0, numberPages: 0 };
   vi.spyOn(window, 'fetch')
     .mockImplementation(() => Promise.resolve({ json: () => emptyAnswer }));
-  const div = document.createElement('div');
   try {
-    ReactDOM.render(
+    render(
       <Provider store={store}>
         <MemoryRouter initialEntries={['/plugins']}>
           <Route path="/plugins" component={Plugins} />
         </MemoryRouter>
-      </Provider>,
-      div
+      </Provider>
     );
-    ReactDOM.unmountComponentAtNode(div);
+
+    // The grid shows its empty state once the answer is in the store
+    expect(await screen.findByText(EMPTY_GRID_TEXT)).toBeDefined();
   } finally {
     window.fetch.mockRestore();
   }
@@ -49,7 +52,6 @@ const entriesOf = searchParams => [...searchParams.entries()];
 const SEARCH_DEBOUNCE_WAIT_MS = 1000;
 
 describe('PluginsPage', () => {
-  let div;
   let location;
   let history;
   let fetchPlugins;
@@ -64,38 +66,38 @@ describe('PluginsPage', () => {
    * @param {Object[]} [params.plugins] - Plugins of the page shown.
    */
   const renderPage = ({ url, countPlugins = 1, plugins = [] }) => {
-    act(() => {
-      ReactDOM.render(
-        <MemoryRouter initialEntries={[url]}>
-          <Route
-            path="/plugins"
-            render={(routeProps) => {
-              ({ location, history } = routeProps);
-              return (
-                <PluginsPage
-                  {...routeProps}
-                  fetchPlugins={fetchPlugins}
-                  findPlugins={findPlugins}
-                  plugins={plugins}
-                  countPlugins={countPlugins}
-                />
-              );
-            }}
-          />
-        </MemoryRouter>,
-        div
-      );
-    });
+    render(
+      <MemoryRouter initialEntries={[url]}>
+        <Route
+          path="/plugins"
+          render={(routeProps) => {
+            ({ location, history } = routeProps);
+            return (
+              <PluginsPage
+                {...routeProps}
+                fetchPlugins={fetchPlugins}
+                findPlugins={findPlugins}
+                plugins={plugins}
+                countPlugins={countPlugins}
+              />
+            );
+          }}
+        />
+      </MemoryRouter>
+    );
   };
 
-  const click = (element) => {
-    act(() => {
-      element.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 }));
-    });
-  };
+  // The page shows the pagination above and below the grid: these helpers take the first one
+  const getPaginationButton = name => screen.getAllByRole('button', { name })[0];
+  const getPageButton = pageNumber => getPaginationButton(String(pageNumber));
 
-  const findPageButton = pageNumber => [...div.querySelectorAll('.numero-de-page button')]
-    .find(button => button.textContent === String(pageNumber));
+  // The fields are filled without an input event, which would start the debounce of the field
+  const fillSearch = ({ value, filter }) => {
+    const input = screen.getByRole('textbox');
+    input.value = value;
+    if (filter) screen.getByRole('combobox').value = filter;
+    return input.form;
+  };
 
   const lastFindCall = () => {
     const [filters, page, pageSize] = findPlugins.mock.calls[findPlugins.mock.calls.length - 1];
@@ -105,13 +107,6 @@ describe('PluginsPage', () => {
   beforeEach(() => {
     fetchPlugins = vi.fn(() => Promise.resolve({}));
     findPlugins = vi.fn(() => Promise.resolve({}));
-    div = document.createElement('div');
-    document.body.appendChild(div);
-  });
-
-  afterEach(() => {
-    ReactDOM.unmountComponentAtNode(div);
-    document.body.removeChild(div);
   });
 
   it('fetches the first page of all the plugins without a filter', () => {
@@ -125,17 +120,17 @@ describe('PluginsPage', () => {
     renderPage({ url: '/plugins?categories=Delay&page=3', countPlugins: 4 });
 
     expect(lastFindCall()).toEqual({ filters: [['categories', 'Delay']], page: 3, pageSize: 10 });
-    expect(div.querySelector('.current-page').textContent).toBe('3');
+    expect(getPageButton(3).className).toBe('current-page');
   });
 
   it.each([
-    ['brand', '.info.brand', [['brand', 'A&B']], '?brand=A%26B'],
-    ['label', '.info:not(.brand)', [['label', 'Echo']], '?label=Echo'],
-    ['category', '.category', [['categories', 'Delay']], '?categories=Delay']
-  ])('filters the grid when the %s of a card is clicked', (field, selector, filters, search) => {
+    ['brand', 'A&B', [['brand', 'A&B']], '?brand=A%26B'],
+    ['label', 'Echo', [['label', 'Echo']], '?label=Echo'],
+    ['category', 'Delay', [['categories', 'Delay']], '?categories=Delay']
+  ])('filters the grid when the %s of a card is clicked', (field, linkName, filters, search) => {
     renderPage({ url: '/plugins', plugins: [PLUGIN] });
 
-    click(div.querySelector(selector));
+    fireEvent.click(screen.getByRole('link', { name: linkName }));
 
     expect(location.search).toBe(search);
     expect(lastFindCall()).toEqual({ filters, page: 1, pageSize: 10 });
@@ -144,7 +139,7 @@ describe('PluginsPage', () => {
   it('keeps the filter when it goes to another page', () => {
     renderPage({ url: '/plugins?brand=MDA', countPlugins: 3 });
 
-    click(findPageButton(2));
+    fireEvent.click(getPageButton(2));
 
     expect(location.search).toBe('?brand=MDA&page=2');
     expect(lastFindCall()).toEqual({ filters: [['brand', 'MDA']], page: 2, pageSize: 10 });
@@ -154,20 +149,20 @@ describe('PluginsPage', () => {
   it('keeps the filter on the next page', () => {
     renderPage({ url: '/plugins?brand=MDA&page=2', countPlugins: 3 });
 
-    click(div.querySelector('.page-suivante'));
+    fireEvent.click(getPaginationButton('NEXT'));
 
     expect(location.search).toBe('?brand=MDA&page=3');
     expect(lastFindCall().page).toBe(3);
   });
 
   it.each([
-    ['next', '.page-suivante', '/plugins?brand=MDA&page=3'],
-    ['previous', '.page-precedente', '/plugins?brand=MDA']
-  ])('stays on the page when there is no %s page', (direction, selector, url) => {
+    ['next', 'NEXT', '/plugins?brand=MDA&page=3'],
+    ['previous', 'PREVIOUS', '/plugins?brand=MDA']
+  ])('stays on the page when there is no %s page', (direction, buttonName, url) => {
     renderPage({ url, countPlugins: 3 });
     const { search } = location;
 
-    click(div.querySelector(selector));
+    fireEvent.click(getPaginationButton(buttonName));
 
     expect(location.search).toBe(search);
     expect(findPlugins).toHaveBeenCalledTimes(1);
@@ -175,13 +170,8 @@ describe('PluginsPage', () => {
 
   it('starts a new search on the first page', () => {
     renderPage({ url: '/plugins?brand=MDA&page=4', countPlugins: 5 });
-    const form = div.querySelector('form');
-    form.querySelector('input[name="value"]').value = ' Gx ';
-    form.querySelector('select[name="label"]').value = 'label';
 
-    act(() => {
-      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    });
+    fireEvent.submit(fillSearch({ value: ' Gx ', filter: 'label' }));
 
     expect(location.search).toBe('?label=Gx');
     expect(lastFindCall()).toEqual({ filters: [['label', 'Gx']], page: 1, pageSize: 10 });
@@ -189,12 +179,8 @@ describe('PluginsPage', () => {
 
   it('lists all the plugins again when the search is emptied', () => {
     renderPage({ url: '/plugins?brand=MDA&page=2', countPlugins: 3 });
-    const form = div.querySelector('form');
-    form.querySelector('input[name="value"]').value = '';
 
-    act(() => {
-      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    });
+    fireEvent.submit(fillSearch({ value: '' }));
 
     expect(location.search).toBe('');
     expect(fetchPlugins).toHaveBeenCalledWith(1, 10);
@@ -212,16 +198,10 @@ describe('PluginsPage', () => {
 
     it('adds one history entry when the search is typed, then submitted', () => {
       renderPage({ url: '/plugins' });
-      const form = div.querySelector('form');
-      const input = form.querySelector('input[name="value"]');
-      const setInputValue = Object
-        .getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+      const input = screen.getByRole('textbox');
 
-      act(() => {
-        setInputValue.call(input, 'Gx');
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-        form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-      });
+      fireEvent.change(input, { target: { value: 'Gx' } });
+      fireEvent.submit(input.form);
       // The search field submits the typed value again once its debounce delay is over
       act(() => {
         vi.advanceTimersByTime(SEARCH_DEBOUNCE_WAIT_MS);
@@ -233,12 +213,11 @@ describe('PluginsPage', () => {
   });
 
   it('renders without props', () => {
+    let container;
     expect(() => {
-      act(() => {
-        ReactDOM.render(<MemoryRouter><PluginsPage /></MemoryRouter>, div);
-      });
+      ({ container } = render(<MemoryRouter><PluginsPage /></MemoryRouter>));
     }).not.toThrow();
-    expect(div.querySelector('.plugin')).toBeNull();
+    expect(container.querySelector('.plugin')).toBeNull();
   });
 
   it('ignores the unknown parameters and an invalid page of the URL', () => {

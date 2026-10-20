@@ -21,12 +21,9 @@ allowBuilds:
   fsevents: false
   workerd: false
 
-# These packages import react or react-dom without declaring them, so pnpm gave them the hoisted
-# copy of another app, and the frontend bundle held two versions of React
+# The tooltips of the CMS import react and react-dom without declaring them, so pnpm would give
+# them the hoisted copy of another app rather than the React of the CMS
 packageExtensions:
-  react-redux@7:
-    peerDependencies:
-      react-dom: ^16.8.3
   react-tippy@1:
     peerDependencies:
       react: ^15.0.0 || ^16.0.0

@@ -2,17 +2,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Tooltip } from 'react-tippy';
 
 // Utils
 import { buildPluginFilterLink, isPluginFilterValue } from '../../utils/plugin-filter';
 
 // Components
+import Tooltip from '../tooltip';
 import FilterTooltipContent from './filter-tooltip-content';
 
 // Style
 import './style.scss';
-import 'react-tippy/dist/tippy.css';
 
 /**
  * Card of a plugin in the grid: its screenshot, linking to its details, then links that filter
@@ -28,27 +27,29 @@ const Plugin = ({
   return (
     <div className="plugin">
       {_id ? (
-        <Link to={`/plugin/${_id}`}>
-          <Tooltip
-            html={(
-              <i>
-                Click to discover
-                <br />
-                {`more details about ${name || 'this plugin'}.`}
-              </i>
-            )}
-            position="bottom"
-          >
+        <Tooltip
+          content={(
+            <i>
+              Click to discover
+              <br />
+              {`more details about ${name || 'this plugin'}.`}
+            </i>
+          )}
+          placement="bottom"
+        >
+          <Link to={`/plugin/${_id}`}>
             {screenshot}
-          </Tooltip>
-        </Link>
+          </Link>
+        </Tooltip>
       ) : screenshot}
       <div className="category-container">
         {categoryList.map(category => (
           <Tooltip
             key={category}
-            html={<FilterTooltipContent heading="Categorie" value={category} kind="categories" />}
-            position="top"
+            content={(
+              <FilterTooltipContent heading="Categorie" value={category} kind="categories" />
+            )}
+            placement="top"
           >
             <Link
               to={buildPluginFilterLink({ field: 'categories', value: category })}
@@ -63,8 +64,8 @@ const Plugin = ({
       <div className="info-container">
         {label && (
           <Tooltip
-            html={<FilterTooltipContent heading="Label" value={label} kind="labels" />}
-            position="top"
+            content={<FilterTooltipContent heading="Label" value={label} kind="labels" />}
+            placement="top"
           >
             <Link
               to={buildPluginFilterLink({ field: 'label', value: label })}
@@ -76,8 +77,8 @@ const Plugin = ({
         )}
         {brand && (
           <Tooltip
-            html={<FilterTooltipContent heading="Brand" value={brand} kind="brands" />}
-            position="bottom"
+            content={<FilterTooltipContent heading="Brand" value={brand} kind="brands" />}
+            placement="bottom"
           >
             <Link
               to={buildPluginFilterLink({ field: 'brand', value: brand })}

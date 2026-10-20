@@ -5,6 +5,7 @@ import PedalboardDetails from './pedalboard-details';
 import Plugin from './plugin';
 import PluginGrid from './plugin-grid';
 import Search from './search';
+import Tooltip from './tooltip';
 
 export {
   Header,
@@ -13,5 +14,6 @@ export {
   PedalboardDetails,
   Plugin,
   PluginGrid,
-  Search
+  Search,
+  Tooltip
 };

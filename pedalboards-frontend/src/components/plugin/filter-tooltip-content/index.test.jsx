@@ -1,52 +1,49 @@
 // Dependencies
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { render, screen } from '@testing-library/react';
 
 // Components
 import FilterTooltipContent from './index';
 
 describe('FilterTooltipContent', () => {
-  let div;
-
-  beforeEach(() => {
-    div = document.createElement('div');
-  });
-
-  afterEach(() => {
-    ReactDOM.unmountComponentAtNode(div);
-  });
-
   it('renders the heading, then what the link filters by', () => {
-    ReactDOM.render(<FilterTooltipContent heading="Brand" value="MDA" kind="brands" />, div);
+    const { container } = render(
+      <FilterTooltipContent heading="Brand" value="MDA" kind="brands" />
+    );
 
-    expect(div.textContent).toBe('BrandClick to filter pluginby MDA brands.');
-    expect([...div.querySelectorAll('b')].map(bold => bold.textContent)).toEqual(['Brand', 'MDA']);
+    expect(container.textContent).toBe('BrandClick to filter pluginby MDA brands.');
+    expect(screen.getByText('Brand').tagName).toBe('B');
+    expect(screen.getByText('MDA').tagName).toBe('B');
   });
 
   it('renders the sentence without a heading or a kind', () => {
-    ReactDOM.render(<FilterTooltipContent value="MDA" />, div);
+    const { container } = render(<FilterTooltipContent value="MDA" />);
 
-    expect(div.textContent).toBe('Click to filter pluginby MDA.');
-    expect(div.querySelectorAll('br')).toHaveLength(1);
-    expect(div.textContent).not.toContain('undefined');
+    expect(container.textContent).toBe('Click to filter pluginby MDA.');
+    expect(container.querySelectorAll('br')).toHaveLength(1);
+    expect(container.textContent).not.toContain('undefined');
   });
 
   it('renders nothing without props', () => {
-    ReactDOM.render(<FilterTooltipContent />, div);
+    const { container } = render(<FilterTooltipContent />);
 
-    expect(div.innerHTML).toBe('');
+    expect(container.innerHTML).toBe('');
   });
 
   it('renders nothing for an empty value', () => {
-    ReactDOM.render(<FilterTooltipContent heading="Brand" value="" kind="brands" />, div);
+    const { container } = render(
+      <FilterTooltipContent heading="Brand" value="" kind="brands" />
+    );
 
-    expect(div.innerHTML).toBe('');
+    expect(container.innerHTML).toBe('');
   });
 
   it('displays a value holding markup as literal text', () => {
-    ReactDOM.render(<FilterTooltipContent heading="Label" value="<b>x</b>" kind="labels" />, div);
+    const { container } = render(
+      <FilterTooltipContent heading="Label" value="<b>x</b>" kind="labels" />
+    );
 
-    expect(div.textContent).toContain('<b>x</b>');
-    expect(div.querySelectorAll('b')).toHaveLength(2);
+    expect(screen.getByText('<b>x</b>').tagName).toBe('B');
+    expect(container.querySelectorAll('b')).toHaveLength(2);
   });
 });
