@@ -79,6 +79,9 @@ export const CORS_HEADERS = {
 	'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
 };
 
+/** Methods that the CMS may send to the local entry, which serves the write routes */
+export const WRITE_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS';
+
 /**
  * Messages of the API responses. Those of the former Express service keep their wording, which
  * clients may read, and the new ones are in English.

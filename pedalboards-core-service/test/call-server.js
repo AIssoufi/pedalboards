@@ -1,5 +1,8 @@
 import { httpServerHandler } from 'cloudflare:node';
 
+// Address of the API that the test requests call
+const API_URL = 'https://pedalboards.issoufi.fr/api';
+
 /**
  * Reads the body of a request as a browser sends it: a form as multipart/form-data, other text as
  * is.
@@ -22,8 +25,8 @@ const encodeBody = async ({ form, body, contentType }) => {
 };
 
 /**
- * Calls a test server, started with `createApp(...).listen(port)`, as a browser does: the body
- * goes with its length, which Express needs to read it.
+ * Calls a test server, started with `createApp(...).listen(port)`, as a browser does: with the Host
+ * header, and the body with its length, which Express needs to read it.
  *
  * @param {Object} params
  * @param {number} params.port - Port of the server.
@@ -36,10 +39,12 @@ const encodeBody = async ({ form, body, contentType }) => {
  */
 export const callServer = async ({ port, path, method = 'GET', form, body, contentType }) => {
 	const { bytes, contentType: bodyType } = await encodeBody({ form, body, contentType });
-	const init = { method };
+	const url = new URL(`${API_URL}${path}`);
+	const init = { method, headers: { Host: url.host } };
 	if (bytes) {
 		init.body = bytes;
-		init.headers = { 'Content-Type': bodyType, 'Content-Length': String(bytes.byteLength) };
+		init.headers['Content-Type'] = bodyType;
+		init.headers['Content-Length'] = String(bytes.byteLength);
 	}
-	return httpServerHandler({ port }).fetch(new Request(`https://pedalboards.issoufi.fr/api${path}`, init));
+	return httpServerHandler({ port }).fetch(new Request(url, init));
 };
