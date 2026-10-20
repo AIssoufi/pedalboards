@@ -1,0 +1,57 @@
+@import '../../styles/_globals.scss';
+
+// Above the fixed header
+$tooltip-z-index: 9999;
+$tooltip-max-width: 400px;
+// Widest viewport where the bubble may take its whole width, but its margins
+$tooltip-narrow-viewport: 450px;
+// Same margin as VIEWPORT_MARGIN_PX, in constants.js
+$tooltip-viewport-margin: 10px;
+// Distance the bubble slides away from its trigger as it opens
+$tooltip-shift: 10px;
+$tooltip-duration: 375ms;
+$tooltip-easing: cubic-bezier(.165, .84, .44, 1);
+
+.tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: $tooltip-z-index;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: $tooltip-max-width;
+  padding: .4rem .8rem;
+  border-radius: 4px;
+  background-color: $tooltip-bg-color;
+  color: $bg-text-primary-color;
+  font-size: .95rem;
+  text-align: center;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity $tooltip-duration $tooltip-easing,
+    transform $tooltip-duration $tooltip-easing,
+    visibility $tooltip-duration;
+
+  &.top {
+    transform: translateY($tooltip-shift);
+  }
+  &.bottom {
+    transform: translateY(-$tooltip-shift);
+  }
+  &.open {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: $tooltip-narrow-viewport) {
+    max-width: calc(100vw - #{2 * $tooltip-viewport-margin});
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}

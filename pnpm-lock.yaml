@@ -162,7 +162,7 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-packageExtensionsChecksum: sha256-tDuoHQLwabMoXteeKHYOds+tMTpTy+o+QcMGm+QaVbw=
+packageExtensionsChecksum: sha256-6dtiKQCp3P5OnBydoATaxAAP7022ZssRavqrJrdlT78=
 
 importers:
 
@@ -278,9 +278,6 @@ importers:
       react-router-dom:
         specifier: ^5.3.4
         version: 5.3.4(react@18.3.1)
-      react-tippy:
-        specifier: ^1.2.3
-        version: 1.2.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       redux:
         specifier: ^4.0.1
         version: 4.0.1
@@ -5701,8 +5698,8 @@ packages:
   react-tippy@1.2.3:
     resolution: {integrity: sha512-cEmhw29DbVP33n9ayo0nLzibuSz6o0A77cZtzno7zGsfOH8tUEGai/8a7TXRIKHPYDooW8iJkJBIPDnxmEu00g==}
     peerDependencies:
-      react: ^15.0.0 || ^16.0.0 || ^18.0.0
-      react-dom: ^15.0.0 || ^16.0.0 || ^18.0.0
+      react: ^15.0.0 || ^16.0.0
+      react-dom: ^15.0.0 || ^16.0.0
 
   react@16.8.6:
     resolution: {integrity: sha512-pC0uMkhLaHm11ZSJULfOBqV4tIZkx87ZLvbbQYunNixAAvjnC+snJCg0XQXn9VIsttVsbZP/H/ewzgsd5fxKXw==}
@@ -13658,12 +13655,6 @@ snapshots:
       popper.js: 1.15.0
       react: 16.8.6
       react-dom: 16.8.6(react@16.8.6)
-
-  react-tippy@1.2.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
-    dependencies:
-      popper.js: 1.15.0
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
 
   react@16.8.6:
     dependencies:

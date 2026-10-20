@@ -1,6 +1,6 @@
 // Dependencies
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 // Stub
 import { MemoryRouter } from 'react-router-dom';
@@ -80,9 +80,37 @@ it('encodes the values of the filter links', () => {
 });
 
 describe('tooltips', () => {
+  it('describes each link with its tooltip', () => {
+    renderPlugin({
+      _id: 'ghjklmljhjkjhj',
+      brand: 'Antanas',
+      categories: ['Dynamics'],
+      label: 'abGate',
+      name: 'abGate',
+      screenshotUrl: 'http://example.com/screenshot'
+    });
+
+    const descriptions = screen.getAllByRole('link')
+      .map(link => document.getElementById(link.getAttribute('aria-describedby')).textContent);
+    expect(descriptions).toEqual([
+      'Click to discovermore details about abGate.',
+      'CategorieClick to filter pluginby Dynamics categories.',
+      'LabelClick to filter pluginby abGate labels.',
+      'BrandClick to filter pluginby Antanas brands.'
+    ]);
+  });
+
+  it('shows the tooltip of the screenshot when its link gets the focus', () => {
+    renderPlugin({ _id: 'ghjklmljhjkjhj', screenshotUrl: 'http://example.com/screenshot' });
+
+    fireEvent.focus(screen.getByRole('link'));
+
+    expect(screen.getByRole('tooltip').classList.contains('open')).toBe(true);
+  });
+
   it('displays fields holding markup as literal text', () => {
     const markup = '<b>x</b>';
-    const container = renderPlugin({
+    renderPlugin({
       _id: 'ghjklmljhjkjhj',
       author: { name: 'Lorem' },
       brand: markup,
@@ -91,10 +119,7 @@ describe('tooltips', () => {
       name: markup,
       screenshotUrl: 'http://example.com/screenshot'
     });
-    const tooltipped = container.querySelectorAll('[data-tooltipped]');
-    tooltipped.forEach(element => element.dispatchEvent(new MouseEvent('mouseenter')));
-    const tooltips = document.querySelectorAll('.tippy-tooltip-content');
-    expect(tooltipped).toHaveLength(4);
+    const tooltips = screen.getAllByRole('tooltip');
     expect(tooltips).toHaveLength(4);
     tooltips.forEach((tooltip) => {
       expect(tooltip.textContent).toContain(markup);

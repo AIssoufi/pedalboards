@@ -116,9 +116,9 @@ pnpm build
 - `pnpm-workspace.yaml` runs no install script of the dependencies (`allowBuilds`), since none is
   needed, and stops pnpm from setting `NODE_PATH` (`extendNodePath: false`), which would hide the
   `NODE_PATH=src/` of the CMS `.env` file from Create React App.
-- Its `packageExtensions` declare the React peer dependencies that `react-tippy` 1 leaves out:
-  without them, pnpm gave this package the React of the CMS, and the frontend bundle held two
-  copies of React.
+- Its `packageExtensions` declare the React peer dependencies that `react-tippy` 1, the tooltips
+  of the CMS, leaves out: without them, pnpm would give this package the hoisted React of another
+  app rather than the React of the CMS.
 
 ## Node.js 24
 
