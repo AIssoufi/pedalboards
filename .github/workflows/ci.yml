@@ -19,14 +19,16 @@ jobs:
   react-app:
     name: ${{ matrix.name }}
     runs-on: ubuntu-latest
-    # Jest 23 can hang instead of failing when a test crashes its worker
+    # The Jest 23 of the CMS can hang instead of failing when a test crashes its worker
     timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
         include:
+          # dev-server-check: the app's dev script runs Vite, which the dev server check starts
           - name: Frontend
             directory: pedalboards-frontend
+            dev-server-check: true
           - name: CMS
             directory: pedalboards-cms
     defaults:
@@ -44,11 +46,19 @@ jobs:
       # Installs the whole workspace from its single lockfile, even from the folder of one app
       - name: Install
         run: pnpm install --frozen-lockfile
-      # CI=true runs Jest once instead of in watch mode, and makes the build fail on lint warnings
+      # CI=true runs the Jest of the CMS once instead of in watch mode, and makes its build fail on
+      # lint warnings. The frontend runs Vitest once and ignores it
       - name: Test
         run: CI=true pnpm test
       - name: Build
         run: CI=true pnpm run build
+      - name: Test the dev server check
+        if: matrix.dev-server-check
+        run: pnpm --workspace-root run test:dev-server-check
+      # Checks that the dev server starts on a free port and serves the page and its scripts
+      - name: Dev server check
+        if: matrix.dev-server-check
+        run: pnpm run check:dev-server
 
   core-service:
     name: Core service

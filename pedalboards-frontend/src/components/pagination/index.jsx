@@ -5,11 +5,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 // Constants
-import { FIRST_PAGE } from 'utils/page/constants';
+import { FIRST_PAGE } from '../../utils/page/constants';
 import { PAGE_GAP } from './constants';
 
 // Utils
-import { isPageNumber } from 'utils/page';
+import { isPageNumber } from '../../utils/page';
 import { getPageItems } from './utils';
 
 // Style

@@ -1,4 +1,4 @@
-import * as RequestHelper from 'helpers/request.helper';
+import * as RequestHelper from './request.helper';
 
 export {
   RequestHelper

@@ -2,7 +2,7 @@
 import { combineReducers } from 'redux';
 
 // Reducers
-import pluginReducer from 'redux/reducers/plugin.reducer';
+import pluginReducer from './plugin.reducer';
 
 const rootReducer = combineReducers({
   plugin: pluginReducer

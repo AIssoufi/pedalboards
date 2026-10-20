@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Tooltip } from 'react-tippy';
 
 // Utils
-import { buildPluginFilterLink, isPluginFilterValue } from 'utils/plugin-filter';
+import { buildPluginFilterLink, isPluginFilterValue } from '../../utils/plugin-filter';
 
 // Components
 import FilterTooltipContent from './filter-tooltip-content';

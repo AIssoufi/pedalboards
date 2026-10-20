@@ -145,3 +145,37 @@ runtime, against a local D1, and the CI checks that the deployed bundle holds no
 | Worker bundle, raw / gzipped | none | 1,167.60 KiB / 300.29 KiB |
 
 Decision: [0005. Deploy the frontend on Cloudflare Pages and a read-only API Worker on D1](decisions/0005-cloudflare-pages-and-d1-worker.md)
+
+## Since 2026: the frontend on Vite and Vitest
+
+The frontend leaves Create React App 2: Vite serves and builds it, and Vitest runs its tests in
+jsdom. Its development server starts again on Node.js 24, and the CI checks that it serves the
+app. The build no longer needs the OpenSSL flag, the `node-sass` alias or a `NODE_PATH`, and its
+environment variables take the `VITE_` prefix. `.env.production` now names the address of the
+API, so the Pages previews show the plugins. React moves from 16.8.6 to 16.14.0, which the Fast
+Refresh of Vite needs, and `packageExtensions` in the pnpm workspace give `react-redux` and
+`react-tippy` the React of the frontend, so that the bundle holds a single copy of React. The CMS
+still runs on Create React App ([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
+
+| Figure | Before (`c80ae2c3`) | After |
+| --- | --- | --- |
+| Frontend development server on Node.js 24 | fails | starts, checked in the CI |
+| Frontend build, median of 3 | 3.36 s | 0.48 s |
+| Frontend JS that the page loads, raw / gzipped | 370,400 B / 114,750 B | 358,515 B / 113,003 B |
+| Frontend CSS, raw / gzipped | 23,380 B / 3,743 B | 20,431 B / 3,244 B |
+| Frontend tests, all passing | 182 (Jest 23) | 191 (Vitest 5) |
+| Frontend test run, median of 3 | 1.31 s | 0.96 s |
+| Frontend direct dependencies | 22 | 25 |
+| Packages installed | 1,681 | 1,588 |
+| Install after deleting `node_modules` | 2.02 s | 2.23 s |
+| Frontend audit advisories, critical / high / moderate / low | 27 / 103 / 69 / 24 | 2 / 26 / 14 / 3 |
+| Workspace audit advisories, critical / high / moderate / low | 27 / 103 / 69 / 24 | 27 / 103 / 69 / 24 |
+
+The advisories of the workspace stay the same because the CMS still installs `react-scripts` 2,
+which reaches all those that the frontend left. The 21 advisories of the core service stay too,
+all through `pedalboards-core-service>vitest>jsdom@15.1.1`: pnpm still resolves the optional
+`jsdom` peer of Vitest with the jsdom 15.1.1 that `react-scripts` 2 brings into the workspace, so
+they go when the CMS leaves Create React App
+([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
+
+Decision: [0006. Build and test the frontend with Vite and Vitest](decisions/0006-vite-and-vitest.md)

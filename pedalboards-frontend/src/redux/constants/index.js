@@ -1,5 +1,5 @@
 // Constants
-import * as PluginConstants from 'redux/constants/plugin.constant';
+import * as PluginConstants from './plugin.constant';
 
 export {
   PluginConstants

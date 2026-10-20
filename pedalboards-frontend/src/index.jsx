@@ -7,14 +7,10 @@ import { Provider } from 'react-redux';
 import './index.scss';
 
 // Components
-import App from 'components/App';
+import App from './components/App';
 
 // Redux - store
-import store from 'redux/store';
-
-// Worker
-import * as serviceWorker from './serviceWorker';
-
+import store from './redux/store';
 
 ReactDOM.render(
   <Provider store={store}>
@@ -22,5 +18,3 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root')
 );
-
-serviceWorker.unregister();

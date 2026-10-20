@@ -6,20 +6,20 @@ import PropTypes from 'prop-types';
 // Componenets
 import {
   Search, Pagination, PluginGrid
-} from 'components';
+} from '../../components';
 
 // Redux - selectors
-import { pluginSelector } from 'redux/selectors';
+import { pluginSelector } from '../../redux/selectors';
 
 // Redux - actions
 import {
   fetchPluginsAction, findPluginsAction
-} from 'redux/actions/plugin.action';
+} from '../../redux/actions/plugin.action';
 
 // Utils
 import {
   buildPluginsSearch, createPluginFilters, isValidPage, parsePluginsSearch
-} from 'utils/plugin-filter';
+} from '../../utils/plugin-filter';
 
 // Style
 import './style.scss';

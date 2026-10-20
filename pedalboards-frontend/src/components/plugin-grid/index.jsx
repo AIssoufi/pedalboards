@@ -3,10 +3,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 // Components
-import { Plugin } from 'components';
+import { Plugin } from '..';
 
 // HOC
-import { withLoader } from 'hoc';
+import { withLoader } from '../../hoc';
 
 // Styles
 import './style.scss';

@@ -4,10 +4,10 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 // HOC
-import { withLoader } from 'hoc';
+import { withLoader } from '../../hoc';
 
 // Utils
-import { buildPluginFilterLink, isPluginFilterValue } from 'utils/plugin-filter';
+import { buildPluginFilterLink, isPluginFilterValue } from '../../utils/plugin-filter';
 import { isControlPort, toCellText } from './utils';
 
 // Style

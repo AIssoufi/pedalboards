@@ -1,4 +1,4 @@
-import * as PluginActions from 'redux/actions/plugin.action';
+import * as PluginActions from './plugin.action';
 
 export {
   PluginActions
