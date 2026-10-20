@@ -10,12 +10,13 @@ const API_URL = 'https://pedalboards.issoufi.fr/api';
 /**
  * Calls the deployed entry of the Worker.
  *
- * @param {string} path - Path and query under /api, such as `/plugins?page=2`.
- * @param {RequestInit} [init] - Method and body of the request.
+ * @param {Object} params
+ * @param {string} params.path - Path and query under /api, such as `/plugins?page=2`.
+ * @param {string} [params.method] - Method of the request, `GET` by default.
  * @returns {Promise<{ status: number, headers: Headers, body: any }>} The status, the headers and the parsed JSON body.
  */
-const callApi = async (path, init) => {
-	const response = await exports.default.fetch(`${API_URL}${path}`, init);
+const callApi = async ({ path, method }) => {
+	const response = await exports.default.fetch(`${API_URL}${path}`, { method });
 	return { status: response.status, headers: response.headers, body: await response.json() };
 };
 
@@ -24,7 +25,7 @@ const sortedNames = plugins.map(plugin => plugin.name).toSorted(byName);
 
 describe('GET /api/plugins', () => {
 	it('serves the first page of 10 plugins by default', async () => {
-		const { status, headers, body } = await callApi('/plugins');
+		const { status, headers, body } = await callApi({ path: '/plugins' });
 
 		expect(status).toBe(200);
 		expect(headers.get('Access-Control-Allow-Origin')).toBe('*');
@@ -33,7 +34,7 @@ describe('GET /api/plugins', () => {
 	});
 
 	it('sorts by name before paging, so the pages follow each other without overlap', async () => {
-		const pages = await Promise.all([1, 2, 3, 4, 5, 6, 7, 8, 9].map(page => callApi(`/plugins?page=${page}&pagesize=7`)));
+		const pages = await Promise.all([1, 2, 3, 4, 5, 6, 7, 8, 9].map(page => callApi({ path: `/plugins?page=${page}&pagesize=7` })));
 		const names = pages.flatMap(({ body }) => body.data.map(plugin => plugin.name));
 
 		expect(names).toEqual(sortedNames);
@@ -41,7 +42,7 @@ describe('GET /api/plugins', () => {
 	});
 
 	it('falls back to the default page and caps the page size', async () => {
-		const { status, body } = await callApi('/plugins?page=abc&pagesize=1000');
+		const { status, body } = await callApi({ path: '/plugins?page=abc&pagesize=1000' });
 
 		expect(status).toBe(200);
 		expect(MAX_PAGE_SIZE).toBeGreaterThan(50);
@@ -50,7 +51,7 @@ describe('GET /api/plugins', () => {
 	});
 
 	it('matches a plugin when one of the filtered fields holds the text, whatever the case', async () => {
-		const { body } = await callApi('/plugins?pagesize=100&filterby[brand]=mda&filterby[categories]=delay');
+		const { body } = await callApi({ path: '/plugins?pagesize=100&filterby[brand]=mda&filterby[categories]=delay' });
 		const expected = plugins.filter(plugin => plugin.brand.toLowerCase().includes('mda')
 			|| plugin.categories.some(category => category.toLowerCase().includes('delay')));
 
@@ -59,14 +60,14 @@ describe('GET /api/plugins', () => {
 	});
 
 	it.each(['%', '_', '\\'])('searches "%s" as a literal character', async text => {
-		const { status, body } = await callApi(`/plugins?filterby[name]=${encodeURIComponent(text)}`);
+		const { status, body } = await callApi({ path: `/plugins?filterby[name]=${encodeURIComponent(text)}` });
 
 		expect(status).toBe(200);
 		expect(body).toMatchObject({ data: [], count: 0, numberPages: 0 });
 	});
 
 	it('answers 400 with a short message to a field that cannot be searched', async () => {
-		const { status, body } = await callApi('/plugins?filterby[description]=x');
+		const { status, body } = await callApi({ path: '/plugins?filterby[description]=x' });
 
 		expect(status).toBe(400);
 		expect(body).toEqual({ msg: MESSAGES.invalidInput });
@@ -75,20 +76,20 @@ describe('GET /api/plugins', () => {
 
 describe('GET /api/plugins/count', () => {
 	it('counts all the plugins', async () => {
-		const { body } = await callApi('/plugins/count');
+		const { body } = await callApi({ path: '/plugins/count' });
 
 		expect(body).toEqual({ msg: MESSAGES.pluginsCount, data: 50 });
 	});
 
 	it('counts the plugins whose name holds the text', async () => {
-		const { body } = await callApi('/plugins/count?name=GX');
+		const { body } = await callApi({ path: '/plugins/count?name=GX' });
 		const expected = plugins.filter(plugin => plugin.name.toLowerCase().includes('gx'));
 
 		expect(body.data).toBe(expected.length);
 	});
 
 	it('answers 400 to a repeated name', async () => {
-		const { status } = await callApi('/plugins/count?name=a&name=b');
+		const { status } = await callApi({ path: '/plugins/count?name=a&name=b' });
 
 		expect(status).toBe(400);
 	});
@@ -96,7 +97,7 @@ describe('GET /api/plugins/count', () => {
 
 describe('GET /api/plugin/:id', () => {
 	it('serves each seed plugin as data/plugins.json holds it', async () => {
-		const responses = await Promise.all(plugins.map(plugin => callApi(`/plugin/${toPluginId(plugin.name)}`)));
+		const responses = await Promise.all(plugins.map(plugin => callApi({ path: `/plugin/${toPluginId(plugin.name)}` })));
 
 		responses.forEach(({ status, body }, index) => {
 			expect(status).toBe(200);
@@ -108,14 +109,14 @@ describe('GET /api/plugin/:id', () => {
 	});
 
 	it('answers 404 to an unknown id', async () => {
-		const { status, body } = await callApi('/plugin/unknown');
+		const { status, body } = await callApi({ path: '/plugin/unknown' });
 
 		expect(status).toBe(404);
 		expect(body).toEqual({ msg: MESSAGES.pluginNotFound });
 	});
 
 	it('answers 400 to a malformed id', async () => {
-		const { status, body } = await callApi('/plugin/%E0');
+		const { status, body } = await callApi({ path: '/plugin/%E0' });
 
 		expect(status).toBe(400);
 		expect(body).toEqual({ msg: MESSAGES.invalidInput });
@@ -129,7 +130,7 @@ describe('routes outside the read API', () => {
 		['DELETE', '/plugin/abgate'],
 		['GET', '/unknown']
 	])('answers %s %s with a JSON 404, since the Worker serves the read routes only', async (method, path) => {
-		const { status, body } = await callApi(path, { method });
+		const { status, body } = await callApi({ path, method });
 
 		expect(status).toBe(404);
 		expect(body).toEqual({ msg: MESSAGES.routeNotFound });
