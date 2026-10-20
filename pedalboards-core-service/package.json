@@ -9,6 +9,7 @@
     "mongo:install": "brew update && brew install mongodb && mkdir -p /data/db && chmod 777 /data/db",
     "start": "URL=mongodb://test:m2mbds2018@ds135844.mlab.com:35844/mbds node index.js",
     "start:dev": "PORT=8080 nodemon index.js",
+    "smoke": "node scripts/smoke-check.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": {
