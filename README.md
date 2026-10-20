@@ -81,3 +81,6 @@ Après l'importation vous aurez:
   `node-sass`, and `node-sass` itself has no build for Node.js 24. The alias goes away when an app
   leaves Create React App ([#33](https://github.com/AIssoufi/pedalboards/issues/33) for the
   frontend).
+- Their `start` and `build` scripts set `NODE_OPTIONS=--openssl-legacy-provider`: webpack 4 hashes
+  modules with MD4, which OpenSSL 3 disables. The flag also goes away when an app leaves Create
+  React App.
