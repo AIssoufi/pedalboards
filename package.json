@@ -14,7 +14,7 @@
     "start": "pnpm --workspace-root run --parallel --no-bail \"/^start:(core-service|frontend|cms)$/\"",
     "start:dev": "pnpm --workspace-root run --parallel --no-bail \"/^start:(mongodb|core-service|frontend|cms)$/\"",
     "prepare": "husky",
-    "test": "pnpm test:commit-messages && CI=true pnpm --filter pedalboards-frontend --filter pedalboards-cms test",
+    "test": "pnpm test:commit-messages && pnpm --filter pedalboards-core-service test && CI=true pnpm --filter pedalboards-frontend --filter pedalboards-cms test",
     "test:commit-messages": "node --test \"tools/commit-messages/**/*.test.mjs\"",
     "build": "pnpm --filter pedalboards-frontend --filter pedalboards-cms build",
     "smoke": "pnpm --filter pedalboards-core-service smoke"

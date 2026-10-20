@@ -4,50 +4,33 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
+// Constants
+import { FIRST_PAGE } from 'utils/page/constants';
+import { PAGE_GAP } from './constants';
+
+// Utils
+import { isPageNumber } from 'utils/page';
+import { getPageItems } from './utils';
+
 // Style
 import './style.scss';
 
-
-const getLeftPageNumbers = (currentPage) => {
-  const results = [];
-  if (currentPage <= 4) {
-    for (let index = 1; index < currentPage; index++) {
-      results.push(index);
-    }
-  } else {
-    results.push(1, '...', currentPage - 1);
-  }
-  return results;
-};
-
-const getRightPageNumbers = (currentPage, elementCount) => {
-  const result = [];
-
-  if (currentPage === elementCount) { return result; }
-  result.push(currentPage + 1);
-  if (currentPage + 1 === elementCount) { return result; }
-  if (currentPage + 1 === 2) {
-    result.push(currentPage + 2);
-    if (currentPage + 3 !== elementCount) {
-      result.push('...');
-    }
-  } else if (currentPage + 1 !== elementCount && currentPage + 2 !== elementCount) {
-    result.push('...');
-  }
-  result.push(elementCount);
-  return result;
-};
-
+/**
+ * Previous and next controls around the page numbers: the first and last pages, the pages next
+ * to the current one, and a gap in place of the others. Renders nothing without pages.
+ */
 const Pagination = ({
-  elementCount, currentPage, onCurrentPageChange
+  elementCount = 0, currentPage = FIRST_PAGE, onCurrentPageChange
 }) => {
-  if (!elementCount || elementCount <= 0) return null;
+  const shownPage = isPageNumber(currentPage) ? currentPage : FIRST_PAGE;
+  const pageItems = getPageItems({ currentPage: shownPage, pageCount: elementCount });
+  if (pageItems.length === 0) return null;
 
-  const goToPreviousPage = () => onCurrentPageChange(currentPage - 1);
-  const goToNextPage = () => onCurrentPageChange(currentPage + 1);
-
-  const leftPageNumbers = getLeftPageNumbers(currentPage);
-  const rigthPageNumbers = getRightPageNumbers(currentPage, elementCount);
+  const showPage = (page) => {
+    if (typeof onCurrentPageChange === 'function') onCurrentPageChange(page);
+  };
+  const goToPreviousPage = () => showPage(shownPage - 1);
+  const goToNextPage = () => showPage(shownPage + 1);
 
   return (
     <div className="navigation">
@@ -62,25 +45,23 @@ const Pagination = ({
         <p>PREVIOUS</p>
       </div>
       <div className="numero-de-page">
-        {leftPageNumbers.map(pageNumber => (
-          <button
-            type="button"
-            key={pageNumber}
-            onClick={() => onCurrentPageChange(pageNumber)}
-          >
-            {pageNumber}
-          </button>
-        ))}
-        <button type="button" className="current-page">{currentPage}</button>
-        {rigthPageNumbers.map(pageNumber => (
-          <button
-            type="button"
-            key={pageNumber}
-            onClick={() => onCurrentPageChange(pageNumber)}
-          >
-            {pageNumber}
-          </button>
-        ))}
+        {pageItems.map((pageItem, index) => {
+          if (pageItem === PAGE_GAP) {
+            // Two gaps can show, so the position tells them apart.
+            // eslint-disable-next-line react/no-array-index-key
+            return <span key={`gap-${index}`} className="gap">{PAGE_GAP}</span>;
+          }
+          if (pageItem === shownPage) {
+            return (
+              <button key={pageItem} type="button" className="current-page">{pageItem}</button>
+            );
+          }
+          return (
+            <button key={pageItem} type="button" onClick={() => showPage(pageItem)}>
+              {pageItem}
+            </button>
+          );
+        })}
       </div>
       <div
         className="page-suivante"
@@ -97,9 +78,12 @@ const Pagination = ({
 };
 
 Pagination.propTypes = {
-  currentPage: PropTypes.number.isRequired,
-  elementCount: PropTypes.number.isRequired,
-  onCurrentPageChange: PropTypes.func.isRequired
+  /** Page shown, highlighted among the page numbers. @default 1 */
+  currentPage: PropTypes.number,
+  /** Number of pages. Nothing renders when it is not a positive integer. @default 0 */
+  elementCount: PropTypes.number,
+  /** Called with the page number that the visitor picks. */
+  onCurrentPageChange: PropTypes.func
 };
 
 export default Pagination;

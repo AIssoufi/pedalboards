@@ -1,5 +1,5 @@
 // Dependencies
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -16,64 +16,64 @@ import {
   fetchPluginsAction, findPluginsAction
 } from 'redux/actions/plugin.action';
 
+// Utils
+import {
+  buildPluginsSearch, createPluginFilters, isValidPage, parsePluginsSearch
+} from 'utils/plugin-filter';
+
 // Style
 import './style.scss';
 
+// Number of plugins on each page
+const PAGE_SIZE = 10;
+
+/**
+ * Page listing the plugins, with a search, numbered pages and the grid of plugin cards. Its URL
+ * holds the filter and the page (`?brand=MDA&page=2`): a search, a page change or a filter link
+ * of a card changes the URL, and the page fetches the plugins of each new URL.
+ */
 const PluginsPage = ({
-  location, fetchPlugins, findPlugins, plugins,
-  elementCount, countPlugins, isFetching
+  location = {}, history = {}, fetchPlugins, findPlugins, plugins = [], countPlugins = 0,
+  isFetching = false
 }) => {
-  const displayNumber = 10;
-  const [currentPage, setCurrentPage] = useState(1);
+  const { pathname, search = '' } = location;
+  const { filters, page: currentPage } = parsePluginsSearch(search);
 
+  // filters and currentPage are derived from search, so search alone tells when they change
   useEffect(() => {
-    const { search } = location;
+    const hasFilters = [...filters.keys()].length > 0;
+    const canFindPlugins = hasFilters && typeof findPlugins === 'function';
+    const canFetchPlugins = !hasFilters && typeof fetchPlugins === 'function';
 
-    if (search) {
-      const searchParams = new URLSearchParams(search);
-      findPlugins(
-        searchParams,
-        currentPage,
-        displayNumber
-      );
-    } else {
-      fetchPlugins(currentPage, displayNumber);
-    }
-  }, []);
+    if (canFindPlugins) findPlugins(filters, currentPage, PAGE_SIZE);
+    if (canFetchPlugins) fetchPlugins(currentPage, PAGE_SIZE);
+  }, [search]);
+
+  const showSearch = (nextSearch) => {
+    // The search field calls a handler of an earlier render after its debounce delay, so the
+    // URL shown now comes from the history, which the router keeps up to date
+    const { location: shownLocation = location } = history;
+    const { search: shownSearch = '' } = shownLocation || {};
+    const isNewSearch = nextSearch !== shownSearch;
+    const canNavigate = isNewSearch && typeof history.push === 'function';
+
+    if (canNavigate) history.push({ pathname, search: nextSearch });
+  };
 
   const handleSearchSubmit = (formData) => {
-    const label = formData.get('label');
-    const value = formData.get('value');
-    const searchParams = new URLSearchParams();
+    const searchFilters = createPluginFilters({
+      field: formData.get('label'),
+      value: formData.get('value')
+    });
 
-    searchParams.append(label, value);
-
-    findPlugins(
-      searchParams,
-      currentPage,
-      displayNumber
-    );
+    showSearch(buildPluginsSearch({ filters: searchFilters }));
   };
 
   const setCurrentPageHandler = (pageNumber) => {
-    const pageNumberIsNotValide = Number.isNaN(pageNumber)
-      || (pageNumber >= elementCount)
-      || (pageNumber <= 0);
+    if (!isValidPage({ page: pageNumber, pageCount: countPlugins })) return;
 
-    if (pageNumberIsNotValide) return;
-
-    fetchPlugins(
-      pageNumber,
-      displayNumber
-    ).then((response) => {
-      const {
-        currentPage: newPage
-      } = response;
-
-      setCurrentPage(newPage);
-    });
+    showSearch(buildPluginsSearch({ filters, page: pageNumber }));
   };
-
 
   return (
     <div className="plugins-page-container">
@@ -109,19 +109,36 @@ const mapDispatchToProps = {
 const mapStateToProps = pluginSelector;
 
 PluginsPage.propTypes = {
+  /** Location of the page, from the router: its query string holds the filter and the page. */
   location: PropTypes.shape({
+    pathname: PropTypes.string,
     search: PropTypes.string
-  }).isRequired,
-  fetchPlugins: PropTypes.func.isRequired,
-  findPlugins: PropTypes.func.isRequired,
+  }),
+  /**
+   * History of the router, where a search or a page change pushes the new URL. Its location
+   * gives the URL shown now, compared with the new one so that a URL is never pushed twice.
+   */
+  history: PropTypes.shape({
+    location: PropTypes.shape({
+      search: PropTypes.string
+    }),
+    push: PropTypes.func
+  }),
+  /** Fetches a page of all the plugins, from the store. Nothing is fetched without it. */
+  fetchPlugins: PropTypes.func,
+  /** Fetches a page of the plugins matching filters, from the store, as fetchPlugins. */
+  findPlugins: PropTypes.func,
+  /** Plugins of the page shown. @default [] */
   plugins: PropTypes.arrayOf(PropTypes.shape({
     label: PropTypes.string,
     name: PropTypes.string,
     brand: PropTypes.string
-  })).isRequired,
-  elementCount: PropTypes.number.isRequired,
-  countPlugins: PropTypes.number.isRequired,
-  isFetching: PropTypes.bool.isRequired
+  })),
+  /** Number of pages of the results. @default 0 */
+  countPlugins: PropTypes.number,
+  /** Whether the plugins are being fetched. @default false */
+  isFetching: PropTypes.bool
 };
 
+export { PluginsPage };
 export default connect(mapStateToProps, mapDispatchToProps)(PluginsPage);
