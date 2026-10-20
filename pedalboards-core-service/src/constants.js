@@ -43,7 +43,10 @@ export const CORS_HEADERS = {
 	'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
 };
 
-/** Messages of the API responses, in the language of the apps that show them */
+/**
+ * Messages of the API responses. Those of the former Express service keep their wording, which
+ * clients may read, and the new ones are in English.
+ */
 export const MESSAGES = {
 	pluginsCount: 'plugins count',
 	pluginsFound: 'plugins recherchés avec succès',
@@ -52,8 +55,8 @@ export const MESSAGES = {
 	pluginCreated: 'Ajout réussi',
 	pluginUpdated: 'Modification réussie',
 	pluginDeleted: 'Suppression réussie',
-	invalidInput: 'paramètres invalides',
+	invalidInput: 'invalid parameters',
 	databaseError: 'erreur de connexion à la base de données',
-	routeNotFound: 'route inconnue',
-	internalError: 'erreur interne du serveur'
+	routeNotFound: 'unknown route',
+	internalError: 'internal server error'
 };
