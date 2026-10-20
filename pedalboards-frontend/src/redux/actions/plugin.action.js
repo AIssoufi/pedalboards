@@ -1,10 +1,10 @@
 // Constants
-import { PluginConstants } from 'redux/constants';
+import { PluginConstants } from '../constants';
 
 // Services
 import {
   PedalboardService
-} from 'services';
+} from '../../services';
 
 const {
   REQUEST_PLUGIN, RECEIVE_PLUGIN, CANCEL_PLUGIN_REQUEST

@@ -1,4 +1,4 @@
-import pluginSelector from 'redux/selectors/plugin.selector';
+import pluginSelector from './plugin.selector';
 
 export {
   pluginSelector

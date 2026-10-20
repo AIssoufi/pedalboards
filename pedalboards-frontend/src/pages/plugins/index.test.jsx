@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import { MemoryRouter, Route } from 'react-router-dom';
 
 // Redux - store
-import store from 'redux/store';
+import store from '../../redux/store';
 
 // Components
 import Plugins, { PluginsPage } from './index';
@@ -16,7 +16,7 @@ import Plugins, { PluginsPage } from './index';
 it('renders without crashing', () => {
   // The store fetches the plugins: an answer keeps its promise from failing in a later test
   const emptyAnswer = { data: [], count: 0, numberPages: 0 };
-  jest.spyOn(window, 'fetch')
+  vi.spyOn(window, 'fetch')
     .mockImplementation(() => Promise.resolve({ json: () => emptyAnswer }));
   const div = document.createElement('div');
   try {
@@ -103,8 +103,8 @@ describe('PluginsPage', () => {
   };
 
   beforeEach(() => {
-    fetchPlugins = jest.fn(() => Promise.resolve({}));
-    findPlugins = jest.fn(() => Promise.resolve({}));
+    fetchPlugins = vi.fn(() => Promise.resolve({}));
+    findPlugins = vi.fn(() => Promise.resolve({}));
     div = document.createElement('div');
     document.body.appendChild(div);
   });
@@ -201,18 +201,13 @@ describe('PluginsPage', () => {
   });
 
   describe('with the debounce delay of the search field', () => {
-    let now;
-
     beforeEach(() => {
-      // The debounce reads Date.now, which the fake timers of Jest 23 leave real
-      jest.useFakeTimers();
-      now = Date.now();
-      jest.spyOn(Date, 'now').mockImplementation(() => now);
+      // Fakes Date.now too, which the debounce reads
+      vi.useFakeTimers();
     });
 
     afterEach(() => {
-      Date.now.mockRestore();
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
 
     it('adds one history entry when the search is typed, then submitted', () => {
@@ -228,9 +223,8 @@ describe('PluginsPage', () => {
         form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
       });
       // The search field submits the typed value again once its debounce delay is over
-      now += SEARCH_DEBOUNCE_WAIT_MS;
       act(() => {
-        jest.advanceTimersByTime(SEARCH_DEBOUNCE_WAIT_MS);
+        vi.advanceTimersByTime(SEARCH_DEBOUNCE_WAIT_MS);
       });
 
       expect(location.search).toBe('?brand=Gx');

@@ -1,4 +1,4 @@
-import { PluginConstants } from 'redux/constants';
+import { PluginConstants } from '../constants';
 
 const initialPluginState = {
   data: [],

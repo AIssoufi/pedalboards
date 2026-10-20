@@ -1,8 +1,8 @@
 // Helpers
-import { RequestHelper } from 'helpers';
+import { RequestHelper } from '../helpers';
 
 // Utils
-import { Env } from 'utils';
+import { Env } from '../utils';
 
 class PedalboardsService {
   constructor() {

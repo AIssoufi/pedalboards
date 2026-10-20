@@ -86,19 +86,10 @@ it('encodes the values of the filter links', () => {
   ReactDOM.unmountComponentAtNode(div);
 });
 
-// popper.js positions the tooltips with document.createRange, which jsdom 11 lacks
-const createRangeStub = () => ({
-  setStart: () => {},
-  setEnd: () => {},
-  commonAncestorContainer: document.body
-});
-
 describe('tooltips', () => {
-  const originalCreateRange = document.createRange;
   let div;
 
   beforeEach(() => {
-    document.createRange = createRangeStub;
     div = document.createElement('div');
     document.body.appendChild(div);
   });
@@ -106,7 +97,6 @@ describe('tooltips', () => {
   afterEach(() => {
     ReactDOM.unmountComponentAtNode(div);
     document.body.removeChild(div);
-    document.createRange = originalCreateRange;
   });
 
   it('displays fields holding markup as literal text', () => {

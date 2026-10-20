@@ -1,9 +1,9 @@
 // Constants
-import { FIRST_PAGE } from 'utils/page/constants';
+import { FIRST_PAGE } from '../../utils/page/constants';
 import { MIN_PAGES_IN_GAP, PAGE_GAP } from './constants';
 
 // Utils
-import { isPageNumber } from 'utils/page';
+import { isPageNumber } from '../../utils/page';
 
 /**
  * Lists the pages from `first` to `last`, with a gap in place of the pages between them when it

@@ -4,8 +4,8 @@ packages:
   - pedalboards-frontend
 
 # The command shims of pnpm set NODE_PATH when it is empty, so Create React App would ignore the
-# NODE_PATH=src/ of the apps' .env files (dotenv never overrides a variable), and their absolute
-# imports (import { withLoader } from 'hoc') would fail
+# NODE_PATH=src/ of the CMS's .env file (dotenv never overrides a variable), and its absolute
+# imports (import { PedalboardService } from 'services') would fail
 extendNodePath: false
 
 # No dependency needs its install script to work, so none runs:
@@ -20,3 +20,14 @@ allowBuilds:
   esbuild: false
   fsevents: false
   workerd: false
+
+# These packages import react or react-dom without declaring them, so pnpm gave them the hoisted
+# copy of another app, and the frontend bundle held two versions of React
+packageExtensions:
+  react-redux@7:
+    peerDependencies:
+      react-dom: ^16.8.3
+  react-tippy@1:
+    peerDependencies:
+      react: ^15.0.0 || ^16.0.0
+      react-dom: ^15.0.0 || ^16.0.0

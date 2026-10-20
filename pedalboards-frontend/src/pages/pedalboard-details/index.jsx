@@ -5,12 +5,12 @@ import PropTypes from 'prop-types';
 // Components
 import {
   PedalboardDetails
-} from 'components';
+} from '../../components';
 
 // Services
 import {
   PedalboardService
-} from 'services';
+} from '../../services';
 
 // Style
 import './style.scss';

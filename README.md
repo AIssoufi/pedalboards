@@ -60,7 +60,7 @@ This script starts the API, the frontend and the CMS.
 |--------------------------	|------------------------------------------------------------------------------	|-------------	|
 | pedalboards-cms          	| Le CMS permettant de gérer  les pedaliers (création,  suppressiosn, édition) 	| ReactJS, Sass    |
 | pedalboards-core-service 	| The REST API                                                                 	| Express, Cloudflare Workers, D1	|
-| pedalboards-frontend     	| L'application web des  pédaliers                                             	| React, Sass, Redux, Recompose	|
+| pedalboards-frontend     	| The web app of the pedalboards ([README](pedalboards-frontend/README.md))	| React, Sass, Redux, Recompose, Vite, Vitest	|
 | tools/commit-messages    	| The commitlint rule and the hook script that check the [commit messages](#commit-messages), with their tests	| Node.js, commitlint	|
 | .husky                   	| The git hooks that `pnpm install` turns on                                   	| husky	|
 
@@ -88,25 +88,29 @@ The history of the project's tools and architecture, with its decision records, 
   `concurrently` did.
 - `pnpm-workspace.yaml` runs no install script of the dependencies (`allowBuilds`), since none is
   needed, and stops pnpm from setting `NODE_PATH` (`extendNodePath: false`), which would hide the
-  `NODE_PATH=src/` of the frontend and CMS `.env` files from Create React App.
+  `NODE_PATH=src/` of the CMS `.env` file from Create React App.
+- Its `packageExtensions` declare the React peer dependencies that `react-redux` 7 and
+  `react-tippy` 1 leave out: without them, pnpm gave these packages the React of the CMS, and the
+  frontend bundle held two copies of React.
 
 ## Node.js 24
 
 - The three apps install, test and build on Node.js 24, the current LTS: [`.nvmrc`](.nvmrc) pins it,
   and the `engines` field of every `package.json` requires it.
-- The development servers of the frontend and the CMS do not start on Node.js 24 yet:
-  `webpack-dev-server` 3 of Create React App 2 loads `http-deceiver`, which calls
-  `process.binding('http_parser')`, removed from Node.js. They work again when each app leaves
-  Create React App ([#33](https://github.com/AIssoufi/pedalboards/issues/33) for the frontend,
-  [#45](https://github.com/AIssoufi/pedalboards/issues/45) for the CMS).
-- The frontend and the CMS compile their styles with Dart Sass, installed under the `node-sass` name
+- The frontend runs on Vite and Vitest
+  ([decision record](docs/decisions/0006-vite-and-vitest.md)), so its development server starts
+  on Node.js 24.
+- The development server of the CMS does not start on Node.js 24 yet: `webpack-dev-server` 3 of
+  Create React App 2 loads `http-deceiver`, which calls `process.binding('http_parser')`, removed
+  from Node.js. It works again when the CMS leaves Create React App
+  ([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
+- The CMS compiles its styles with Dart Sass, installed under the `node-sass` name
   (`"node-sass": "npm:sass@…"`): `sass-loader` 7 of Create React App 2 only loads a module called
-  `node-sass`, and `node-sass` itself has no build for Node.js 24. The alias goes away when an app
-  leaves Create React App ([#33](https://github.com/AIssoufi/pedalboards/issues/33) for the
-  frontend).
-- Their `start` and `build` scripts set `NODE_OPTIONS=--openssl-legacy-provider`: webpack 4 hashes
-  modules with MD4, which OpenSSL 3 disables. The flag also goes away when an app leaves Create
-  React App.
+  `node-sass`, and `node-sass` itself has no build for Node.js 24. The frontend installs `sass`
+  under its own name, which Vite loads.
+- The `start` and `build` scripts of the CMS set `NODE_OPTIONS=--openssl-legacy-provider`:
+  webpack 4 hashes modules with MD4, which OpenSSL 3 disables. The alias and the flag go away when
+  the CMS leaves Create React App.
 
 ## Commit messages
 
@@ -154,8 +158,8 @@ request to `master` and every push to `master`, with one job per app, which cach
 - The core service runs its tests with Vitest in the Workers runtime, against a local D1 that the
   migrations fill. `pnpm run build` bundles the Worker into `dist` without publishing it, and
   `pnpm run check:bundle` fails when that bundle holds a write route or a multipart parser.
-- `CI=true` runs Jest once instead of in watch mode, and turns the lint warnings of the build into
-  errors.
+- `CI=true` runs the Jest of the CMS once instead of in watch mode, and turns the lint warnings of
+  its build into errors. The frontend runs Vitest once (`vitest run`) and ignores it.
 - To reproduce a failing job, run its steps in the app's folder.
 
 The [commit messages workflow](.github/workflows/commit-messages.yml) runs for every pull request
@@ -184,8 +188,8 @@ origin ([decision record](docs/decisions/0005-cloudflare-pages-and-d1-worker.md)
 - `pnpm run deploy` applies the D1 migrations that the remote database lacks, then deploys the
   Worker.
 - The production frontend calls `/api` on its own origin: `.env.production` leaves
-  `REACT_APP_CORE_SERVICE` empty. Pages preview deployments set it to
+  `VITE_CORE_SERVICE` empty. Pages preview deployments set it to
   `https://pedalboards.issoufi.fr` in the Pages settings.
-- `.env.production` leaves `REACT_APP_BACKEND` empty too, so the header hides its "Admin Panel"
+- `.env.production` leaves `VITE_BACKEND` empty too, so the header hides its "Admin Panel"
   link. The CMS and the write routes of the API stay in the repository: their local environment
   is [#53](https://github.com/AIssoufi/pedalboards/issues/53).

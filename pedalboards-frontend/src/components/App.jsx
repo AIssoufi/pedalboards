@@ -8,11 +8,11 @@ import {
 import {
   Plugins,
   PedalboardDetails
-} from 'pages';
+} from '../pages';
 
 import {
   Header
-} from 'components';
+} from '.';
 
 // Style
 import './App.css';

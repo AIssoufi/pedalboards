@@ -4,7 +4,7 @@ import { ADMIN_PANEL_PATH } from './constants';
 /**
  * Gives the link of the admin panel, which the CMS serves.
  *
- * @param {string} [cmsUrl] - Address of the CMS (`REACT_APP_BACKEND`), empty where the CMS is not
+ * @param {string} [cmsUrl] - Address of the CMS (`VITE_BACKEND`), empty where the CMS is not
  *   deployed.
  * @returns {string|null} The link, or null without a CMS address, so that the header hides it.
  * @example

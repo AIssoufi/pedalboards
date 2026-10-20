@@ -19,7 +19,7 @@ jobs:
   react-app:
     name: ${{ matrix.name }}
     runs-on: ubuntu-latest
-    # Jest 23 can hang instead of failing when a test crashes its worker
+    # The Jest 23 of the CMS can hang instead of failing when a test crashes its worker
     timeout-minutes: 15
     strategy:
       fail-fast: false
@@ -44,7 +44,8 @@ jobs:
       # Installs the whole workspace from its single lockfile, even from the folder of one app
       - name: Install
         run: pnpm install --frozen-lockfile
-      # CI=true runs Jest once instead of in watch mode, and makes the build fail on lint warnings
+      # CI=true runs the Jest of the CMS once instead of in watch mode, and makes its build fail on
+      # lint warnings. The frontend runs Vitest once and ignores it
       - name: Test
         run: CI=true pnpm test
       - name: Build

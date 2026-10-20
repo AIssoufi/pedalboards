@@ -1,9 +1,9 @@
 // Constants
-import { FIRST_PAGE } from 'utils/page/constants';
+import { FIRST_PAGE } from '../page/constants';
 import { PAGE_PARAM, PLUGIN_FILTER_FIELDS, PLUGINS_PATHNAME } from './constants';
 
 // Utils
-import { isPageNumber } from 'utils/page';
+import { isPageNumber } from '../page';
 
 /**
  * Tells whether a field is one the plugins page filters on.

@@ -24,7 +24,7 @@ describe('Pagination', () => {
   beforeEach(() => {
     div = document.createElement('div');
     document.body.appendChild(div);
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -50,7 +50,7 @@ describe('Pagination', () => {
   });
 
   it('calls back with the page number that is clicked', () => {
-    const onCurrentPageChange = jest.fn();
+    const onCurrentPageChange = vi.fn();
     ReactDOM.render(
       <Pagination currentPage={6} elementCount={54} onCurrentPageChange={onCurrentPageChange} />,
       div
