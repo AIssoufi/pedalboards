@@ -1,7 +1,8 @@
 # 0005. Deploy the frontend on Cloudflare Pages and a read-only API Worker on D1
 
 - Date: 2026-10-20
-- Status: Accepted
+- Status: Accepted, amended by [0006](0006-vite-and-vitest.md) for the API address of the
+  frontend build
 
 ## Context
 

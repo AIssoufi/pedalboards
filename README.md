@@ -192,9 +192,10 @@ origin ([decision record](docs/decisions/0005-cloudflare-pages-and-d1-worker.md)
   Pages for the frontend, Workers Builds for the API. Nothing in GitHub holds a Cloudflare token.
 - `pnpm run deploy` applies the D1 migrations that the remote database lacks, then deploys the
   Worker.
-- The production frontend calls `/api` on its own origin: `.env.production` leaves
-  `VITE_CORE_SERVICE` empty. Pages preview deployments set it to
-  `https://pedalboards.issoufi.fr` in the Pages settings.
+- `.env.production` sets `VITE_CORE_SERVICE` to `https://pedalboards.issoufi.fr` for every
+  build. The production frontend calls `/api` on its own origin, and the Pages preview
+  deployments, on `*.pages.dev`, call it across origins, which the CORS headers of the Worker
+  allow. The Preview variables of the Pages settings did not reach the build.
 - `.env.production` leaves `VITE_BACKEND` empty too, so the header hides its "Admin Panel"
   link. The CMS and the write routes of the API stay in the repository: their local environment
   is [#53](https://github.com/AIssoufi/pedalboards/issues/53).

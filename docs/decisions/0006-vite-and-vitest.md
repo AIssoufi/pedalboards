@@ -45,8 +45,17 @@
   which removes `ReactDOM.render` and rewrites these tests anyway.
 - The environment variables take the `VITE_` prefix that Vite exposes: `REACT_APP_CORE_SERVICE`
   and `REACT_APP_BACKEND` become `VITE_CORE_SERVICE` and `VITE_BACKEND`, read through
-  `import.meta.env`, with the same values in `.env.development`, `.env.production` and
-  `.env.test`. The variable of the Pages preview deployments takes the new name too.
+  `import.meta.env`, with the same values in `.env.development` and `.env.test`.
+- `.env.production` sets `VITE_CORE_SERVICE` to `https://pedalboards.issoufi.fr`, where it was
+  empty ([0005](0005-cloudflare-pages-and-d1-worker.md)):
+  - the production site still calls the API on its own origin;
+  - the Pages preview deployments, on `*.pages.dev`, call it across origins, which the CORS
+    headers of the Worker allow, so they show the plugins;
+  - the Preview variable of the Pages settings did not reach the build: the preview of this
+    change, built after the variable was set, held an empty address, and so did the preview of
+    [#27](https://github.com/AIssoufi/pedalboards/issues/27) with `REACT_APP_CORE_SERVICE`.
+    A likely cause is the root `wrangler.jsonc`, which makes the file the source of truth of the
+    Pages project and turns its settings read-only in the dashboard.
 - The imports of `src/` become relative (`import { Env } from '../../utils'`), and the `.env`
   file that set `NODE_PATH` is deleted.
 - React and React DOM move from 16.8.6 to 16.14.0, the last 16.x release: the Fast Refresh of
@@ -89,6 +98,10 @@
   browser needs.
 - **The default pool of Vitest**: it creates jsdom for each test file, and the run took about 6 s
   instead of 1.5 s.
+- **An empty API address in production, set for previews only**: the Preview variable of the
+  Pages settings did not reach the build. `vars` in `wrangler.jsonc` would be the other place,
+  but the Cloudflare documentation describes them for Pages Functions, not for the build
+  command.
 
 ## Consequences
 
@@ -96,7 +109,7 @@
 | --- | --- | --- |
 | Development server on Node.js 24 | fails (`No such module: http_parser`) | starts, checked in the CI |
 | Frontend build, median of 3 | 3.36 s | 0.48 s |
-| JavaScript that the page loads, raw / gzipped | 370,400 B / 114,750 B (3 files) | 358,485 B / 112,988 B (1 file) |
+| JavaScript that the page loads, raw / gzipped | 370,400 B / 114,750 B (3 files) | 358,515 B / 113,003 B (1 file) |
 | Service worker files in the build | 1,634 B (2 files) | none |
 | CSS, raw / gzipped | 23,380 B / 3,743 B (2 files) | 20,431 B / 3,244 B (1 file) |
 | Tests, all passing | 182 (Jest 23) | 191 (Vitest 5): the same 182, and 9 for `Env.get` |
@@ -128,3 +141,5 @@
   `recompose`. They are left to the upgrade to React 19 (#34).
 - `extendNodePath: false` stays for the `NODE_PATH` of the CMS until it leaves Create React App
   (#45).
+- The production bundle holds the domain of the site: moving to another domain changes
+  `.env.production` too. Every Pages preview calls the production API.

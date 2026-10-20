@@ -22,7 +22,8 @@ Run them in this folder, or from the root with `pnpm --filter pedalboards-fronte
 
 Vite reads them from the `.env.<mode>` file of this folder: `.env.development` for `pnpm dev`,
 `.env.production` for `pnpm build` and `.env.test` for `pnpm test`. A variable set in the shell
-or in the Pages settings takes precedence over the file.
+takes precedence over the file. The Pages build did not get the Preview variables of the Pages
+settings, so `.env.production` holds the values of every Pages deployment.
 
 | Variable            | What it holds                        | Development             |
 |---------------------|--------------------------------------|-------------------------|

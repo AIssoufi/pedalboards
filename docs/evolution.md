@@ -151,7 +151,8 @@ Decision: [0005. Deploy the frontend on Cloudflare Pages and a read-only API Wor
 The frontend leaves Create React App 2: Vite serves and builds it, and Vitest runs its tests in
 jsdom. Its development server starts again on Node.js 24, and the CI checks that it serves the
 app. The build no longer needs the OpenSSL flag, the `node-sass` alias or a `NODE_PATH`, and its
-environment variables take the `VITE_` prefix. React moves from 16.8.6 to 16.14.0, which the Fast
+environment variables take the `VITE_` prefix. `.env.production` now names the address of the
+API, so the Pages previews show the plugins. React moves from 16.8.6 to 16.14.0, which the Fast
 Refresh of Vite needs, and `packageExtensions` in the pnpm workspace give `react-redux` and
 `react-tippy` the React of the frontend, so that the bundle holds a single copy of React. The CMS
 still runs on Create React App ([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
@@ -160,7 +161,7 @@ still runs on Create React App ([#45](https://github.com/AIssoufi/pedalboards/is
 | --- | --- | --- |
 | Frontend development server on Node.js 24 | fails | starts, checked in the CI |
 | Frontend build, median of 3 | 3.36 s | 0.48 s |
-| Frontend JS that the page loads, raw / gzipped | 370,400 B / 114,750 B | 358,485 B / 112,988 B |
+| Frontend JS that the page loads, raw / gzipped | 370,400 B / 114,750 B | 358,515 B / 113,003 B |
 | Frontend CSS, raw / gzipped | 23,380 B / 3,743 B | 20,431 B / 3,244 B |
 | Frontend tests, all passing | 182 (Jest 23) | 191 (Vitest 5) |
 | Frontend test run, median of 3 | 1.31 s | 0.96 s |
