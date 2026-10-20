@@ -14,7 +14,13 @@ const Plugin = ({
   <div className="plugin">
     <Link to={`/plugin/${_id}`}>
       <Tooltip
-        title={`<i>Click to discover<br>more details about ${name}.</i>`}
+        html={(
+          <i>
+            Click to discover
+            <br />
+            {`more details about ${name}.`}
+          </i>
+        )}
         position="bottom"
       >
         <img
@@ -27,7 +33,19 @@ const Plugin = ({
       {categories.map(category => (
         <Tooltip
           key={category}
-          title={`<b>Categorie</b><br><i>Click to filter plugin<br>by <b>${category}</b> categories.</i>`}
+          html={(
+            <>
+              <b>Categorie</b>
+              <br />
+              <i>
+                Click to filter plugin
+                <br />
+                {'by '}
+                <b>{category}</b>
+                {' categories.'}
+              </i>
+            </>
+          )}
           position="top"
         >
           <Link
@@ -45,14 +63,17 @@ const Plugin = ({
     <hr />
     <div className="info-container">
       <Tooltip
-        title={`
-          <b>Label</b>
-          <br>
-          <i>
-            Click to filter plugin<br>
-            by ${label} labels.
-          </i>
-        `}
+        html={(
+          <>
+            <b>Label</b>
+            <br />
+            <i>
+              Click to filter plugin
+              <br />
+              {`by ${label} labels.`}
+            </i>
+          </>
+        )}
         position="top"
       >
         <Link
@@ -66,14 +87,17 @@ const Plugin = ({
         </Link>
       </Tooltip>
       <Tooltip
-        title={`
-          <b>Brand</b>
-          <br>
-          <i>
-            Click to filter plugin<br>
-            by ${brand} brands.
-          </i>
-        `}
+        html={(
+          <>
+            <b>Brand</b>
+            <br />
+            <i>
+              Click to filter plugin
+              <br />
+              {`by ${brand} brands.`}
+            </i>
+          </>
+        )}
         position="bottom"
       >
         <Link

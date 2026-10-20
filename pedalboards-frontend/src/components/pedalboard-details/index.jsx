@@ -52,12 +52,7 @@ const PedalboardDetails = ({
         </Link>
       ))}
     </div>
-    <p
-      className="pedalboard-description"
-      dangerouslySetInnerHTML={{
-        __html: description
-      }}
-    />
+    <p className="pedalboard-description">{description}</p>
     <div className="plugin-control-ports">
       <table>
         <thead>
