@@ -9,6 +9,9 @@
   "version": "0.1.0",
   "homepage": "https://pedalboards-cms.herokuapp.com",
   "private": true,
+  "engines": {
+    "node": ">=24"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.8",
     "@fortawesome/free-solid-svg-icons": "^5.5.0",

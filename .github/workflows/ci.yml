@@ -15,10 +15,6 @@ concurrency:
   group: ci-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
   cancel-in-progress: true
 
-env:
-  # Current Node.js LTS, pinned so that a new LTS is adopted on purpose
-  NODE_VERSION: 24
-
 jobs:
   react-app:
     name: ${{ matrix.name }}
@@ -40,9 +36,10 @@ jobs:
       - uses: actions/checkout@v7
       # Installs the pnpm version of the packageManager field of package.json
       - uses: pnpm/action-setup@v6
+      # Current Node.js LTS, pinned by .nvmrc so that a new LTS is adopted on purpose
       - uses: actions/setup-node@v7
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: .nvmrc
           cache: pnpm
       # Installs the whole workspace from its single lockfile, even from the folder of one app
       - name: Install
@@ -64,9 +61,10 @@ jobs:
       - uses: actions/checkout@v7
       # Installs the pnpm version of the packageManager field of package.json
       - uses: pnpm/action-setup@v6
+      # Current Node.js LTS, pinned by .nvmrc so that a new LTS is adopted on purpose
       - uses: actions/setup-node@v7
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: .nvmrc
           cache: pnpm
       # Installs the whole workspace from its single lockfile, even from the folder of one app
       - name: Install

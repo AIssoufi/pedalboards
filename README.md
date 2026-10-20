@@ -21,6 +21,7 @@ Conception et réalisation d'un magasin de plugin audio (pédale d’effet virtu
 
 ## Prerequisites
 
+- Node.js 24, the version of [`.nvmrc`](.nvmrc): `nvm use` selects it.
 - pnpm 10 or later: it switches by itself to the version of the `packageManager` field of
   `package.json`.
 
@@ -124,7 +125,13 @@ cp .env.example .env
 
 ## Node.js 24
 
-- The three apps install, test and build on Node.js 24, the current LTS.
+- The three apps install, test and build on Node.js 24, the current LTS: [`.nvmrc`](.nvmrc) pins it,
+  and the `engines` field of every `package.json` requires it.
+- The development servers of the frontend and the CMS do not start on Node.js 24 yet:
+  `webpack-dev-server` 3 of Create React App 2 loads `http-deceiver`, which calls
+  `process.binding('http_parser')`, removed from Node.js. They work again when each app leaves
+  Create React App ([#33](https://github.com/AIssoufi/pedalboards/issues/33) for the frontend,
+  [#45](https://github.com/AIssoufi/pedalboards/issues/45) for the CMS).
 - The frontend and the CMS compile their styles with Dart Sass, installed under the `node-sass` name
   (`"node-sass": "npm:sass@…"`): `sass-loader` 7 of Create React App 2 only loads a module called
   `node-sass`, and `node-sass` itself has no build for Node.js 24. The alias goes away when an app
@@ -136,8 +143,8 @@ cp .env.example .env
 
 ## Continuous integration
 
-The [CI workflow](.github/workflows/ci.yml) runs on Node.js 24 for every pull request to `master` and
-every push to `master`, with one job per app, which caches the pnpm store:
+The [CI workflow](.github/workflows/ci.yml) runs on the Node.js version of `.nvmrc` for every pull
+request to `master` and every push to `master`, with one job per app, which caches the pnpm store:
 
 | Job          | Steps                                                                           |
 |--------------|---------------------------------------------------------------------------------|

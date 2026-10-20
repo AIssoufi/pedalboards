@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Pedalboards-core-service est l'API RESTful de l'application web",
   "main": "index.js",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "mongo:start": "mongod",
     "mongo:import": "mongoimport --db mbds --collection pedalboards --drop --file ./services/plugins.json --jsonArray",
