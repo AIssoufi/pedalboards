@@ -126,8 +126,9 @@ parts are hosted as follows:
 - **the frontend**: a Cloudflare Pages project;
 - **the API**: a Worker on the `/api/*` paths of the same domain, running the read routes of the
   core service on Express 5, on a D1 database seeded from `plugins.json`;
-- **the CMS**: not deployed. Its write routes stay in the repository, and
-  [#53](https://github.com/AIssoufi/pedalboards/issues/53) gives them a local environment.
+- **the CMS**: not deployed. Its write routes run in a local API only, on a local D1 and an R2
+  bucket that wrangler simulates
+  ([#53](https://github.com/AIssoufi/pedalboards/issues/53)).
 
 The MongoDB service is gone. The core service now tests its routes with Vitest in the Workers
 runtime, against a local D1, and the CI checks that the deployed bundle holds no write route.

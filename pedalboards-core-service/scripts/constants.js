@@ -29,6 +29,7 @@ export const WORKER_BUNDLE_URL = new URL('../dist/index.js', import.meta.url);
 
 /** Code that only the write routes use: none of it may ship in the deployed Worker */
 export const WRITE_ONLY_MARKERS = [
+	'createLocalApp',
 	'createWriteRouter',
 	'createImageRouter',
 	'parseMultipartForm',

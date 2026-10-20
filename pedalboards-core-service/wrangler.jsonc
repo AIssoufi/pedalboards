@@ -18,5 +18,23 @@
 	],
 	"observability": { "enabled": true },
 	// The port that the frontend and the CMS call in development (their .env.development files)
-	"dev": { "port": 8080 }
+	"dev": { "port": 8080 },
+	"env": {
+		// Local API with the write routes of the CMS, for `wrangler dev --env local` only: no route,
+		// and a database id that matches no Cloudflare resource, so it never reaches production
+		"local": {
+			"main": "src/local.js",
+			"routes": [],
+			"d1_databases": [
+				{
+					"binding": "DB",
+					"database_name": "pedalboards-local",
+					"database_id": "pedalboards-local",
+					"migrations_dir": "migrations"
+				}
+			],
+			// Simulated by wrangler on disk, under .wrangler/state
+			"r2_buckets": [{ "binding": "IMAGES", "bucket_name": "pedalboards-images-local" }]
+		}
+	}
 }

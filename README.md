@@ -83,8 +83,10 @@ pnpm build
   the migrations to a local D1, kept in `pedalboards-core-service/.wrangler`, then serves the
   Worker with `wrangler dev` on port 8080, with no Cloudflare account.
 - It serves the read routes only: `GET /api/plugins`, `GET /api/plugins/count` and
-  `GET /api/plugin/:id`. Its [README](pedalboards-core-service/README.md) describes them, with
-  the write routes kept for the CMS.
+  `GET /api/plugin/:id`.
+- `pnpm start:core-service:local` serves a local API instead, with the write routes of the CMS
+  beside them, on a local D1 and an R2 bucket that wrangler simulates. The deployed Worker never
+  ships them. The [README](pedalboards-core-service/README.md) of the API describes both.
 - The migrations, in `pedalboards-core-service/migrations`, create the `plugins` table and fill it
   with the records of `data/plugins.json`. After a change to that file, run
   `pnpm db:seed:generate` in `pedalboards-core-service` to write the seed migration again.
@@ -102,6 +104,7 @@ pnpm build
 |-----------------------------|--------------------------------------------------------------------|
 | `pnpm start`                | Starts the API (port 8080), the frontend (3001) and the CMS (3002) |
 | `pnpm start:<app>`          | Starts one of them: `core-service`, `frontend` or `cms`            |
+| `pnpm start:core-service:local` | Starts the API with the write routes of the CMS, on port 8080 |
 | `pnpm test`                 | Runs the tests below, then those of the three apps, once           |
 | `pnpm test:commit-messages` | Runs the tests of the [commit message](#commit-messages) tools     |
 | `pnpm test:dev-server-check`| Runs the tests of the helpers of the dev server check              |
@@ -218,5 +221,5 @@ origin ([decision record](docs/decisions/0005-cloudflare-pages-and-d1-worker.md)
   deployments, on `*.pages.dev`, call it across origins, which the CORS headers of the Worker
   allow. The Preview variables of the Pages settings did not reach the build.
 - `.env.production` leaves `VITE_BACKEND` empty too, so the header hides its "Admin Panel"
-  link. The CMS and the write routes of the API stay in the repository: their local environment
-  is [#53](https://github.com/AIssoufi/pedalboards/issues/53).
+  link. The CMS and the write routes of the API stay in the repository, and run locally only
+  (`pnpm start:core-service:local`).
