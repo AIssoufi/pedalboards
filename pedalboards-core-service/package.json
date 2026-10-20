@@ -1,7 +1,16 @@
 {
   "name": "pedalboards-core-service",
   "version": "1.0.0",
-  "description": "Pedalboards-core-service est l'API RESTful de l'application web",
+  "description": "The REST API of the audio plugins, on Cloudflare Workers and D1",
+  "homepage": "https://github.com/AIssoufi/pedalboards/tree/master/pedalboards-core-service#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIssoufi/pedalboards.git",
+    "directory": "pedalboards-core-service"
+  },
+  "bugs": {
+    "url": "https://github.com/AIssoufi/pedalboards/issues"
+  },
   "private": true,
   "type": "module",
   "engines": {

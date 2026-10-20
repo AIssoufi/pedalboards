@@ -5,7 +5,16 @@
     "url": "https://aissoufi.github.io/"
   },
   "name": "pedalboards-frontend",
-  "description": "Pedalboards-frontend est la partie visibale par l'utilisateur final.",
+  "description": "The web app where visitors browse the audio plugins",
+  "homepage": "https://pedalboards.issoufi.fr",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIssoufi/pedalboards.git",
+    "directory": "pedalboards-frontend"
+  },
+  "bugs": {
+    "url": "https://github.com/AIssoufi/pedalboards/issues"
+  },
   "version": "0.1.0",
   "private": true,
   "engines": {

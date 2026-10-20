@@ -5,9 +5,16 @@
     "url": "https://aissoufi.github.io/"
   },
   "name": "pedalboards-cms",
-  "description": "Pedalbords-cms est la partie visible par les utilisateurs authentifiés. Cette partie permet d'administrer (création, suppression, etc.) des pédales.",
+  "description": "The admin app where signed-in users create, edit and delete the audio plugins",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIssoufi/pedalboards.git",
+    "directory": "pedalboards-cms"
+  },
+  "bugs": {
+    "url": "https://github.com/AIssoufi/pedalboards/issues"
+  },
   "version": "0.1.0",
-  "homepage": "https://pedalboards-cms.herokuapp.com",
   "private": true,
   "engines": {
     "node": ">=24"
