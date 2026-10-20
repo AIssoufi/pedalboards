@@ -1,8 +1,9 @@
 // Dependencies
 import { branch, compose, renderComponent } from 'recompose';
 
-// HOC
-import { Loader } from 'components';
+// Components: imported from its own module, since the `components` barrel imports
+// `plugin-grid`, which imports this HOC back
+import Loader from 'components/loader';
 
 export default BaseComponent => compose(
   branch(
