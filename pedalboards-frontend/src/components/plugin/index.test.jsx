@@ -92,3 +92,28 @@ describe('tooltips', () => {
     });
   });
 });
+
+it('encodes the values of the filter links', () => {
+  const div = document.createElement('div');
+  ReactDOM.render(
+    <MemoryRouter>
+      <Plugin
+        _id="ghjklmljhjkjhj"
+        author={{ name: 'Lorem' }}
+        brand="A&B"
+        categories={['C++']}
+        label="Gate Dynamics"
+        name="Lorem"
+        screenshotUrl="http://example.com/screenshot"
+      />
+    </MemoryRouter>, div
+  );
+
+  const hrefs = [...div.querySelectorAll('.category, .info')].map(link => link.getAttribute('href'));
+  expect(hrefs).toEqual([
+    '/plugins?categories=C%2B%2B',
+    '/plugins?label=Gate+Dynamics',
+    '/plugins?brand=A%26B'
+  ]);
+  ReactDOM.unmountComponentAtNode(div);
+});

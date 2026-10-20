@@ -1,0 +1,129 @@
+// Constants
+import { FIRST_PAGE } from 'utils/page/constants';
+import { PAGE_PARAM, PLUGIN_FILTER_FIELDS, PLUGINS_PATHNAME } from './constants';
+
+// Utils
+import { isPageNumber } from 'utils/page';
+
+/**
+ * Tells whether a field is one the plugins page filters on.
+ *
+ * @param {*} field - Name of the field, read from a URL or a form.
+ * @returns {boolean} True for brand, categories and label.
+ */
+const isPluginFilterField = field => PLUGIN_FILTER_FIELDS.includes(field);
+
+/**
+ * Tells whether a value can filter the plugins, such as a category of a plugin.
+ *
+ * @param {*} value - Value read from the API, a URL or a form.
+ * @returns {boolean} True for a string that is not blank.
+ */
+const isPluginFilterValue = value => typeof value === 'string' && value.trim() !== '';
+
+/**
+ * Builds the filters of the plugins page from one field and its value.
+ *
+ * @param {Object} [params]
+ * @param {*} params.field - Field to filter on, such as 'brand'.
+ * @param {*} params.value - Value searched in that field. Surrounding spaces are dropped.
+ * @returns {URLSearchParams} The filter, or no filter when the field is unknown or the value
+ * is not a string or is blank.
+ */
+const createPluginFilters = ({ field, value } = {}) => {
+  const filters = new URLSearchParams();
+  const isUsableFilter = isPluginFilterField(field) && isPluginFilterValue(value);
+
+  if (isUsableFilter) filters.append(field, value.trim());
+
+  return filters;
+};
+
+/**
+ * Builds the query string of the plugins page, with every value encoded.
+ *
+ * @param {Object} [params]
+ * @param {URLSearchParams} [params.filters] - Filters to keep in the URL.
+ * @param {number} [params.page] - Page to show. The first page, or a value that is not a page
+ * number, is omitted.
+ * @returns {string} The query string, starting with '?', or '' when there is nothing to keep.
+ */
+const buildPluginsSearch = ({ filters = new URLSearchParams(), page = FIRST_PAGE } = {}) => {
+  const searchParams = new URLSearchParams(filters);
+  const isLaterPage = isPageNumber(page) && page !== FIRST_PAGE;
+
+  if (isLaterPage) searchParams.set(PAGE_PARAM, page);
+
+  const query = searchParams.toString();
+
+  return query ? `?${query}` : '';
+};
+
+/**
+ * Builds the location of the plugins page filtered on one value of a field, for a link.
+ *
+ * @param {Object} params
+ * @param {string} params.field - Field to filter on, such as 'brand'.
+ * @param {string} params.value - Value of the field, such as 'A&B', encoded in the URL.
+ * @returns {{ pathname: string, search: string }} The location, with no filter when the field
+ * is unknown or the value blank.
+ */
+const buildPluginFilterLink = ({ field, value } = {}) => ({
+  pathname: PLUGINS_PATHNAME,
+  search: buildPluginsSearch({ filters: createPluginFilters({ field, value }) })
+});
+
+/**
+ * Reads the page number of a query parameter.
+ *
+ * @param {string|null} value - Value of the page parameter.
+ * @returns {number} The page, or the first page when the value is not a whole number from 1.
+ */
+const parsePage = (value) => {
+  const page = Number(value);
+  const isValidPageNumber = value !== null && isPageNumber(page);
+
+  return isValidPageNumber ? page : FIRST_PAGE;
+};
+
+/**
+ * Reads the filters and the page of the plugins page from its query string.
+ *
+ * @param {string} [search] - Query string of the location, such as '?brand=MDA&page=2'.
+ * @returns {{ filters: URLSearchParams, page: number }} The filters on known fields with a
+ * value, and the page, the first one when it is missing or invalid.
+ */
+const parsePluginsSearch = (search) => {
+  const searchParams = new URLSearchParams(typeof search === 'string' ? search : '');
+  const filters = new URLSearchParams();
+
+  searchParams.forEach((value, field) => {
+    createPluginFilters({ field, value }).forEach((filterValue, filterField) => {
+      filters.append(filterField, filterValue);
+    });
+  });
+
+  return {
+    filters,
+    page: parsePage(searchParams.get(PAGE_PARAM))
+  };
+};
+
+/**
+ * Tells whether a page can be shown.
+ *
+ * @param {Object} params
+ * @param {*} params.page - Page asked for.
+ * @param {number} params.pageCount - Number of pages of the results.
+ * @returns {boolean} True for a whole number from the first page to the last one.
+ */
+const isValidPage = ({ page, pageCount } = {}) => isPageNumber(page) && page <= pageCount;
+
+export {
+  buildPluginFilterLink,
+  buildPluginsSearch,
+  createPluginFilters,
+  isPluginFilterValue,
+  isValidPage,
+  parsePluginsSearch
+};

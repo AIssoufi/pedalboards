@@ -53,3 +53,25 @@ it('displays a description holding markup as literal text', () => {
   expect(description.querySelector('b')).toBeNull();
   ReactDOM.unmountComponentAtNode(div);
 });
+
+it('encodes the categories of the filter links', () => {
+  const div = document.createElement('div');
+  ReactDOM.render(
+    <MemoryRouter>
+      <PedalboardDetails
+        author={{ name: 'Lorem' }}
+        categories={['A&B', 'C++']}
+        controlPorts={[]}
+        description="lorem impsum"
+        label="lorem"
+        pedalboardCount={42}
+        screenshotUrl="http://example.com/screenshot"
+        uri="http://example.com"
+      />
+    </MemoryRouter>, div
+  );
+
+  const hrefs = [...div.querySelectorAll('.plugin-category')].map(link => link.getAttribute('href'));
+  expect(hrefs).toEqual(['/plugins?categories=A%26B', '/plugins?categories=C%2B%2B']);
+  ReactDOM.unmountComponentAtNode(div);
+});

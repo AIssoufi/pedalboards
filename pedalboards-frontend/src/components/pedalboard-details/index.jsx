@@ -6,6 +6,9 @@ import { Link } from 'react-router-dom';
 // HOC
 import { withLoader } from 'hoc';
 
+// Utils
+import { buildPluginFilterLink } from 'utils/plugin-filter';
+
 // Style
 import './style.scss';
 
@@ -40,10 +43,7 @@ const PedalboardDetails = ({
     <div className="category-container">
       {categories.map((categorie, index) => (
         <Link
-          to={{
-            pathname: '/plugins',
-            search: `?categories=${categorie}`
-          }}
+          to={buildPluginFilterLink({ field: 'categories', value: categorie })}
           key={`${categorie}-${index}`}
           className="plugin-category"
         >

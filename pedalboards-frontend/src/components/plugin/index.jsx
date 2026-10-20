@@ -4,6 +4,9 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Tooltip } from 'react-tippy';
 
+// Utils
+import { buildPluginFilterLink } from 'utils/plugin-filter';
+
 // Style
 import './style.scss';
 import 'react-tippy/dist/tippy.css';
@@ -49,10 +52,7 @@ const Plugin = ({
           position="top"
         >
           <Link
-            to={{
-              pathname: '/plugins',
-              search: `?categories=${category}`
-            }}
+            to={buildPluginFilterLink({ field: 'categories', value: category })}
             className="category"
           >
             {category}
@@ -77,10 +77,7 @@ const Plugin = ({
         position="top"
       >
         <Link
-          to={{
-            pathname: '/plugins',
-            search: `?label=${label}`
-          }}
+          to={buildPluginFilterLink({ field: 'label', value: label })}
           className="info"
         >
           {label}
@@ -101,10 +98,7 @@ const Plugin = ({
         position="bottom"
       >
         <Link
-          to={{
-            pathname: '/plugins',
-            search: `?brand=${brand}`
-          }}
+          to={buildPluginFilterLink({ field: 'brand', value: brand })}
           className="info brand"
         >
           {brand}
