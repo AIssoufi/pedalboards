@@ -60,6 +60,12 @@ export const PLUGIN_IMAGE_KEY_PREFIX = 'plugins/';
 /** Route, under /api, that serves the plugin images in the local entry */
 export const PLUGIN_IMAGE_ROUTE = '/images';
 
+/** Largest multipart form that the write routes read: room for the largest image and the text fields */
+export const MAX_FORM_BYTES = 6 * 1024 * 1024;
+
+/** Lowest and highest HTTP statuses of a client error, which body-parser gives a bad body */
+export const CLIENT_ERROR_STATUS = { min: 400, max: 499 };
+
 /** Headers that let the CMS and the preview deployments of the frontend call the API */
 export const CORS_HEADERS = {
 	'Access-Control-Allow-Origin': '*',

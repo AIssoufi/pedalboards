@@ -31,6 +31,7 @@ export const WORKER_BUNDLE_URL = new URL('../dist/index.js', import.meta.url);
 export const WRITE_ONLY_MARKERS = [
 	'createWriteRouter',
 	'createImageRouter',
+	'parseMultipartForm',
 	'multer',
 	'busboy',
 	'INSERT INTO plugins',
