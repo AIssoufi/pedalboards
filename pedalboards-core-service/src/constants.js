@@ -36,6 +36,24 @@ export const PLUGIN_FILTER_CONDITIONS = {
 /** Order of the plugin lists: by name whatever the case, then by id, so that pages never overlap */
 export const PLUGIN_ORDER_BY = 'ORDER BY name COLLATE NOCASE, id';
 
+/** Columns that the write routes may set: the id, the stability flag and the image size stay as they are */
+export const PLUGIN_WRITABLE_COLUMNS = [
+	'name',
+	'label',
+	'brand',
+	'description',
+	'uri',
+	'version',
+	'pedalboardCount',
+	'screenshotUrl',
+	'author',
+	'categories',
+	'controlPorts'
+];
+
+/** Columns that hold JSON text */
+export const PLUGIN_JSON_COLUMNS = ['author', 'categories', 'controlPorts'];
+
 /** Headers that let the CMS and the preview deployments of the frontend call the API */
 export const CORS_HEADERS = {
 	'Access-Control-Allow-Origin': '*',

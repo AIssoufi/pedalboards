@@ -28,4 +28,11 @@ export const PLUGIN_COLUMNS = [
 export const WORKER_BUNDLE_URL = new URL('../dist/index.js', import.meta.url);
 
 /** Code that only the write routes use: none of it may ship in the deployed Worker */
-export const WRITE_ONLY_MARKERS = ['createWriteRouter', 'multer', 'busboy'];
+export const WRITE_ONLY_MARKERS = [
+	'createWriteRouter',
+	'multer',
+	'busboy',
+	'INSERT INTO plugins',
+	'UPDATE plugins',
+	'DELETE FROM plugins'
+];

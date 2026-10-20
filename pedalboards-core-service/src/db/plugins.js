@@ -47,7 +47,7 @@ export const toPlugin = ({ id, author, categories, controlPorts, stable, ...fiel
  * @returns {Promise<T>} The result of the queries.
  * @throws {DatabaseError} When D1 fails.
  */
-const queryDatabase = async runQueries => {
+export const queryDatabase = async runQueries => {
 	try {
 		return await runQueries();
 	} catch (error) {
