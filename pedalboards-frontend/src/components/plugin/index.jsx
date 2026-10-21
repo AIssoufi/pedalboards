@@ -1,5 +1,4 @@
 // Dependencies
-import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 
 // Utils
@@ -13,9 +12,27 @@ import FilterTooltipContent from './filter-tooltip-content';
 import './style.scss';
 
 /**
+ * Props of {@link Plugin}.
+ *
+ * @typedef {Object} PluginProps
+ * @property {string} [_id=''] - Identifier of the plugin, ending the link to its details. No link
+ *   when empty.
+ * @property {{ avatarUrl?: string, name?: string }} [author] - Author of the plugin, not shown on
+ *   the card.
+ * @property {string} [brand=''] - Brand, linking to the plugins of that brand. Hidden when empty.
+ * @property {Array<string>} [categories=[]] - Categories, each linking to the plugins of that
+ *   category.
+ * @property {string} [label=''] - Label, linking to the plugins of that label. Hidden when empty.
+ * @property {string} [name=''] - Name, shown in the tooltip of the screenshot.
+ * @property {string} [screenshotUrl=''] - URL of the screenshot. The image is omitted when empty.
+ */
+
+/**
  * Card of a plugin in the grid: its screenshot, linking to its details, then links that filter
  * the plugins by each of its categories, by its label and by its brand. A missing field shows
  * nothing in its place.
+ *
+ * @param {PluginProps} props - Props of the component.
  */
 const Plugin = ({
   _id = '', name = '', screenshotUrl = '', categories = [], brand = '', label = ''
@@ -90,26 +107,6 @@ const Plugin = ({
       </div>
     </div>
   );
-};
-
-Plugin.propTypes = {
-  /** Identifier of the plugin, ending the link to its details. No link when empty. @default '' */
-  _id: PropTypes.string,
-  /** Author of the plugin, not shown on the card. */
-  author: PropTypes.shape({
-    avatarUrl: PropTypes.string,
-    name: PropTypes.string
-  }),
-  /** Brand, linking to the plugins of that brand. Hidden when empty. @default '' */
-  brand: PropTypes.string,
-  /** Categories, each linking to the plugins of that category. @default [] */
-  categories: PropTypes.arrayOf(PropTypes.string),
-  /** Label, linking to the plugins of that label. Hidden when empty. @default '' */
-  label: PropTypes.string,
-  /** Name, shown in the tooltip of the screenshot. @default '' */
-  name: PropTypes.string,
-  /** URL of the screenshot. The image is omitted when empty. @default '' */
-  screenshotUrl: PropTypes.string
 };
 
 export default Plugin;

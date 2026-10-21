@@ -104,10 +104,6 @@ it('encodes the categories of the filter links', () => {
   expect(hrefs).toEqual(['/plugins?categories=A%26B', '/plugins?categories=C%2B%2B']);
 });
 
-afterEach(() => {
-  vi.restoreAllMocks();
-});
-
 it('shows the loader in place of the details while loading', () => {
   renderDetails({ label: 'Gx Overdrive', isLoading: true });
 
@@ -116,8 +112,6 @@ it('shows the loader in place of the details while loading', () => {
 });
 
 it('shows the loader for a truthy isLoading that is not a boolean', () => {
-  vi.spyOn(console, 'error').mockImplementation(() => {});
-
   renderDetails({ isLoading: 'yes' });
 
   expect(screen.getByText(LOADER_TEXT)).toBeDefined();
@@ -129,8 +123,6 @@ it.each([
   ['zero', 0],
   ['empty', '']
 ])('shows the details when isLoading is %s', (description, isLoading) => {
-  vi.spyOn(console, 'error').mockImplementation(() => {});
-
   renderDetails({ label: 'Gx Overdrive', isLoading });
 
   expect(screen.queryByText(LOADER_TEXT)).toBeNull();

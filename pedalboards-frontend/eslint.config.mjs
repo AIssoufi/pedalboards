@@ -37,16 +37,14 @@ export default [
     },
     rules: {
       // An import cycle already broke a test suite, whose module was still undefined when it ran
-      'import-x/no-cycle': 'error'
+      'import-x/no-cycle': 'error',
+      // The props are typed with JSDoc typedefs, since prop-types left the app (decision 0009)
+      'react/prop-types': 'off'
     }
   },
   {
     files: TEST_FILES,
-    languageOptions: { globals: globals.vitest },
-    rules: {
-      // The small components that a test renders need no prop types
-      'react/prop-types': 'off'
-    }
+    languageOptions: { globals: globals.vitest }
   },
   {
     files: NODE_FILES,

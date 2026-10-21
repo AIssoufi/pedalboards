@@ -1,6 +1,5 @@
 // Dependencies
 import { useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
@@ -20,10 +19,23 @@ import { isTextOfValue, toSearchField, toSearchText } from './utils';
 import './style.scss';
 
 /**
+ * Props of {@link Search}.
+ *
+ * @typedef {Object} SearchProps
+ * @property {string} [value=''] - Value of the filter of the URL, shown in the text field.
+ * @property {string} [field] - Field of the filter of the URL, shown in the select. Brand when the
+ *   select lacks it.
+ * @property {(formData: FormData) => void} [onSubmit] - Called with the `FormData` of the form,
+ *   its `value` and `label` fields.
+ */
+
+/**
  * Search form of the plugins: a text field and the field of the plugins it searches in, which
  * show the filter of the URL (`value` and `field`) and follow it when it changes. Calls
  * `onSubmit` with the data of the form on submit, when the select loses the focus, and once the
  * typing in the text field pauses.
+ *
+ * @param {SearchProps} props - Props of the component.
  */
 const Search = ({ value, field, onSubmit }) => {
   const formRef = useRef(null);
@@ -108,15 +120,6 @@ const Search = ({ value, field, onSubmit }) => {
 
     </form>
   );
-};
-
-Search.propTypes = {
-  /** Value of the filter of the URL, shown in the text field. @default '' */
-  value: PropTypes.string,
-  /** Field of the filter of the URL, shown in the select. Brand when the select lacks it. */
-  field: PropTypes.string,
-  /** Called with the `FormData` of the form, its `value` and `label` fields. */
-  onSubmit: PropTypes.func
 };
 
 export default Search;

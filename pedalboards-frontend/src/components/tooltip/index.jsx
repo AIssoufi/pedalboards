@@ -3,10 +3,9 @@ import {
   cloneElement, isValidElement, useId, useRef
 } from 'react';
 import { createPortal } from 'react-dom';
-import PropTypes from 'prop-types';
 
 // Constants
-import { DEFAULT_TOOLTIP_PLACEMENT, TOOLTIP_PLACEMENTS } from './constants';
+import { DEFAULT_TOOLTIP_PLACEMENT } from './constants';
 
 // Hooks
 import useBubblePosition from './hooks/useBubblePosition';
@@ -19,11 +18,25 @@ import { getTooltipPlacement, isEmptyNode } from './utils';
 import './style.scss';
 
 /**
+ * Props of {@link Tooltip}.
+ *
+ * @typedef {Object} TooltipProps
+ * @property {import('react').ReactNode} [content=null] - Content of the bubble. Without it, the
+ *   children show alone.
+ * @property {'top'|'bottom'} [placement='top'] - Side of the children where the bubble shows,
+ *   unless only the other side has room in the viewport. An unknown side shows the bubble on top.
+ * @property {import('react').ReactNode} [children=null] - Element that the bubble describes, such
+ *   as a link or a button.
+ */
+
+/**
  * Shows `content` in a dark bubble next to its children while the pointer is over them or the
  * focus is inside them, until Escape. The bubble sits at the end of the page, so no parent clips
  * it, and stays within the viewport. A single child element gets the bubble as its description
  * (`aria-describedby`), which screen readers announce on focus. Renders the children alone without
  * content, and nothing without children.
+ *
+ * @param {TooltipProps} props - Props of the component.
  *
  * @example
  * <Tooltip content={<i>Click to launch the search</i>} placement="top">
@@ -73,18 +86,6 @@ const Tooltip = ({ content = null, placement = DEFAULT_TOOLTIP_PLACEMENT, childr
       )}
     </>
   );
-};
-
-Tooltip.propTypes = {
-  /** Content of the bubble. Without it, the children show alone. @default null */
-  content: PropTypes.node,
-  /**
-   * Side of the children where the bubble shows, unless only the other side has room in the
-   * viewport. An unknown side shows the bubble on top. @default 'top'
-   */
-  placement: PropTypes.oneOf(TOOLTIP_PLACEMENTS),
-  /** Element that the bubble describes, such as a link or a button. @default null */
-  children: PropTypes.node
 };
 
 export default Tooltip;

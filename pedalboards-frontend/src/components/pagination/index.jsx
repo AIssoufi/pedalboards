@@ -1,5 +1,4 @@
 // Dependencies
-import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
@@ -15,8 +14,21 @@ import { getPageItems } from './utils';
 import './style.scss';
 
 /**
+ * Props of {@link Pagination}.
+ *
+ * @typedef {Object} PaginationProps
+ * @property {number} [currentPage=1] - Page shown, highlighted among the page numbers.
+ * @property {number} [elementCount=0] - Number of pages. Nothing renders when it is not a positive
+ *   integer.
+ * @property {(page: number) => void} [onCurrentPageChange] - Called with the page number that the
+ *   visitor picks.
+ */
+
+/**
  * Previous and next controls around the page numbers: the first and last pages, the pages next
  * to the current one, and a gap in place of the others. Renders nothing without pages.
+ *
+ * @param {PaginationProps} props - Props of the component.
  */
 const Pagination = ({
   elementCount = 0, currentPage = FIRST_PAGE, onCurrentPageChange
@@ -73,15 +85,6 @@ const Pagination = ({
       </div>
     </div>
   );
-};
-
-Pagination.propTypes = {
-  /** Page shown, highlighted among the page numbers. @default 1 */
-  currentPage: PropTypes.number,
-  /** Number of pages. Nothing renders when it is not a positive integer. @default 0 */
-  elementCount: PropTypes.number,
-  /** Called with the page number that the visitor picks. */
-  onCurrentPageChange: PropTypes.func
 };
 
 export default Pagination;
