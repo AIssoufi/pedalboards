@@ -47,6 +47,7 @@ const PluginsPage = ({
 
     if (canFindPlugins) findPlugins(filters, currentPage, PAGE_SIZE);
     if (canFetchPlugins) fetchPlugins(currentPage, PAGE_SIZE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- search tells when filters change
   }, [search]);
 
   const showSearch = (nextSearch) => {

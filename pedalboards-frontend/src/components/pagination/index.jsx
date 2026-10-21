@@ -47,7 +47,6 @@ const Pagination = ({
         {pageItems.map((pageItem, index) => {
           if (pageItem === PAGE_GAP) {
             // Two gaps can show, so the position tells them apart.
-            // eslint-disable-next-line react/no-array-index-key
             return <span key={`gap-${index}`} className="gap">{PAGE_GAP}</span>;
           }
           if (pageItem === shownPage) {

@@ -1,3 +1,6 @@
+// Dependencies
+import PropTypes from 'prop-types';
+
 // Components: imported from its own module, since the `components` barrel imports
 // `plugin-grid`, which imports this HOC back
 import Loader from '../components/loader';
@@ -16,6 +19,10 @@ const withLoader = (BaseComponent) => {
   );
   const baseName = BaseComponent.displayName || BaseComponent.name || 'Component';
   WithLoader.displayName = `withLoader(${baseName})`;
+  WithLoader.propTypes = {
+    /** Shows the loader while truthy. The other props go to `BaseComponent` as they are. */
+    isLoading: PropTypes.bool
+  };
 
   return WithLoader;
 };
