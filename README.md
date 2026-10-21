@@ -24,7 +24,8 @@ A store of audio plugins: virtual effect pedals that visitors browse, search and
 - API: Express 5 in a Cloudflare Worker, on a Cloudflare D1 database, tested with Vitest 5 in the
   Workers runtime.
 - Hosting: Cloudflare Pages for the frontend, Cloudflare Workers for the API.
-- Tooling: Node.js 24, a pnpm workspace, GitHub Actions, commitlint and husky.
+- Tooling: Node.js 24, a pnpm workspace, GitHub Actions, ESLint 9 for the frontend, commitlint and
+  husky.
 
 ## Architecture
 
@@ -72,7 +73,9 @@ pnpm test
 pnpm build
 ```
 
-- `pnpm test` runs the tests of the tools and of the three apps once.
+- `pnpm test` runs the tests of the tools and of the three apps once, and `pnpm lint` lints the
+  frontend ([decision record](docs/decisions/0008-eslint-flat-config.md)). The CMS has no lint
+  until it leaves Create React App ([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
 - `pnpm build` builds the frontend and the CMS, and `pnpm --filter pedalboards-frontend preview`
   serves the frontend build.
 - The [root scripts](#pnpm-workspace) list the others.
@@ -109,13 +112,19 @@ pnpm build
 | `pnpm test:commit-messages` | Runs the tests of the [commit message](#commit-messages) tools     |
 | `pnpm test:dev-server-check`| Runs the tests of the helpers of the dev server check              |
 | `pnpm build`                | Builds the frontend and the CMS                                    |
+| `pnpm lint`                 | Lints the frontend, which fails on any warning                     |
 | `pnpm check:dev-server`     | Checks that the dev server of the frontend starts and serves it    |
 
 - `pnpm start` keeps the other processes running when one of them stops (`--no-bail`), as
   `concurrently` did.
 - `pnpm-workspace.yaml` runs no install script of the dependencies (`allowBuilds`), since none is
   needed, and stops pnpm from setting `NODE_PATH` (`extendNodePath: false`), which would hide the
-  `NODE_PATH=src/` of the CMS `.env` file from Create React App.
+  `NODE_PATH=src/` of the CMS `.env` file from Create React App. `unrs-resolver`, the resolver of
+  `eslint-plugin-import-x`, is listed there too: its script only downloads a binary that its
+  platform package already installs.
+- Its `hoistPattern` keeps ESLint out of the hoisted `node_modules/.pnpm/node_modules`: the
+  preflight check of Create React App 2 in the CMS stops the build when it finds there an ESLint
+  other than its own, such as the ESLint 9 of the frontend.
 - Its `packageExtensions` declare the React peer dependencies that `react-tippy` 1, the tooltips
   of the CMS, leaves out: without them, pnpm would give this package the hoisted React of another
   app rather than the React of the CMS.
@@ -178,7 +187,7 @@ request to `master` and every push to `master`, with one job per app, which cach
 
 | Job          | Steps                                                                           |
 |--------------|---------------------------------------------------------------------------------|
-| Frontend     | `pnpm install --frozen-lockfile`, `CI=true pnpm test`, `CI=true pnpm run build`, `pnpm run check:bundle`, `pnpm --workspace-root run test:dev-server-check`, `pnpm run check:dev-server` |
+| Frontend     | `pnpm install --frozen-lockfile`, `pnpm run lint`, `CI=true pnpm test`, `CI=true pnpm run build`, `pnpm run check:bundle`, `pnpm --workspace-root run test:dev-server-check`, `pnpm run check:dev-server` |
 | CMS          | `pnpm install --frozen-lockfile`, `CI=true pnpm test`, `CI=true pnpm run build` |
 | Core service | `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm run build`, `pnpm run check:bundle` |
 
