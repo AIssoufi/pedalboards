@@ -4,6 +4,9 @@ import { fireEvent, render, screen } from '@testing-library/react';
 // Components
 import Search from './index';
 
+// Constants
+import { SEARCH_DEBOUNCE_MS } from './constants';
+
 /**
  * Gives the tooltip that describes an element.
  *
@@ -30,6 +33,38 @@ it('calls onSubmit with the text and the field to search in', () => {
   expect(onSubmit).toHaveBeenCalledTimes(1);
   const [formData] = onSubmit.mock.calls[0];
   expect(Object.fromEntries(formData)).toEqual({ value: 'MDA', label: 'categories' });
+});
+
+it('calls onSubmit with the form once the typing in the text field pauses', () => {
+  vi.useFakeTimers();
+  try {
+    const onSubmit = vi.fn();
+    render(<Search onSubmit={onSubmit} />);
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, { target: { value: 'MDA' } });
+    expect(onSubmit).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS);
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    const [formData] = onSubmit.mock.calls[0];
+    expect(Object.fromEntries(formData)).toEqual({ value: 'MDA', label: 'brand' });
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+it('calls onSubmit with the form when the select loses the focus', () => {
+  const onSubmit = vi.fn();
+  render(<Search onSubmit={onSubmit} />);
+  const select = screen.getByRole('combobox');
+  select.value = 'label';
+
+  fireEvent.blur(select);
+
+  expect(onSubmit).toHaveBeenCalledTimes(1);
+  const [formData] = onSubmit.mock.calls[0];
+  expect(Object.fromEntries(formData)).toEqual({ value: '', label: 'label' });
 });
 
 it('submits without onSubmit', () => {
