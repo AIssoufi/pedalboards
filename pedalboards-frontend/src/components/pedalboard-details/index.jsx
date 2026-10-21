@@ -2,8 +2,8 @@
 import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 
-// HOC
-import { withLoader } from '../../hoc';
+// Components
+import Loader from '../loader';
 
 // Utils
 import { buildPluginFilterLink, isPluginFilterValue } from '../../utils/plugin-filter';
@@ -15,12 +15,15 @@ import './style.scss';
 /**
  * Details of a plugin: its author and URI, how many pedalboards use it, its label, screenshot,
  * categories linking to the plugins of each category, description, control ports and version.
- * A missing field shows nothing in its place.
+ * A missing field shows nothing in its place. Shows the loader in their place while `isLoading`
+ * is truthy.
  */
 const PedalboardDetails = ({
   author = {}, uri = '', pedalboardCount = 0, label = '', screenshotUrl = '', categories = [],
-  controlPorts = [], version = '', description = ''
+  controlPorts = [], version = '', description = '', isLoading = false
 }) => {
+  if (isLoading) return <Loader />;
+
   const { name: authorName = '' } = author || {};
   const categoryList = Array.isArray(categories) ? categories.filter(isPluginFilterValue) : [];
   const controlPortList = Array.isArray(controlPorts) ? controlPorts.filter(isControlPort) : [];
@@ -102,6 +105,8 @@ const PedalboardDetails = ({
 };
 
 PedalboardDetails.propTypes = {
+  /** Shows the loader in place of the details while truthy. @default false */
+  isLoading: PropTypes.bool,
   /** Author of the plugin, whose name heads the details. @default {} */
   author: PropTypes.shape({
     name: PropTypes.string
@@ -136,4 +141,4 @@ PedalboardDetails.propTypes = {
   version: PropTypes.string
 };
 
-export default withLoader(PedalboardDetails);
+export default PedalboardDetails;

@@ -63,3 +63,25 @@ it('shows the loader in place of the cards while loading', () => {
   expect(screen.getByText(LOADER_TEXT)).toBeDefined();
   expect(screen.queryAllByRole('link')).toHaveLength(0);
 });
+
+it('shows the loader for a truthy isLoading that is not a boolean', () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+
+  renderGrid({ plugins: PLUGINS, isLoading: 'yes' });
+
+  expect(screen.getByText(LOADER_TEXT)).toBeDefined();
+});
+
+it.each([
+  ['missing', undefined],
+  ['null', null],
+  ['zero', 0],
+  ['empty', '']
+])('shows the cards when isLoading is %s', (description, isLoading) => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+
+  renderGrid({ plugins: PLUGINS, isLoading });
+
+  expect(screen.queryByText(LOADER_TEXT)).toBeNull();
+  expect(screen.getAllByRole('link').length).toBeGreaterThan(0);
+});
