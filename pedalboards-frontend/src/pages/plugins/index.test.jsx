@@ -35,10 +35,10 @@ const PLUGIN = {
 // Longer than the 900 ms debounce of the search field
 const SEARCH_DEBOUNCE_WAIT_MS = 1000;
 
-// Filters of a fetched URL, without their `filterby[...]` wrapper, such as [['brand', 'MDA']]
 // Lets the answers of the requests started so far reach the store, and the page render them
 const flushAnswers = () => act(async () => {});
 
+// Filters of a fetched URL, without their `filterby[...]` wrapper, such as [['brand', 'MDA']]
 const filtersOf = url => [...url.searchParams.entries()]
   .filter(([key]) => key.startsWith('filterby['))
   .map(([key, value]) => [key.slice('filterby['.length, -1), value]);
@@ -243,14 +243,47 @@ describe('PluginsPage', () => {
     expect(screen.queryByRole('alert')).toBeNull();
   });
 
+  it('shows the filter of the URL in the search form', async () => {
+    await renderPage({ url: '/plugins?label=Gx' });
+
+    expect(screen.getByRole('textbox').value).toBe('Gx');
+    expect(screen.getByRole('combobox').value).toBe('label');
+  });
+
+  it('shows the filter of a card link in the search form', async () => {
+    await renderPage({ url: '/plugins?brand=MDA', plugins: [PLUGIN] });
+
+    fireEvent.click(screen.getByRole('link', { name: 'Delay' }));
+    await flushAnswers();
+
+    expect(screen.getByRole('textbox').value).toBe('Delay');
+    expect(screen.getByRole('combobox').value).toBe('categories');
+  });
+
   describe('with the debounce delay of the search field', () => {
     beforeEach(() => {
-      // Fakes Date.now too, which the debounce reads
       vi.useFakeTimers();
     });
 
     afterEach(() => {
       vi.useRealTimers();
+    });
+
+    it('runs one search for several keystrokes', async () => {
+      await renderPage({ url: '/plugins' });
+      const input = screen.getByRole('textbox');
+
+      ['M', 'MD', 'MDA'].forEach((value) => {
+        fireEvent.change(input, { target: { value } });
+      });
+      act(() => {
+        vi.advanceTimersByTime(SEARCH_DEBOUNCE_WAIT_MS);
+      });
+      await flushAnswers();
+
+      expect(location.search).toBe('?brand=MDA');
+      expect(fetchCount()).toBe(2);
+      expect(lastFetch().filters).toEqual([['brand', 'MDA']]);
     });
 
     it('adds one history entry when the search is typed, then submitted', async () => {
@@ -259,7 +292,7 @@ describe('PluginsPage', () => {
 
       fireEvent.change(input, { target: { value: 'Gx' } });
       fireEvent.submit(input.form);
-      // The search field submits the typed value again once its debounce delay is over
+      // The submit cancels the pending debounce, so nothing searches again once its delay is over
       act(() => {
         vi.advanceTimersByTime(SEARCH_DEBOUNCE_WAIT_MS);
       });

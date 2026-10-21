@@ -1,5 +1,5 @@
 // Dependencies
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router';
 
@@ -13,7 +13,7 @@ import { loadPlugins, selectPluginsPage } from '../../redux/plugins/slice';
 
 // Utils
 import {
-  buildPluginsSearch, createPluginFilters, isValidPage, parsePluginsSearch
+  buildPluginsSearch, createPluginFilters, getSearchFilter, isValidPage, parsePluginsSearch
 } from '../../utils/plugin-filter';
 
 // Style
@@ -38,13 +38,7 @@ const PluginsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.toString();
   const { filters, page: currentPage } = parsePluginsSearch(search);
-  // The search field calls a handler of an earlier render after its debounce delay, so the
-  // handlers compare a new search with this ref, which holds the search of the URL shown now
-  const shownSearchRef = useRef(search);
-
-  useEffect(() => {
-    shownSearchRef.current = search;
-  }, [search]);
+  const searchFilter = getSearchFilter(filters);
 
   // filters and currentPage are derived from search, so search alone tells when they change
   useEffect(() => {
@@ -56,7 +50,7 @@ const PluginsPage = () => {
   }, [search, dispatch]);
 
   const showSearch = (nextSearch) => {
-    const isNewSearch = new URLSearchParams(nextSearch).toString() !== shownSearchRef.current;
+    const isNewSearch = new URLSearchParams(nextSearch).toString() !== search;
 
     if (isNewSearch) setSearchParams(nextSearch);
   };
@@ -84,7 +78,8 @@ const PluginsPage = () => {
         <hr />
       </header>
       <Search
-        onChange={null}
+        value={searchFilter.value}
+        field={searchFilter.field}
         onSubmit={handleSearchSubmit}
       />
       <Pagination

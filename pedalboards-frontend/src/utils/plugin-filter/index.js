@@ -110,6 +110,27 @@ const parsePluginsSearch = (search) => {
 };
 
 /**
+ * Gives the field and the value that the search form shows for the filters of the URL: the first
+ * filter, since the form searches one field at a time.
+ *
+ * @param {*} filters - Filters of the plugins page, as `parsePluginsSearch` reads them.
+ * @returns {{ field?: string, value?: string }} The field and the value of the first filter, or
+ * an empty object without filters.
+ * @example
+ * getSearchFilter(new URLSearchParams('label=Gx')); // { field: 'label', value: 'Gx' }
+ */
+const getSearchFilter = (filters) => {
+  const isSearchParams = filters instanceof URLSearchParams;
+  if (!isSearchParams) return {};
+
+  const [firstFilter] = filters.entries();
+  if (!firstFilter) return {};
+
+  const [field, value] = firstFilter;
+  return { field, value };
+};
+
+/**
  * Tells whether a page can be shown.
  *
  * @param {Object} params
@@ -123,6 +144,7 @@ export {
   buildPluginFilterLink,
   buildPluginsSearch,
   createPluginFilters,
+  getSearchFilter,
   isPluginFilterValue,
   isValidPage,
   parsePluginsSearch

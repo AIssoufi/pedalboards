@@ -3,6 +3,7 @@ import {
   buildPluginFilterLink,
   buildPluginsSearch,
   createPluginFilters,
+  getSearchFilter,
   isPluginFilterValue,
   isValidPage,
   parsePluginsSearch
@@ -177,5 +178,30 @@ describe('isValidPage', () => {
 
   it('refuses a missing page', () => {
     expect(isValidPage()).toBe(false);
+  });
+});
+
+describe('getSearchFilter', () => {
+  it('gives the field and the value of the filter', () => {
+    expect(getSearchFilter(new URLSearchParams('label=Gx'))).toEqual({ field: 'label', value: 'Gx' });
+  });
+
+  it('gives the first filter of several', () => {
+    expect(getSearchFilter(new URLSearchParams('brand=MDA&label=Gx')))
+      .toEqual({ field: 'brand', value: 'MDA' });
+  });
+
+  it('keeps the characters that the URL encodes', () => {
+    expect(getSearchFilter(new URLSearchParams('brand=A%26B'))).toEqual({ field: 'brand', value: 'A&B' });
+  });
+
+  it.each([
+    ['empty filters', new URLSearchParams()],
+    ['no filters', undefined],
+    ['null', null],
+    ['a query string', 'brand=MDA'],
+    ['an object', { brand: 'MDA' }]
+  ])('gives an empty object for %s', (description, filters) => {
+    expect(getSearchFilter(filters)).toEqual({});
   });
 });
