@@ -1,6 +1,3 @@
-// Dependencies
-import React from 'react';
-
 // Constants
 import { DEFAULT_TOOLTIP_PLACEMENT, TOOLTIP_DISTANCE_PX, VIEWPORT_MARGIN_PX } from './constants';
 

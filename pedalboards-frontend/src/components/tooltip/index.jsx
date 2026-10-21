@@ -1,5 +1,5 @@
 // Dependencies
-import React, {
+import {
   cloneElement, isValidElement, useId, useRef
 } from 'react';
 import { createPortal } from 'react-dom';
