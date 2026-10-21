@@ -2,7 +2,8 @@
 import { act, render, screen } from '@testing-library/react';
 
 // Stub
-import { createMemoryRouter, RouterProvider } from 'react-router';
+import { createMemoryRouter } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
 
 // Components
 import PedalboardDetails from './index';
