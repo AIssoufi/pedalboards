@@ -9,7 +9,9 @@ import './index.scss';
 import App from './components/App';
 
 // Redux - store
-import store from './redux/store';
+import setupStore from './redux/store';
+
+const store = setupStore();
 
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>

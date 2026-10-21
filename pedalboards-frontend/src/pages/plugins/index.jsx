@@ -1,21 +1,15 @@
 // Dependencies
 import { useEffect, useRef } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router';
-import PropTypes from 'prop-types';
 
-// Componenets
+// Components
 import {
   Search, Pagination, PluginGrid
 } from '../../components';
 
-// Redux - selectors
-import { pluginSelector } from '../../redux/selectors';
-
-// Redux - actions
-import {
-  fetchPluginsAction, findPluginsAction
-} from '../../redux/actions/plugin.action';
+// Redux
+import { loadPlugins, selectPluginsPage } from '../../redux/plugins/slice';
 
 // Utils
 import {
@@ -32,11 +26,15 @@ const PAGE_SIZE = 10;
  * Page listing the plugins, with a search, numbered pages and the grid of plugin cards. Its URL
  * holds the filter and the page (`?brand=MDA&page=2`): a search, a page change or a filter link
  * of a card changes the URL, and the page fetches the plugins of each new URL.
- * It renders inside a router, since it reads and writes its query string with useSearchParams.
+ * It renders inside a router, since it reads and writes its query string with useSearchParams,
+ * and inside the Redux store, which loads the plugins. A failed request shows an error message in
+ * place of the grid.
  */
-const PluginsPage = ({
-  fetchPlugins, findPlugins, plugins = [], countPlugins = 0, isFetching = false
-}) => {
+const PluginsPage = () => {
+  const dispatch = useDispatch();
+  const {
+    plugins, pageCount, isLoading, hasFailed
+  } = useSelector(selectPluginsPage);
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.toString();
   const { filters, page: currentPage } = parsePluginsSearch(search);
@@ -50,14 +48,12 @@ const PluginsPage = ({
 
   // filters and currentPage are derived from search, so search alone tells when they change
   useEffect(() => {
-    const hasFilters = [...filters.keys()].length > 0;
-    const canFindPlugins = hasFilters && typeof findPlugins === 'function';
-    const canFetchPlugins = !hasFilters && typeof fetchPlugins === 'function';
+    const request = dispatch(loadPlugins({ filters, page: currentPage, pageSize: PAGE_SIZE }));
 
-    if (canFindPlugins) findPlugins(filters, currentPage, PAGE_SIZE);
-    if (canFetchPlugins) fetchPlugins(currentPage, PAGE_SIZE);
+    // A new search, or leaving the page, drops the answer of this one
+    return () => request.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- search tells when filters change
-  }, [search]);
+  }, [search, dispatch]);
 
   const showSearch = (nextSearch) => {
     const isNewSearch = new URLSearchParams(nextSearch).toString() !== shownSearchRef.current;
@@ -75,7 +71,7 @@ const PluginsPage = ({
   };
 
   const setCurrentPageHandler = (pageNumber) => {
-    if (!isValidPage({ page: pageNumber, pageCount: countPlugins })) return;
+    if (!isValidPage({ page: pageNumber, pageCount })) return;
 
     showSearch(buildPluginsSearch({ filters, page: pageNumber }));
   };
@@ -93,42 +89,19 @@ const PluginsPage = ({
       />
       <Pagination
         currentPage={currentPage}
-        elementCount={countPlugins}
+        elementCount={pageCount}
         onCurrentPageChange={setCurrentPageHandler}
       />
-      <PluginGrid isLoading={isFetching} plugins={plugins} />
+      {hasFailed
+        ? <p role="alert">Impossible de charger les plugins, réessayez plus tard.</p>
+        : <PluginGrid isLoading={isLoading} plugins={plugins} />}
       <Pagination
         currentPage={currentPage}
-        elementCount={countPlugins}
+        elementCount={pageCount}
         onCurrentPageChange={setCurrentPageHandler}
       />
     </div>
   );
 };
 
-const mapDispatchToProps = {
-  fetchPlugins: fetchPluginsAction,
-  findPlugins: findPluginsAction
-};
-
-const mapStateToProps = pluginSelector;
-
-PluginsPage.propTypes = {
-  /** Fetches a page of all the plugins, from the store. Nothing is fetched without it. */
-  fetchPlugins: PropTypes.func,
-  /** Fetches a page of the plugins matching filters, from the store, as fetchPlugins. */
-  findPlugins: PropTypes.func,
-  /** Plugins of the page shown. @default [] */
-  plugins: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.string,
-    name: PropTypes.string,
-    brand: PropTypes.string
-  })),
-  /** Number of pages of the results. @default 0 */
-  countPlugins: PropTypes.number,
-  /** Whether the plugins are being fetched. @default false */
-  isFetching: PropTypes.bool
-};
-
-export { PluginsPage };
-export default connect(mapStateToProps, mapDispatchToProps)(PluginsPage);
+export default PluginsPage;

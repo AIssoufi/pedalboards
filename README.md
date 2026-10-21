@@ -18,8 +18,8 @@ A store of audio plugins: virtual effect pedals that visitors browse, search and
 
 ## Tech stack
 
-- Frontend: React 19, Redux 4, React Router 8 and Sass, built with Vite 8 and tested with Vitest 5
-  and Testing Library.
+- Frontend: React 19, Redux Toolkit 2, React Router 8 and Sass, built with Vite 8 and tested with
+  Vitest 5 and Testing Library.
 - CMS: React 16 and Sass on Create React App 2, tested with Jest.
 - API: Express 5 in a Cloudflare Worker, on a Cloudflare D1 database, tested with Vitest 5 in the
   Workers runtime.
@@ -195,7 +195,7 @@ request to `master` and every push to `master`, with one job per app, which cach
   migrations fill. `pnpm run build` bundles the Worker into `dist` without publishing it, and
   `pnpm run check:bundle` fails when that bundle holds a write route or a multipart parser.
 - The `pnpm run check:bundle` of the frontend fails when the scripts of its build hold
-  development-only code, such as `redux-logger`.
+  development-only code, such as the state checks of Redux Toolkit.
 - `CI=true` runs the Jest of the CMS once instead of in watch mode, and turns the lint warnings of
   its build into errors. The frontend runs Vitest once (`vitest run`) and ignores it.
 - `pnpm run check:dev-server` starts the dev server of the frontend on a free port, checks that the

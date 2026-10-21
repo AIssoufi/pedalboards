@@ -19,8 +19,9 @@ Run them in this folder, or from the root with `pnpm --filter pedalboards-fronte
 | `pnpm check:bundle`     | Fails when the scripts of `build/` hold development-only code; run `pnpm build` first |
 
 - `pnpm dev` fails when port 3001 is taken, rather than moving to 3002, the port of the CMS.
-- The store logs each Redux action with `redux-logger` in development and in the tests only: the
-  production build leaves the package out, and `pnpm check:bundle` fails when it ships.
+- The store checks in development and in the tests only that the state is never mutated and
+  holds only serializable values (Redux Toolkit): the production build leaves these checks out,
+  and `pnpm check:bundle` fails when they ship.
 - The CI runs `pnpm lint`, `pnpm test`, `pnpm build`, `pnpm check:bundle` and
   `pnpm check:dev-server`.
 

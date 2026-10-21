@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import store from '../redux/store';
+import setupStore from '../redux/store';
 import App from './App';
 import { jsonResponse } from '../test-utils/fetch';
 
@@ -25,7 +25,7 @@ const renderAt = (url) => {
   window.history.pushState({}, '', url);
 
   render(
-    <Provider store={store}>
+    <Provider store={setupStore()}>
       <App />
     </Provider>
   );
