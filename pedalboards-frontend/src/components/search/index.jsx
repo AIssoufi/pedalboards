@@ -1,5 +1,4 @@
 // Dependencies
-import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -7,6 +6,9 @@ import _ from 'lodash';
 
 // Components
 import Tooltip from '../tooltip';
+
+// Constants
+import { SEARCH_DEBOUNCE_MS } from './constants';
 
 // Style
 import './style.scss';
@@ -17,11 +19,11 @@ import './style.scss';
  * typing in the text field pauses.
  */
 const Search = ({ onSubmit }) => {
-  const formElement = useRef(null);
-
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    const formNode = formElement.current;
+    // The form on a submit, the form of the field on a change or a blur. Not currentTarget,
+    // which React clears before the debounced call of the text field runs
+    const formNode = event.target.form ?? event.target;
     const formData = new FormData(formNode);
 
     onSubmit?.(formData);
@@ -31,14 +33,13 @@ const Search = ({ onSubmit }) => {
     <form
       className="search-container"
       onSubmit={handleFormSubmit}
-      ref={formElement}
     >
       <div className="search">
         <input
           type="text"
           name="value"
           placeholder="Search Plugins"
-          onChange={_.debounce(handleFormSubmit, 900)}
+          onChange={_.debounce(handleFormSubmit, SEARCH_DEBOUNCE_MS)}
         />
         <Tooltip
           content={<i>Click to launch the search</i>}

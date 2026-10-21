@@ -1,5 +1,4 @@
 // Components
-import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faThList } from '@fortawesome/free-solid-svg-icons';

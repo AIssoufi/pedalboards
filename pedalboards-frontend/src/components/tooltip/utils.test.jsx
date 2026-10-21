@@ -1,6 +1,3 @@
-// Dependencies
-import React from 'react';
-
 // Constants
 import { DEFAULT_TOOLTIP_PLACEMENT, TOOLTIP_DISTANCE_PX, VIEWPORT_MARGIN_PX } from './constants';
 
@@ -58,6 +55,7 @@ describe('isEmptyNode', () => {
     ['zero, which React shows', 0],
     ['a blank string, which React shows', ' '],
     ['a text', 'Help'],
+    // eslint-disable-next-line react/jsx-key -- a row of the table, never rendered in a list
     ['an element', <i>Help</i>],
     ['a list of nodes', ['Help', <br key="break" />]]
   ])('is false for %s', (description, node) => {

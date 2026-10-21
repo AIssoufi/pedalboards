@@ -25,6 +25,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "lint": "eslint . --max-warnings 0",
     "check:dev-server": "node ../tools/dev-server-check/check-dev-server.mjs",
     "check:bundle": "node scripts/check-bundle.mjs"
   },
@@ -44,13 +45,16 @@
     "reselect": "^4.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
     "@vitejs/plugin-react": "^6.1.2",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.17.3",
-    "eslint-plugin-jsx-a11y": "^6.2.1",
-    "eslint-plugin-react": "^7.14.1",
+    "eslint": "^9.39.5",
+    "eslint-plugin-import-x": "^4.17.1",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
     "jsdom": "^30.1.3",
     "sass": "^1.105.2",
     "vite": "^8.3.4",

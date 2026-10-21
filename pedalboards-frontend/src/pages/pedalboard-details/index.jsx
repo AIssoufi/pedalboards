@@ -1,5 +1,5 @@
 // Dependencies
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 // Components
@@ -15,33 +15,46 @@ import {
 // Style
 import './style.scss';
 
+/**
+ * Page of one plugin, the one of the `id` parameter of its route: shows the loader while the
+ * plugin is fetched, then its details, or an empty state when the answer holds no plugin.
+ */
 const PedalboardDetailsPage = ({ match }) => {
-  const initialPlugin = undefined;
-  const [isFetching, setIsFetching] = useState(false);
-  const [plugin, setPlugin] = useState(initialPlugin);
+  const pluginId = match?.params?.id;
+  // The plugin of the last answer, with the id it answered, so the page fetches while the id of
+  // its route has no answer yet, without setting a state when the fetch starts
+  const [fetched, setFetched] = useState({});
+  const hasAnswer = fetched.pluginId === pluginId;
+  // A route without an id fetches nothing, so it never waits for an answer
+  const isFetching = Boolean(pluginId) && !hasAnswer;
+  const plugin = hasAnswer ? fetched.plugin : undefined;
+  const hasContent = isFetching || Boolean(plugin);
 
   useEffect(() => {
-    const {
-      params: {
-        id: pluginId
-      } = {}
-    } = match;
+    // A route without an id names no plugin, so the page shows its empty state at once
+    if (!pluginId) return undefined;
 
-    setIsFetching(true);
+    let fetchedPlugin;
+    // False once the id changes, so a late answer for the previous id is ignored
+    let isCurrentId = true;
 
     PedalboardService.getPlugin(pluginId)
       .then((response) => {
-        setPlugin(response.data);
+        fetchedPlugin = response?.data;
       })
       .finally(() => {
-        setIsFetching(false);
+        if (isCurrentId) setFetched({ pluginId, plugin: fetchedPlugin });
       });
-  }, []);
+
+    return () => {
+      isCurrentId = false;
+    };
+  }, [pluginId]);
 
   return (
     <div className="pedalboard-details-wrapper">
       <div className="details-container">
-        {isFetching || plugin
+        {hasContent
           ? <PedalboardDetails isLoading={isFetching} {...plugin} />
           : <p>Pas de données disponible</p>
         }
@@ -51,11 +64,12 @@ const PedalboardDetailsPage = ({ match }) => {
 };
 
 PedalboardDetailsPage.propTypes = {
+  /** Match of the route, given by the router, whose `id` parameter names the plugin. */
   match: PropTypes.shape({
     params: PropTypes.shape({
-      id: PropTypes.string.isRequired
+      id: PropTypes.string
     })
-  }).isRequired
+  })
 };
 
 export default PedalboardDetailsPage;

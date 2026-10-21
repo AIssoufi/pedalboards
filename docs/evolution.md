@@ -221,3 +221,39 @@ advisories of `lodash`: those of `recompose`, `react-router-dom` 4, `react-redux
 `redux-devtools` are gone.
 
 Decision: [0007. Replace react-tippy and recompose with in-house code](decisions/0007-in-house-tooltip-and-loader.md)
+
+## Since 2026: the frontend linted with ESLint 9
+
+The frontend moves from an unused `.eslintrc.js`, built on the airbnb and Create React App
+presets, to a flat `eslint.config.mjs` on ESLint 9, made of the recommended presets of ESLint,
+React, React Hooks, jsx-a11y and `eslint-plugin-import-x`. `pnpm lint` exits 0 and runs in the
+CI before the tests, with `import-x/no-cycle` as an error: the plugin grid now imports its card
+from its own module rather than from the `components` barrel. The fixes follow the React
+Compiler rules of React Hooks 7: the search form reads its fields from the event rather than a
+ref, and the details page sets no state synchronously in its effect. The CMS keeps no lint until
+it leaves Create React App ([#45](https://github.com/AIssoufi/pedalboards/issues/45)), whose
+preflight check refuses ESLint 9.
+
+| Figure | Before (`ec26dfff`) | After |
+| --- | --- | --- |
+| Frontend lint problems, errors / warnings | 99 (95 / 4) | 0 |
+| `import/no-cycle` errors | 2 | 0 |
+| Frontend lint run, median of 3 | 0.9 s | 1.1 s |
+| Frontend tests, all passing | 287 | 303 |
+| Frontend direct dependencies | 24 | 27 |
+| Install after deleting `node_modules`, median of 3 | 1.7 s | 3.4 s |
+| Frontend audit advisories, critical / high / moderate / low | 2 / 21 / 13 / 3 | 0 / 3 / 3 / 0 |
+| Workspace audit advisories, critical / high / moderate / low | 27 / 99 / 69 / 24 | 27 / 99 / 69 / 24 |
+
+The base and the branch were measured in turn on an Apple M3 (8 cores), with Node.js 24.22.0 and
+pnpm 12.14.0. The lint of the base is `eslint --ext .js,.jsx src` with the ESLint 5.6.0 that the
+frontend reached through the hoisted dependencies of the CMS, since it had no ESLint of its own:
+most of its problems were `react/require-default-props`, the Vitest globals unknown to its
+config, and a parsing error that stopped it from reading one test file. The lint of the branch
+is `pnpm lint`, over `src`, `scripts` and the configuration files. The install takes longer with
+the ESLint 9 plugins and their resolver, but the frontend no longer reaches the advisories of
+the ESLint 5 tree: the 6 left are those of `lodash`, which
+[#36](https://github.com/AIssoufi/pedalboards/issues/36) removes. The workspace keeps the same
+advisories, those of the CMS.
+
+Decision: [0008. Lint the frontend with ESLint 9 and its recommended presets](decisions/0008-eslint-flat-config.md)
