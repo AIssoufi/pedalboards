@@ -8,17 +8,27 @@ packages:
 # imports (import { PedalboardService } from 'services') would fail
 extendNodePath: false
 
+# Create React App 2 in the CMS refuses to start or build when a folder above react-scripts holds
+# another ESLint than its own, and pnpm would hoist the ESLint 9 of the frontend into
+# node_modules/.pnpm/node_modules. Every other package is hoisted there, as by default
+hoistPattern:
+  - '*'
+  - '!eslint'
+
 # No dependency needs its install script to work, so none runs:
 # - core-js and core-js-pure only print a message;
 # - fsevents 1 has no build for Node.js 24, and chokidar watches files without it;
 # - @parcel/watcher only serves the watch mode of the sass command line, which no app uses;
-# - esbuild and workerd (wrangler) only check the binary that their platform package installs.
+# - esbuild and workerd (wrangler) only check the binary that their platform package installs;
+# - unrs-resolver (eslint-plugin-import-x) only downloads a binary when its platform package is
+#   missing.
 allowBuilds:
   '@parcel/watcher': false
   core-js: false
   core-js-pure: false
   esbuild: false
   fsevents: false
+  unrs-resolver: false
   workerd: false
 
 # The tooltips of the CMS import react and react-dom without declaring them, so pnpm would give
