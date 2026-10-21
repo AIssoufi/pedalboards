@@ -8,8 +8,13 @@ import { RouterProvider } from 'react-router/dom';
 // Components
 import PedalboardDetails from './index';
 
+// Test utils
+import { jsonResponse } from '../../test-utils/fetch';
+
 const LOADER_TEXT = 'Je Fais ça En Deux Deux...';
 const EMPTY_STATE_TEXT = 'Pas de données disponible';
+const ERROR_TEXT = 'Impossible de charger ce plugin, réessayez plus tard.';
+const SERVER_ERROR_STATUS = 500;
 
 /**
  * Answers each fetch with the plugin that `getPlugin` gives for its URL.
@@ -17,7 +22,7 @@ const EMPTY_STATE_TEXT = 'Pas de données disponible';
  * @param {Function} getPlugin - Gives the plugin of a URL, or `undefined` for no plugin.
  */
 const mockFetch = getPlugin => vi.spyOn(window, 'fetch')
-  .mockImplementation(url => Promise.resolve({ json: () => ({ data: getPlugin(String(url)) }) }));
+  .mockImplementation(url => Promise.resolve(jsonResponse({ body: { data: getPlugin(String(url)) } })));
 
 /**
  * Holds each fetch until the test answers it with the plugin of its id.
@@ -28,7 +33,7 @@ const holdFetch = () => {
   const answerById = {};
   vi.spyOn(window, 'fetch').mockImplementation(url => new Promise((resolve) => {
     const id = String(url).split('/').pop();
-    answerById[id] = () => resolve({ json: () => ({ data: { uri: `https://plugin/${id}` } }) });
+    answerById[id] = () => resolve(jsonResponse({ body: { data: { uri: `https://plugin/${id}` } } }));
   }));
   return answerById;
 };
@@ -92,12 +97,28 @@ it('fetches the plugin of a new id and shows the loader until it answers', async
   expect(window.fetch).toHaveBeenCalledTimes(2);
 });
 
-it('shows the empty state when the fetch fails', async () => {
-  vi.spyOn(console, 'log').mockImplementation(() => {});
-  vi.spyOn(window, 'fetch').mockImplementation(() => Promise.reject(new Error('offline')));
+it.each([
+  ['the network fails', () => Promise.reject(new TypeError('Failed to fetch'))],
+  ['the API answers an error', () => Promise.resolve(jsonResponse({ status: SERVER_ERROR_STATUS }))]
+])('shows an error message when %s', async (description, answer) => {
+  vi.spyOn(window, 'fetch').mockImplementation(answer);
   renderAt('/plugin/2');
 
-  expect(await screen.findByText(EMPTY_STATE_TEXT)).toBeDefined();
+  expect((await screen.findByRole('alert')).textContent).toBe(ERROR_TEXT);
+  expect(screen.queryByText(LOADER_TEXT)).toBeNull();
+  expect(screen.queryByText(EMPTY_STATE_TEXT)).toBeNull();
+});
+
+it('shows the plugin of a new id after an error', async () => {
+  vi.spyOn(window, 'fetch').mockImplementationOnce(() => Promise.reject(new TypeError('offline')));
+  mockFetch(url => ({ uri: `https://plugin/${url.split('/').pop()}` }));
+  const router = renderAt('/plugin/2');
+  expect(await screen.findByRole('alert')).toBeDefined();
+
+  await navigate({ router, url: '/plugin/3' });
+
+  expect(await screen.findByRole('link', { name: 'https://plugin/3' })).toBeDefined();
+  expect(screen.queryByRole('alert')).toBeNull();
 });
 
 it.each([

@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import store from '../redux/store';
 import App from './App';
+import { jsonResponse } from '../test-utils/fetch';
 
 const EMPTY_GRID_TEXT = 'Aucun plugin ne correspond à votre recherche !';
 const EMPTY_DETAILS_TEXT = 'Pas de données disponible';
@@ -18,9 +19,9 @@ const isPluginUrl = url => String(url).includes('/api/plugin/');
  * @param {string} url - URL the browser shows when the app starts, such as '/plugin/2'.
  */
 const renderAt = (url) => {
-  vi.spyOn(window, 'fetch').mockImplementation(url => Promise.resolve({
-    json: () => (isPluginUrl(url) ? {} : EMPTY_PLUGIN_LIST)
-  }));
+  vi.spyOn(window, 'fetch').mockImplementation(url => Promise.resolve(jsonResponse({
+    body: isPluginUrl(url) ? {} : EMPTY_PLUGIN_LIST
+  })));
   window.history.pushState({}, '', url);
 
   render(

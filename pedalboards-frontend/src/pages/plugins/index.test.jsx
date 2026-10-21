@@ -15,13 +15,16 @@ import store from '../../redux/store';
 // Components
 import Plugins, { PluginsPage } from './index';
 
+// Test utils
+import { jsonResponse } from '../../test-utils/fetch';
+
 const EMPTY_GRID_TEXT = 'Aucun plugin ne correspond à votre recherche !';
 
 it('renders without crashing', async () => {
   // The store fetches the plugins: an answer keeps its promise from failing in a later test
   const emptyAnswer = { data: [], count: 0, numberPages: 0 };
   vi.spyOn(window, 'fetch')
-    .mockImplementation(() => Promise.resolve({ json: () => emptyAnswer }));
+    .mockImplementation(() => Promise.resolve(jsonResponse({ body: emptyAnswer })));
   try {
     render(
       <Provider store={store}>

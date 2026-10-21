@@ -22,6 +22,7 @@ export default defineConfig({
     globals: true,
     // Creates jsdom once per worker and keeps each test file apart: the default pool, creating it
     // once per file, made the tests three times slower
-    pool: 'vmThreads'
+    pool: 'vmThreads',
+    setupFiles: ['./src/test-utils/setup.js']
   }
 });
