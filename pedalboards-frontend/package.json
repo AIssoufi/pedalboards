@@ -25,7 +25,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "check:dev-server": "node ../tools/dev-server-check/check-dev-server.mjs"
+    "check:dev-server": "node ../tools/dev-server-check/check-dev-server.mjs",
+    "check:bundle": "node scripts/check-bundle.mjs"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.8",

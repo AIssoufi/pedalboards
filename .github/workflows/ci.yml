@@ -26,9 +26,11 @@ jobs:
       matrix:
         include:
           # dev-server-check: the app's dev script runs Vite, which the dev server check starts
+          # bundle-check: the app has a check:bundle script, run on its build
           - name: Frontend
             directory: pedalboards-frontend
             dev-server-check: true
+            bundle-check: true
           - name: CMS
             directory: pedalboards-cms
     defaults:
@@ -52,6 +54,10 @@ jobs:
         run: CI=true pnpm test
       - name: Build
         run: CI=true pnpm run build
+      # Checks that the build holds no development-only code, such as redux-logger
+      - name: Check the bundle
+        if: matrix.bundle-check
+        run: pnpm run check:bundle
       - name: Test the dev server check
         if: matrix.dev-server-check
         run: pnpm --workspace-root run test:dev-server-check
