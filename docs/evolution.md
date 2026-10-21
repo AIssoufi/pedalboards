@@ -257,3 +257,38 @@ the ESLint 5 tree: the 6 left are those of `lodash`, which
 advisories, those of the CMS.
 
 Decision: [0008. Lint the frontend with ESLint 9 and its recommended presets](decisions/0008-eslint-flat-config.md)
+
+## Since 2026: the frontend on React Router 8
+
+The frontend moves from `react-router-dom` 5.3, which kept the API of React Router 4 (route props
+and `withRouter`), to `react-router` 8 in library mode: version 8 removes `react-router-dom`, and
+`react-router` holds the browser router, with the DOM components in `react-router/dom`. The move
+goes through React Router 7 in its own commit, as the upgrade guide of version 8 advises, and
+that guide changes nothing else in the declarative mode that the app uses.
+
+The routes give their element to `Routes`, and an unknown path goes to `/plugins` with
+`Navigate`. The pages no longer receive route props: the details page reads its id with
+`useParams`, and the plugins page reads and writes its query string with `useSearchParams`, so
+the search parameters still drive the list. The page keeps the search of the URL shown in a ref,
+which the debounced search field reads, so that a search never adds the same URL twice to the
+history. The routes no longer take a `component`, so the prop type warning that the `connect`
+object of react-redux caused in React Router 4 and 5 cannot come back. The app tests now open
+deep links (`/plugin/:id`, `/plugins?brand=MDA&page=2`) and check the redirect of an unknown
+path.
+
+| Figure | Before (`b692eff2`) | After |
+| --- | --- | --- |
+| Frontend tests, all passing | 303 | 310 |
+| Frontend test run, median of 3 | 1.2 s | 1.0 s |
+| Frontend build, median of 3 | 0.3 s | 0.4 s |
+| Frontend JS that the page loads, raw / gzipped | 382,043 B / 123,364 B | 399,366 B / 129,526 B |
+| Frontend direct dependencies | 27 | 27 |
+| Frontend audit advisories, critical / high / moderate / low | 0 / 3 / 3 / 0 | 0 / 3 / 3 / 0 |
+| Workspace audit advisories, critical / high / moderate / low | 27 / 99 / 69 / 24 | 27 / 99 / 69 / 24 |
+
+The base and the branch were measured in turn on an Apple M3 (8 cores), with Node.js 24.22.0 and
+pnpm 12.14.0, three runs each, the build output deleted before each build. The sizes are those of
+the built script, gzipped with `gzip -9`. React Router 8 adds 17.3 kB of JavaScript, 6.2 kB
+gzipped, which [#60](https://github.com/AIssoufi/pedalboards/issues/60) follows with the rest
+of the bundle. The advisories left in the frontend are those of `lodash`, which
+[#36](https://github.com/AIssoufi/pedalboards/issues/36) removes.
