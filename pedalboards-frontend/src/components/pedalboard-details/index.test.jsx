@@ -2,7 +2,7 @@
 import { render, screen } from '@testing-library/react';
 
 // Stub
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 
 // Components
 import PedalboardDetails from './index';

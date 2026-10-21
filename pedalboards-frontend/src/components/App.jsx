@@ -1,8 +1,8 @@
 // Dependencies
 import { Fragment } from 'react';
 import {
-  BrowserRouter as Router, Route, Switch, Redirect
-} from 'react-router-dom';
+  BrowserRouter, Navigate, Route, Routes
+} from 'react-router';
 
 // Components
 import {
@@ -18,18 +18,18 @@ import {
 import './App.css';
 
 const App = () => (
-  <Router>
+  <BrowserRouter>
     <Fragment>
       <Header />
       <main className="main-container">
-        <Switch>
-          <Route exact path="/plugins" component={Plugins} />
-          <Route exact path="/plugin/:id" component={PedalboardDetails} />
-          <Redirect to="/plugins" />
-        </Switch>
+        <Routes>
+          <Route path="/plugins" element={<Plugins />} />
+          <Route path="/plugin/:id" element={<PedalboardDetails />} />
+          <Route path="*" element={<Navigate to="/plugins" replace />} />
+        </Routes>
       </main>
     </Fragment>
-  </Router>
+  </BrowserRouter>
 );
 
 export default App;

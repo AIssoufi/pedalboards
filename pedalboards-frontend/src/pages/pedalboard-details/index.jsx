@@ -1,6 +1,6 @@
 // Dependencies
 import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import { useParams } from 'react-router';
 
 // Components
 import {
@@ -19,8 +19,8 @@ import './style.scss';
  * Page of one plugin, the one of the `id` parameter of its route: shows the loader while the
  * plugin is fetched, then its details, or an empty state when the answer holds no plugin.
  */
-const PedalboardDetailsPage = ({ match }) => {
-  const pluginId = match?.params?.id;
+const PedalboardDetailsPage = () => {
+  const { id: pluginId } = useParams();
   // The plugin of the last answer, with the id it answered, so the page fetches while the id of
   // its route has no answer yet, without setting a state when the fetch starts
   const [fetched, setFetched] = useState({});
@@ -61,15 +61,6 @@ const PedalboardDetailsPage = ({ match }) => {
       </div>
     </div>
   );
-};
-
-PedalboardDetailsPage.propTypes = {
-  /** Match of the route, given by the router, whose `id` parameter names the plugin. */
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string
-    })
-  })
 };
 
 export default PedalboardDetailsPage;

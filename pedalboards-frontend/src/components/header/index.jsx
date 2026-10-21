@@ -1,5 +1,5 @@
 // Components
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faThList } from '@fortawesome/free-solid-svg-icons';
 
@@ -30,11 +30,8 @@ const Header = () => (
         </div>
       </div>
       <div className="toolbar-option-container">
-        <NavLink
-          className="toolbar-option"
-          activeClassName="active"
-          to="/plugins"
-        >
+        {/* NavLink adds the active class while the URL is under /plugins */}
+        <NavLink className="toolbar-option" to="/plugins">
           <FontAwesomeIcon icon={faThList} />
           <span>Plugins</span>
         </NavLink>

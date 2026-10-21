@@ -1,6 +1,6 @@
 // Dependencies
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 // HOC
 import { withLoader } from '../../hoc';
