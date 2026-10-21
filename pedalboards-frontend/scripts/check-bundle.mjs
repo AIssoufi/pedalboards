@@ -1,5 +1,5 @@
-// Fails when the scripts of the production build hold code of a development-only package, such as
-// redux-logger. Run `pnpm build` first.
+// Fails when the scripts of the production build hold development-only code, such as the state
+// checks of Redux Toolkit. Run `pnpm build` first.
 import { readdir, readFile } from 'node:fs/promises';
 
 import { BUILD_ASSETS_URL, DEVELOPMENT_ONLY_MARKERS, SCRIPT_EXTENSION } from './constants.mjs';

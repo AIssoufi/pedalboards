@@ -19,10 +19,6 @@ const PLUGINS = [
  */
 const renderGrid = props => render(<MemoryRouter><PluginGrid {...props} /></MemoryRouter>);
 
-afterEach(() => {
-  vi.restoreAllMocks();
-});
-
 it('renders its empty state without props', () => {
   renderGrid();
 
@@ -40,8 +36,6 @@ it.each([
   ['an object', {}],
   ['a string', 'abc']
 ])('renders its empty state when the plugins are %s', (description, plugins) => {
-  vi.spyOn(console, 'error').mockImplementation(() => {});
-
   renderGrid({ plugins });
 
   expect(screen.getByText(EMPTY_STATE_TEXT)).toBeDefined();
@@ -62,4 +56,22 @@ it('shows the loader in place of the cards while loading', () => {
 
   expect(screen.getByText(LOADER_TEXT)).toBeDefined();
   expect(screen.queryAllByRole('link')).toHaveLength(0);
+});
+
+it('shows the loader for a truthy isLoading that is not a boolean', () => {
+  renderGrid({ plugins: PLUGINS, isLoading: 'yes' });
+
+  expect(screen.getByText(LOADER_TEXT)).toBeDefined();
+});
+
+it.each([
+  ['missing', undefined],
+  ['null', null],
+  ['zero', 0],
+  ['empty', '']
+])('shows the cards when isLoading is %s', (description, isLoading) => {
+  renderGrid({ plugins: PLUGINS, isLoading });
+
+  expect(screen.queryByText(LOADER_TEXT)).toBeNull();
+  expect(screen.getAllByRole('link').length).toBeGreaterThan(0);
 });

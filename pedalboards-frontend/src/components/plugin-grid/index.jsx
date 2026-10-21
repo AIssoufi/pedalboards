@@ -1,11 +1,8 @@
 // Dependencies
-import PropTypes from 'prop-types';
 
 // Components: imported from its own module, since the `components` barrel imports this grid
 import Plugin from '../plugin';
-
-// HOC
-import { withLoader } from '../../hoc';
+import Loader from '../loader';
 
 // Styles
 import './style.scss';
@@ -14,10 +11,23 @@ import './style.scss';
 const NO_PLUGINS = [];
 
 /**
- * Grid of the plugin cards, or a message when no plugin matches the search. Shows the loader in
- * its place while `isLoading` is truthy (`withLoader`).
+ * Props of {@link PluginGrid}.
+ *
+ * @typedef {Object} PluginGridProps
+ * @property {boolean} [isLoading=false] - Shows the loader in place of the grid while truthy.
+ * @property {Array<import('../plugin').PluginProps>} [plugins=[]] - Plugins to show, one card
+ *   each.
  */
-const PluginGrid = ({ plugins = NO_PLUGINS }) => {
+
+/**
+ * Grid of the plugin cards, or a message when no plugin matches the search. Shows the loader in
+ * its place while `isLoading` is truthy.
+ *
+ * @param {PluginGridProps} props - Props of the component.
+ */
+const PluginGrid = ({ plugins = NO_PLUGINS, isLoading = false }) => {
+  if (isLoading) return <Loader />;
+
   // The plugins come from the API as it answers: anything but a list shows the empty state
   const pluginList = Array.isArray(plugins) ? plugins : NO_PLUGINS;
 
@@ -33,13 +43,4 @@ const PluginGrid = ({ plugins = NO_PLUGINS }) => {
   );
 };
 
-PluginGrid.propTypes = {
-  /** Plugins to show, one card each. @default [] */
-  plugins: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.string,
-    name: PropTypes.string,
-    brand: PropTypes.string
-  }))
-};
-
-export default withLoader(PluginGrid);
+export default PluginGrid;

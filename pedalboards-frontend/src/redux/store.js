@@ -1,25 +1,27 @@
 // Dependencies
-import { createStore, applyMiddleware, compose } from 'redux';
-import thunkMiddleware from 'redux-thunk';
+import { configureStore } from '@reduxjs/toolkit';
+
+// Constants
+import { PLUGINS_SLICE_NAME } from './plugins/constants';
 
 // Reducers
-import rootReducer from './reducers';
+import pluginsReducer from './plugins/slice';
 
-const { __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: DEVTOOLS } = window;
-const composeEnhancers = DEVTOOLS || compose;
+/**
+ * Creates the store of the app. Redux Toolkit adds the thunk middleware, and in development
+ * only the checks that the state is never mutated nor holds values that are not serializable.
+ *
+ * @param {Object} [params]
+ * @param {Object} [params.preloadedState] - State to start from, for the tests.
+ * @returns The store.
+ */
+const setupStore = ({ preloadedState } = {}) => configureStore({
+  reducer: {
+    [PLUGINS_SLICE_NAME]: pluginsReducer
+  },
+  preloadedState,
+  // The Redux DevTools extension sees the store in development only, never in production
+  devTools: import.meta.env.DEV
+});
 
-const middlewares = [thunkMiddleware];
-
-// Logs each action in development only: the production build drops this branch, and with it the
-// whole redux-logger package, so that visitors never see the state in their console
-if (import.meta.env.DEV) {
-  const { default: logger } = await import('redux-logger');
-  middlewares.push(logger);
-}
-
-const store = createStore(
-  rootReducer,
-  composeEnhancers(applyMiddleware(...middlewares))
-);
-
-export default store;
+export default setupStore;

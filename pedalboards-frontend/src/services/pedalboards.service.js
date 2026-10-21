@@ -4,9 +4,24 @@ import { RequestHelper } from '../helpers';
 // Utils
 import { Env } from '../utils';
 
+/**
+ * Client of the API of the core service. Each method rejects with a `RequestError` when the
+ * request gets no usable answer (see `helpers/request.helper.js`).
+ */
 class PedalboardsService {
   constructor() {
     this.url = Env.get('core_service');
+  }
+
+  /**
+   * Builds the URL of one plugin, with its id encoded so that a `?`, `#` or `/` in it stays in
+   * the path segment.
+   *
+   * @param {string} id - Id of the plugin, such as 'mda-overdrive'.
+   * @returns {string} The URL of the plugin in the API.
+   */
+  pluginUrl(id) {
+    return `${this.url}/api/plugin/${encodeURIComponent(id)}`;
   }
 
   async getPlugins(page = 1, pagesize = 10) {
@@ -33,27 +48,21 @@ class PedalboardsService {
   }
 
   async getPlugin(id) {
-    const url = `${this.url}/api/plugin/${id}`;
-
-    return RequestHelper.get(url);
+    return RequestHelper.get(this.pluginUrl(id));
   }
 
   async updatePlugin(id, data) {
-    const url = `${this.url}/api/plugin/${id}`;
-
-    return RequestHelper.put(url, data);
+    return RequestHelper.put({ url: this.pluginUrl(id), body: data });
   }
 
   async createPlugin(data) {
     const url = `${this.url}/api/plugin`;
 
-    return RequestHelper.post(url, data);
+    return RequestHelper.post({ url, body: data });
   }
 
   async deletePlugin(id) {
-    const url = `${this.url}/api/plugin/${id}`;
-
-    return RequestHelper.remove(url);
+    return RequestHelper.remove(this.pluginUrl(id));
   }
 }
 

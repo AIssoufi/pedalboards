@@ -1,9 +1,8 @@
 // Dependencies
-import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 
-// HOC
-import { withLoader } from '../../hoc';
+// Components
+import Loader from '../loader';
 
 // Utils
 import { buildPluginFilterLink, isPluginFilterValue } from '../../utils/plugin-filter';
@@ -13,14 +12,49 @@ import { isControlPort, toCellText } from './utils';
 import './style.scss';
 
 /**
+ * Control port of a plugin, one row of the table of the details.
+ *
+ * @typedef {Object} ControlPort
+ * @property {number} [default] - Value of the port when the plugin loads.
+ * @property {number} [max] - Highest value of the port.
+ * @property {number} [min] - Lowest value of the port.
+ * @property {string} [name] - Name of the port.
+ */
+
+/**
+ * Props of {@link PedalboardDetails}.
+ *
+ * @typedef {Object} PedalboardDetailsProps
+ * @property {boolean} [isLoading=false] - Shows the loader in place of the details while truthy.
+ * @property {{ name?: string }} [author={}] - Author of the plugin, whose name heads the details.
+ * @property {Array<string>} [categories=[]] - Categories, each linking to the plugins of that
+ *   category. Blank ones are skipped.
+ * @property {string} [description=''] - Description, shown as plain text.
+ * @property {Array<ControlPort>} [controlPorts=[]] - Control ports, one row each in the table.
+ *   Entries that are not objects are skipped, and a field that is neither a text nor a number
+ *   leaves its cell empty.
+ * @property {string} [label=''] - Label, shown as the title. Hidden when empty.
+ * @property {number} [pedalboardCount=0] - Number of pedalboards using the plugin. Hidden when 0.
+ * @property {string} [screenshotUrl=''] - URL of the screenshot. The image is omitted when empty.
+ * @property {string} [uri=''] - URI of the plugin, linked in the header. The link is omitted when
+ *   empty.
+ * @property {string} [version=''] - Version, shown after a 'v'. Hidden when empty.
+ */
+
+/**
  * Details of a plugin: its author and URI, how many pedalboards use it, its label, screenshot,
  * categories linking to the plugins of each category, description, control ports and version.
- * A missing field shows nothing in its place.
+ * A missing field shows nothing in its place. Shows the loader in their place while `isLoading`
+ * is truthy.
+ *
+ * @param {PedalboardDetailsProps} props - Props of the component.
  */
 const PedalboardDetails = ({
   author = {}, uri = '', pedalboardCount = 0, label = '', screenshotUrl = '', categories = [],
-  controlPorts = [], version = '', description = ''
+  controlPorts = [], version = '', description = '', isLoading = false
 }) => {
+  if (isLoading) return <Loader />;
+
   const { name: authorName = '' } = author || {};
   const categoryList = Array.isArray(categories) ? categories.filter(isPluginFilterValue) : [];
   const controlPortList = Array.isArray(controlPorts) ? controlPorts.filter(isControlPort) : [];
@@ -101,39 +135,4 @@ const PedalboardDetails = ({
   );
 };
 
-PedalboardDetails.propTypes = {
-  /** Author of the plugin, whose name heads the details. @default {} */
-  author: PropTypes.shape({
-    name: PropTypes.string
-  }),
-  /**
-   * Categories, each linking to the plugins of that category. Blank ones are skipped.
-   * @default []
-   */
-  categories: PropTypes.arrayOf(PropTypes.string),
-  /** Description, shown as plain text. @default '' */
-  description: PropTypes.string,
-  /**
-   * Control ports, one row each in the table. Entries that are not objects are skipped, and a
-   * field that is neither a text nor a number leaves its cell empty.
-   * @default []
-   */
-  controlPorts: PropTypes.arrayOf(PropTypes.shape({
-    default: PropTypes.number,
-    max: PropTypes.number,
-    min: PropTypes.number,
-    name: PropTypes.string
-  })),
-  /** Label, shown as the title. Hidden when empty. @default '' */
-  label: PropTypes.string,
-  /** Number of pedalboards using the plugin. Hidden when 0. @default 0 */
-  pedalboardCount: PropTypes.number,
-  /** URL of the screenshot. The image is omitted when empty. @default '' */
-  screenshotUrl: PropTypes.string,
-  /** URI of the plugin, linked in the header. The link is omitted when empty. @default '' */
-  uri: PropTypes.string,
-  /** Version, shown after a 'v'. Hidden when empty. @default '' */
-  version: PropTypes.string
-};
-
-export default withLoader(PedalboardDetails);
+export default PedalboardDetails;

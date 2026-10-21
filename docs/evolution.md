@@ -292,3 +292,35 @@ the built script, gzipped with `gzip -9`. React Router 8 adds 17.3 kB of JavaScr
 gzipped, which [#60](https://github.com/AIssoufi/pedalboards/issues/60) follows with the rest
 of the bundle. The advisories left in the frontend are those of `lodash`, which
 [#36](https://github.com/AIssoufi/pedalboards/issues/36) removes.
+
+## Since 2026: the frontend store on Redux Toolkit
+
+The frontend moves its store from hand-written Redux 4 (action types, creators, thunks with
+`redux-thunk`, `reselect` selectors and `redux-logger` in development) to a slice of Redux
+Toolkit, read with the hooks of react-redux in place of `connect`. The request helper now
+rejects a failed request instead of resolving it with `undefined`, the store keeps the error of
+the last load, and both pages show an alert when the API fails. The search form shows the
+filter of the URL and debounces its search once, with a hook in place of `lodash`. The loader
+moves from the `withLoader` higher-order component into the grid and the details, and the props
+are typed with JSDoc in place of `prop-types`, which React 19 no longer checks.
+
+| Figure | Before (`f8e72b82`) | After |
+| --- | --- | --- |
+| Frontend tests, all passing | 310 | 418 |
+| Frontend test run, median of 3 | 1.0 s | 1.1 s |
+| Frontend build, median of 3 | 0.3 s | 0.3 s |
+| Frontend JS that the page loads, raw / gzipped | 399,366 B / 130,200 B | 340,244 B / 109,544 B |
+| Frontend direct dependencies | 27 | 22 |
+| Install after deleting `node_modules`, median of 3 | 1.7 s | 1.8 s |
+| Frontend audit advisories, critical / high / moderate / low | 0 / 3 / 3 / 0 | 0 / 0 / 0 / 0 |
+| Workspace audit advisories, critical / high / moderate / low | 27 / 99 / 69 / 24 | 27 / 99 / 69 / 24 |
+
+The base and the branch were measured in turn on an Apple M3 (8 cores), with Node.js 24.22.0 and
+pnpm 12.14.0, three runs each, the build output deleted before each build, with
+`measure-migration.mjs`, which gzips at the default level of Node.js. The script that the page
+loads loses 59,122 B, 20,656 B gzipped: `lodash` and `redux-logger` leave it, and Redux Toolkit
+brings `immer`. `prop-types` stays in it, as a dependency of `@fortawesome/react-fontawesome`.
+The frontend has no audit advisory left, since those of `lodash` are gone; the workspace keeps
+the same ones, those of the CMS. The tests count the frontend and its scripts.
+
+Decision: [0009. Run the frontend store on Redux Toolkit, with hooks and no prop-types](decisions/0009-redux-toolkit-and-hooks.md)
