@@ -27,10 +27,13 @@ jobs:
         include:
           # dev-server-check: the app's dev script runs Vite, which the dev server check starts
           # bundle-check: the app has a check:bundle script, run on its build
+          # lint: the app has a lint script. Create React App 2 refuses the ESLint 9 that a lint of the
+          # CMS would need, so the CMS gets its own once it moves to Vite
           - name: Frontend
             directory: pedalboards-frontend
             dev-server-check: true
             bundle-check: true
+            lint: true
           - name: CMS
             directory: pedalboards-cms
     defaults:
@@ -48,6 +51,9 @@ jobs:
       # Installs the whole workspace from its single lockfile, even from the folder of one app
       - name: Install
         run: pnpm install --frozen-lockfile
+      - name: Lint
+        if: matrix.lint
+        run: pnpm run lint
       # CI=true runs the Jest of the CMS once instead of in watch mode, and makes its build fail on
       # lint warnings. The frontend runs Vitest once and ignores it
       - name: Test

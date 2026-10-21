@@ -25,6 +25,7 @@
     "test:commit-messages": "node --test \"tools/commit-messages/**/*.test.mjs\"",
     "test:dev-server-check": "node --test \"tools/dev-server-check/**/*.test.mjs\"",
     "build": "pnpm --filter pedalboards-frontend --filter pedalboards-cms build",
+    "lint": "pnpm --filter pedalboards-frontend lint",
     "check:dev-server": "pnpm --filter pedalboards-frontend check:dev-server"
   },
   "keywords": [
