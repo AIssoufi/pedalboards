@@ -5,7 +5,9 @@ import {
 import { Provider } from 'react-redux';
 
 // Stub
-import { MemoryRouter, Route } from 'react-router-dom';
+import {
+  MemoryRouter, Route, Routes, useLocation, useNavigate
+} from 'react-router';
 
 // Redux - store
 import store from '../../redux/store';
@@ -24,7 +26,9 @@ it('renders without crashing', async () => {
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={['/plugins']}>
-          <Route path="/plugins" component={Plugins} />
+          <Routes>
+            <Route path="/plugins" element={<Plugins />} />
+          </Routes>
         </MemoryRouter>
       </Provider>
     );
@@ -52,9 +56,16 @@ const SEARCH_DEBOUNCE_WAIT_MS = 1000;
 
 describe('PluginsPage', () => {
   let location;
-  let history;
+  let navigate;
   let fetchPlugins;
   let findPlugins;
+
+  // Keeps the location shown and the navigate function of the router for the assertions
+  const RouterSpy = () => {
+    location = useLocation();
+    navigate = useNavigate();
+    return null;
+  };
 
   /**
    * Renders the page at a URL, with stand-ins for the actions that fetch the plugins.
@@ -67,21 +78,20 @@ describe('PluginsPage', () => {
   const renderPage = ({ url, countPlugins = 1, plugins = [] }) => {
     render(
       <MemoryRouter initialEntries={[url]}>
-        <Route
-          path="/plugins"
-          render={(routeProps) => {
-            ({ location, history } = routeProps);
-            return (
+        <RouterSpy />
+        <Routes>
+          <Route
+            path="/plugins"
+            element={(
               <PluginsPage
-                {...routeProps}
                 fetchPlugins={fetchPlugins}
                 findPlugins={findPlugins}
                 plugins={plugins}
                 countPlugins={countPlugins}
               />
-            );
-          }}
-        />
+            )}
+          />
+        </Routes>
       </MemoryRouter>
     );
   };
@@ -173,6 +183,7 @@ describe('PluginsPage', () => {
     fireEvent.submit(fillSearch({ value: ' Gx ', filter: 'label' }));
 
     expect(location.search).toBe('?label=Gx');
+    expect(location.pathname).toBe('/plugins');
     expect(lastFindCall()).toEqual({ filters: [['label', 'Gx']], page: 1, pageSize: 10 });
   });
 
@@ -207,7 +218,11 @@ describe('PluginsPage', () => {
       });
 
       expect(location.search).toBe('?brand=Gx');
-      expect(history.length).toBe(2);
+      // A second entry for the same search would keep the search after one step back
+      act(() => {
+        navigate(-1);
+      });
+      expect(location.search).toBe('');
     });
   });
 

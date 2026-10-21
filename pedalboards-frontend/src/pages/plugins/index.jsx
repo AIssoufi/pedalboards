@@ -1,6 +1,7 @@
 // Dependencies
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
+import { useSearchParams } from 'react-router';
 import PropTypes from 'prop-types';
 
 // Componenets
@@ -31,13 +32,21 @@ const PAGE_SIZE = 10;
  * Page listing the plugins, with a search, numbered pages and the grid of plugin cards. Its URL
  * holds the filter and the page (`?brand=MDA&page=2`): a search, a page change or a filter link
  * of a card changes the URL, and the page fetches the plugins of each new URL.
+ * It renders inside a router, since it reads and writes its query string with useSearchParams.
  */
 const PluginsPage = ({
-  location = {}, history = {}, fetchPlugins, findPlugins, plugins = [], countPlugins = 0,
-  isFetching = false
+  fetchPlugins, findPlugins, plugins = [], countPlugins = 0, isFetching = false
 }) => {
-  const { pathname, search = '' } = location;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const search = searchParams.toString();
   const { filters, page: currentPage } = parsePluginsSearch(search);
+  // The search field calls a handler of an earlier render after its debounce delay, so the
+  // handlers compare a new search with this ref, which holds the search of the URL shown now
+  const shownSearchRef = useRef(search);
+
+  useEffect(() => {
+    shownSearchRef.current = search;
+  }, [search]);
 
   // filters and currentPage are derived from search, so search alone tells when they change
   useEffect(() => {
@@ -51,14 +60,9 @@ const PluginsPage = ({
   }, [search]);
 
   const showSearch = (nextSearch) => {
-    // The search field calls a handler of an earlier render after its debounce delay, so the
-    // URL shown now comes from the history, which the router keeps up to date
-    const { location: shownLocation = location } = history;
-    const { search: shownSearch = '' } = shownLocation || {};
-    const isNewSearch = nextSearch !== shownSearch;
-    const canNavigate = isNewSearch && typeof history.push === 'function';
+    const isNewSearch = new URLSearchParams(nextSearch).toString() !== shownSearchRef.current;
 
-    if (canNavigate) history.push({ pathname, search: nextSearch });
+    if (isNewSearch) setSearchParams(nextSearch);
   };
 
   const handleSearchSubmit = (formData) => {
@@ -110,21 +114,6 @@ const mapDispatchToProps = {
 const mapStateToProps = pluginSelector;
 
 PluginsPage.propTypes = {
-  /** Location of the page, from the router: its query string holds the filter and the page. */
-  location: PropTypes.shape({
-    pathname: PropTypes.string,
-    search: PropTypes.string
-  }),
-  /**
-   * History of the router, where a search or a page change pushes the new URL. Its location
-   * gives the URL shown now, compared with the new one so that a URL is never pushed twice.
-   */
-  history: PropTypes.shape({
-    location: PropTypes.shape({
-      search: PropTypes.string
-    }),
-    push: PropTypes.func
-  }),
   /** Fetches a page of all the plugins, from the store. Nothing is fetched without it. */
   fetchPlugins: PropTypes.func,
   /** Fetches a page of the plugins matching filters, from the store, as fetchPlugins. */
