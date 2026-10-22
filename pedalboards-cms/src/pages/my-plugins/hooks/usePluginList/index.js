@@ -8,7 +8,9 @@ import { PedalboardService } from 'services';
 import { RequestHelper } from 'helpers';
 
 // Constants
-import { FIRST_PAGE, PAGE_SIZE, UNKNOWN_PAGE_COUNT } from '../../constants';
+import {
+  FIRST_PAGE, NO_PLUGINS, PAGE_SIZE, UNKNOWN_PAGE_COUNT
+} from '../../constants';
 
 // Utils
 import { isPageInRange } from '../../utils';
@@ -32,7 +34,7 @@ import { isPageInRange } from '../../utils';
  * reloads the page
  */
 const usePluginList = ({ search = '' } = {}) => {
-  const [plugins, setPlugins] = useState([]);
+  const [plugins, setPlugins] = useState(NO_PLUGINS);
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE);
   const [pageCount, setPageCount] = useState(UNKNOWN_PAGE_COUNT);
   const [errorMessage, setErrorMessage] = useState('');
@@ -59,16 +61,19 @@ const usePluginList = ({ search = '' } = {}) => {
     pluginsRequest.then((response) => {
       if (!isLastRequest()) return;
 
-      const { data = [], currentPage: loadedPage = page, numberPages = 0 } = response;
+      const {
+        data, currentPage: loadedPage = page, numberPages = UNKNOWN_PAGE_COUNT
+      } = response || {};
+      const hasPages = numberPages > UNKNOWN_PAGE_COUNT;
       // A delete can empty the last page: the list has fewer pages than the one asked for
-      const isPastLastPage = numberPages >= FIRST_PAGE && page > numberPages;
+      const isPastLastPage = hasPages && page > numberPages;
 
       if (isPastLastPage) {
         loadPlugins({ page: numberPages });
         return;
       }
 
-      setPlugins(data);
+      setPlugins(Array.isArray(data) ? data : NO_PLUGINS);
       setCurrentPage(loadedPage);
       setPageCount(numberPages);
       setErrorMessage('');

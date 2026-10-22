@@ -102,6 +102,26 @@ describe('usePluginList', () => {
     expect(hook.result.current).toMatchObject({ plugins: [], currentPage: 1, pageCount: 0 });
   });
 
+  it('gives neutral values for an empty response body', async () => {
+    PedalboardService.getPlugins.mockResolvedValue(null);
+    hook = renderPluginList();
+    await flushPromises();
+
+    expect(hook.result.current).toMatchObject({
+      plugins: [], currentPage: 1, pageCount: 0, errorMessage: ''
+    });
+  });
+
+  it('gives no plugin for data that is not a list', async () => {
+    PedalboardService.getPlugins.mockResolvedValue({
+      data: null, count: 0, currentPage: 1, numberPages: 0
+    });
+    hook = renderPluginList();
+    await flushPromises();
+
+    expect(hook.result.current.plugins).toEqual([]);
+  });
+
   it('loads the first page again when the search changes', async () => {
     hook = renderPluginList();
     await flushPromises();
@@ -176,6 +196,22 @@ describe('usePluginList', () => {
     await flushPromises();
 
     expect(console.error).not.toHaveBeenCalled();
+  });
+
+  it('reloads nothing when a delete succeeds after the page is left', async () => {
+    let answerDelete;
+    PedalboardService.deletePlugin.mockReturnValueOnce(new Promise((resolve) => {
+      answerDelete = resolve;
+    }));
+    hook = renderPluginList();
+    await flushPromises();
+    act(() => hook.result.current.deletePlugin('gate'));
+    hook.unmount();
+    hook = undefined;
+    answerDelete({});
+    await flushPromises();
+
+    expect(PedalboardService.getPlugins).toHaveBeenCalledTimes(1);
   });
 
   it('updates nothing when a delete fails after the page is left', async () => {
