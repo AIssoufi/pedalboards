@@ -4,6 +4,9 @@ export const FIRST_PAGE = 1;
 /** Mark that stands for the pages that the pagination hides */
 export const ELLIPSIS = '...';
 
+/** Last current page that still shows every page before it, without an ellipsis */
+export const LAST_PAGE_WITHOUT_PREVIOUS_ELLIPSIS = 4;
+
 /** Number of pages shown after the first page, before the ellipsis */
 export const NEXT_PAGES_AFTER_FIRST = 2;
 

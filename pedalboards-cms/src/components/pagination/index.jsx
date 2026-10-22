@@ -8,23 +8,10 @@ import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { FIRST_PAGE, IGNORE_PAGE_CHANGE } from './constants';
 
 // Utils
-import { getRightPageNumbers } from './utils';
+import { getLeftPageNumbers, getRightPageNumbers } from './utils';
 
 // Style
 import './style.scss';
-
-
-const getLeftPageNumbers = (currentPage) => {
-  const results = [];
-  if (currentPage <= 4) {
-    for (let index = 1; index < currentPage; index++) {
-      results.push(index);
-    }
-  } else {
-    results.push(1, '...', currentPage - 1);
-  }
-  return results;
-};
 
 /**
  * Links to the previous page, the next page and the pages around the current one. Renders nothing
@@ -38,7 +25,7 @@ const Pagination = ({
   const goToPreviousPage = () => onCurrentPageChange(currentPage - 1);
   const goToNextPage = () => onCurrentPageChange(currentPage + 1);
 
-  const leftPageNumbers = getLeftPageNumbers(currentPage);
+  const leftPageNumbers = getLeftPageNumbers({ currentPage });
   const rightPageNumbers = getRightPageNumbers({ currentPage, pageCount: elementCount });
 
   return (

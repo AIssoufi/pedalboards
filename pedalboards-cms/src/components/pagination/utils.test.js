@@ -2,7 +2,35 @@
 import { ELLIPSIS } from './constants';
 
 // Utils
-import { getRightPageNumbers } from './utils';
+import { getLeftPageNumbers, getRightPageNumbers } from './utils';
+
+describe('getLeftPageNumbers', () => {
+  it.each([
+    [1, []],
+    [2, [1]],
+    [3, [1, 2]],
+    [4, [1, 2, 3]],
+    [5, [1, ELLIPSIS, 4]],
+    [54, [1, ELLIPSIS, 53]]
+  ])('lists the pages before page %i', (currentPage, expected) => {
+    expect(getLeftPageNumbers({ currentPage })).toEqual(expected);
+  });
+
+  it.each([
+    ['a current page before the first one', 0],
+    ['a negative current page', -3],
+    ['a current page that is not a number', NaN],
+    ['a current page that is not a whole number', 1.5],
+    ['a current page given as a text', '3'],
+    ['a missing current page', undefined]
+  ])('lists no page for %s', (label, currentPage) => {
+    expect(getLeftPageNumbers({ currentPage })).toEqual([]);
+  });
+
+  it('lists no page without parameters', () => {
+    expect(getLeftPageNumbers()).toEqual([]);
+  });
+});
 
 describe('getRightPageNumbers', () => {
   it.each([

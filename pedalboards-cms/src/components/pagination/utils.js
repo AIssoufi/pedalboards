@@ -1,7 +1,35 @@
 // Constants
 import {
-  ELLIPSIS, FIRST_PAGE, NEXT_PAGES_AFTER_FIRST, NEXT_PAGES_AFTER_OTHERS
+  ELLIPSIS,
+  FIRST_PAGE,
+  LAST_PAGE_WITHOUT_PREVIOUS_ELLIPSIS,
+  NEXT_PAGES_AFTER_FIRST,
+  NEXT_PAGES_AFTER_OTHERS
 } from './constants';
+
+/**
+ * Lists the pages shown before the current one: every previous page near the start of the list,
+ * otherwise the first page, an ellipsis and the previous page. A current page that is not a page
+ * of the list shows none.
+ * @param {Object} [params]
+ * @param {number} [params.currentPage] page shown as current
+ * @returns {Array<number|string>} the page numbers, with the ellipsis between them when needed
+ *
+ * @example
+ * getLeftPageNumbers({ currentPage: 3 }); // [1, 2]
+ * getLeftPageNumbers({ currentPage: 6 }); // [1, '...', 5]
+ */
+export const getLeftPageNumbers = ({ currentPage } = {}) => {
+  const isPage = Number.isInteger(currentPage) && currentPage >= FIRST_PAGE;
+
+  if (!isPage) return [];
+
+  const showsEveryPreviousPage = currentPage <= LAST_PAGE_WITHOUT_PREVIOUS_ELLIPSIS;
+
+  if (!showsEveryPreviousPage) return [FIRST_PAGE, ELLIPSIS, currentPage - 1];
+
+  return Array.from({ length: currentPage - FIRST_PAGE }, (_, index) => FIRST_PAGE + index);
+};
 
 /**
  * Lists the pages shown after the current one: the next pages, an ellipsis when it hides at least
