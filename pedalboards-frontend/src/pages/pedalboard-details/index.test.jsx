@@ -159,3 +159,28 @@ it('shows its empty state when the route loses its id', async () => {
   expect(screen.queryByText(LOADER_TEXT)).toBeNull();
   expect(window.fetch).toHaveBeenCalledTimes(1);
 });
+
+it('shows an error message, not a blank app, when the details fail to load', async () => {
+  // React reports the error that the boundary catches
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  // The chunk of the details fails, as after a deploy that removed it: the page loads again, so
+  // that its lazy import meets the failing module
+  vi.doMock('../../components/pedalboard-details', () => {
+    throw new TypeError('Failed to fetch dynamically imported module');
+  });
+  onTestFinished(() => {
+    vi.doUnmock('../../components/pedalboard-details');
+  });
+  vi.resetModules();
+  const { default: PageWithFailingDetails } = await import('./index');
+  mockFetch(() => ({ uri: 'https://plugin/2' }));
+
+  const router = createMemoryRouter(
+    [{ path: '/plugin/:id', element: <PageWithFailingDetails /> }],
+    { initialEntries: ['/plugin/2'] }
+  );
+  render(<RouterProvider router={router} />);
+
+  expect((await screen.findByRole('alert')).textContent).toBe(ERROR_TEXT);
+  expect(screen.queryByText(LOADER_TEXT)).toBeNull();
+});
