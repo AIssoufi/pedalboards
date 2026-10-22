@@ -106,6 +106,15 @@ describe('AddPlugin', () => {
       .toEqual(['Add the control port', 'Remove Threshold']);
   });
 
+  it('names a control port without a name generically in the tooltip of its remove button', () => {
+    view = render(<AddPlugin edit {...GATE} controlPorts={[{ default: 0.5, max: 1, min: 0 }]} />);
+
+    const removeButton = view.container.querySelector('.control-ports [aria-label^="Remove"]');
+    const tooltip = removeButton.parentElement;
+    // react-tippy moves the title of the element it wraps to data-original-title
+    expect(tooltip.getAttribute('data-original-title')).toBe('Click to remove this control port');
+  });
+
   it('leaves the categories empty when they are not a list', () => {
     view = render(<AddPlugin categories={null} />);
 

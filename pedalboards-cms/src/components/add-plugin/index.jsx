@@ -23,7 +23,7 @@ import { IMAGE_FIELD } from './constants';
 
 // Utils
 import {
-  formDataToObject, readControlPorts, removeEmptyImage, toRemovePortLabel
+  formDataToObject, readControlPorts, removeEmptyImage, toRemovePortLabel, toRemovePortTooltip
 } from './utils';
 
 /**
@@ -360,7 +360,7 @@ export default class AddPlugin extends Component {
                       <td>{cp.min}</td>
                       <td>
                         <Tooltip
-                          title={`Click to remove ${cp.name}`}
+                          title={toRemovePortTooltip(cp.name)}
                           position="left"
                         >
                           <button

@@ -1,9 +1,11 @@
 // Constants
-import { GENERIC_REMOVE_PORT_LABEL, NO_CONTROL_PORTS, SAMPLE_CONTROL_PORTS } from './constants';
+import {
+  GENERIC_REMOVE_PORT_LABEL, GENERIC_REMOVE_PORT_TOOLTIP, NO_CONTROL_PORTS, SAMPLE_CONTROL_PORTS
+} from './constants';
 
 // Utils
 import {
-  formDataToObject, readControlPorts, removeEmptyImage, toRemovePortLabel
+  formDataToObject, readControlPorts, removeEmptyImage, toRemovePortLabel, toRemovePortTooltip
 } from './utils';
 
 const PORTS = [{
@@ -132,5 +134,25 @@ describe('toRemovePortLabel', () => {
     ['a number', 42]
   ])('gives a generic label for %s', (label, name) => {
     expect(toRemovePortLabel(name)).toBe(GENERIC_REMOVE_PORT_LABEL);
+  });
+});
+
+describe('toRemovePortTooltip', () => {
+  it('names the control port to remove', () => {
+    expect(toRemovePortTooltip('Threshold')).toBe('Click to remove Threshold');
+  });
+
+  it('trims the spaces around the name', () => {
+    expect(toRemovePortTooltip('  Threshold ')).toBe('Click to remove Threshold');
+  });
+
+  it.each([
+    ['an empty name', ''],
+    ['a name of spaces', '   '],
+    ['a missing name', undefined],
+    ['null', null],
+    ['a number', 42]
+  ])('gives a generic tooltip for %s', (label, name) => {
+    expect(toRemovePortTooltip(name)).toBe(GENERIC_REMOVE_PORT_TOOLTIP);
   });
 });
