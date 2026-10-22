@@ -15,16 +15,18 @@ import { RequestHelper } from 'helpers';
 // Utils
 import { Env } from 'utils';
 
+// Constants
+import { FIRST_PAGE, PAGE_SIZE } from './constants';
+
 // Style
 import './style.scss';
 
 const MyPlugins = ({ location = {} }) => {
-  const displayNumber = 10;
   const homePageUrl = Env.get('frontend');
 
   const [plugins, setPlugins] = useState([]);
   const [elementCount, setElementCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(FIRST_PAGE);
   const [countPlugins, setCountPlugins] = useState(-1);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -32,21 +34,29 @@ const MyPlugins = ({ location = {} }) => {
     setErrorMessage(RequestHelper.readErrorMessage(error));
   };
 
-  useEffect(() => {
+  // Loads one page of the plugins, filtered by the search of the address when it has one
+  const loadPlugins = ({ page }) => {
     const searchParams = new URLSearchParams(location.search);
     const hasSearch = Array.from(searchParams.keys()).length > 0;
     const pluginsRequest = hasSearch
-      ? PedalboardService.findPlugins(searchParams, currentPage, displayNumber)
-      : PedalboardService.getPlugins(currentPage, displayNumber);
+      ? PedalboardService.findPlugins(searchParams, page, PAGE_SIZE)
+      : PedalboardService.getPlugins(page, PAGE_SIZE);
 
     pluginsRequest.then((response) => {
-      const { data = [], count = 0, numberPages = 0 } = response;
+      const {
+        data = [], count = 0, currentPage: loadedPage = page, numberPages = 0
+      } = response;
 
       setPlugins(data);
       setElementCount(count);
+      setCurrentPage(loadedPage);
       setCountPlugins(numberPages);
       setErrorMessage('');
     }, showError);
+  };
+
+  useEffect(() => {
+    loadPlugins({ page: FIRST_PAGE });
   }, []);
 
   const setCurrentPageHandler = (pageNumber) => {
@@ -56,35 +66,13 @@ const MyPlugins = ({ location = {} }) => {
 
     if (pageNumberIsNotValide) return;
 
-    PedalboardService.getPlugins(
-      pageNumber,
-      displayNumber
-    ).then((response) => {
-      const {
-        data, count, currentPage: newPage, numberPages
-      } = response;
-
-      setPlugins(data);
-      setElementCount(count);
-      setCurrentPage(newPage);
-      setCountPlugins(numberPages);
-      setErrorMessage('');
-    }, showError);
+    loadPlugins({ page: pageNumber });
   };
 
+  // The API answers a delete with a page of every plugin: load the page again with the search
   const deletePluginHandler = (id) => {
-    PedalboardService.deletePlugin(id, currentPage, displayNumber)
-      .then((response) => {
-        const {
-          data, count, currentPage: newPage, numberPages
-        } = response;
-
-        setPlugins(data);
-        setElementCount(count);
-        setCurrentPage(newPage);
-        setCountPlugins(numberPages);
-        setErrorMessage('');
-      }, showError);
+    PedalboardService.deletePlugin(id, currentPage, PAGE_SIZE)
+      .then(() => loadPlugins({ page: currentPage }), showError);
   };
 
   return (
