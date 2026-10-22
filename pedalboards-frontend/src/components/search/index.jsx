@@ -34,8 +34,8 @@ import './style.scss';
 /**
  * Search form of the plugins: a text field and the field of the plugins it searches in, which
  * show the filter of the URL (`value` and `field`) and follow it when it changes. Calls
- * `onSubmit` with the data of the form on submit, when the select loses the focus, and once the
- * typing in the text field pauses.
+ * `onSubmit` with the data of the form on submit, and once the typing in the text field or the
+ * choice of the select pauses.
  *
  * @param {SearchProps} props - Props of the component.
  */
@@ -81,6 +81,11 @@ const Search = ({ value, field, onSubmit }) => {
     submitLater();
   };
 
+  const handleFieldChange = (event) => {
+    setSelectedField(event.target.value);
+    submitLater();
+  };
+
   return (
     <form
       ref={formRef}
@@ -115,8 +120,7 @@ const Search = ({ value, field, onSubmit }) => {
             id={selectId}
             name="label"
             value={selectedField}
-            onChange={event => setSelectedField(event.target.value)}
-            onBlur={submitForm}
+            onChange={handleFieldChange}
           >
             {SEARCH_FIELD_OPTIONS.map(option => (
               <option key={option.value} value={option.value}>{option.label}</option>
