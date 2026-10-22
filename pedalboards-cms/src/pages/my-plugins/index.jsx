@@ -18,6 +18,9 @@ import { Env } from 'utils';
 // Constants
 import { FIRST_PAGE, PAGE_SIZE } from './constants';
 
+// Utils
+import { isPageInRange } from './utils';
+
 // Style
 import './style.scss';
 
@@ -25,7 +28,6 @@ const MyPlugins = ({ location = {} }) => {
   const homePageUrl = Env.get('frontend');
 
   const [plugins, setPlugins] = useState([]);
-  const [elementCount, setElementCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE);
   const [countPlugins, setCountPlugins] = useState(-1);
   const [errorMessage, setErrorMessage] = useState('');
@@ -43,12 +45,9 @@ const MyPlugins = ({ location = {} }) => {
       : PedalboardService.getPlugins(page, PAGE_SIZE);
 
     pluginsRequest.then((response) => {
-      const {
-        data = [], count = 0, currentPage: loadedPage = page, numberPages = 0
-      } = response;
+      const { data = [], currentPage: loadedPage = page, numberPages = 0 } = response;
 
       setPlugins(data);
-      setElementCount(count);
       setCurrentPage(loadedPage);
       setCountPlugins(numberPages);
       setErrorMessage('');
@@ -60,11 +59,7 @@ const MyPlugins = ({ location = {} }) => {
   }, []);
 
   const setCurrentPageHandler = (pageNumber) => {
-    const pageNumberIsNotValide = Number.isNaN(pageNumber)
-      || (pageNumber >= elementCount)
-      || (pageNumber <= 0);
-
-    if (pageNumberIsNotValide) return;
+    if (!isPageInRange({ page: pageNumber, pageCount: countPlugins })) return;
 
     loadPlugins({ page: pageNumber });
   };

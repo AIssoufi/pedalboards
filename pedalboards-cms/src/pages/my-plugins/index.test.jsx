@@ -30,6 +30,14 @@ const findPluginsOnTwoPages = (searchParams, page) => Promise.resolve({
   ...FOUND_PLUGINS, count: 12, currentPage: page, numberPages: 2
 });
 
+const getPluginsOnPages = ({ count, numberPages }) => page => Promise.resolve({
+  ...ALL_PLUGINS, count, currentPage: page, numberPages
+});
+
+const getTwoPluginsOnTwoPages = getPluginsOnPages({ count: 2, numberPages: 2 });
+
+const getPluginsOnThreePages = getPluginsOnPages({ count: 25, numberPages: 3 });
+
 const EMPTY_STATE_TEXT = 'Vous n\'avez ajouté aucun plugin';
 
 const PAGE_SIZE = 10;
@@ -57,6 +65,12 @@ const clickPageButton = ({ container, label }) => {
 
   act(() => {
     pageButton.click();
+  });
+};
+
+const clickNavigation = ({ container, selector }) => {
+  act(() => {
+    container.querySelector(selector).click();
   });
 };
 
@@ -177,6 +191,38 @@ describe('MyPlugins', () => {
 
     expect(PedalboardService.getPlugins.mock.calls).toEqual([[1, PAGE_SIZE], [2, PAGE_SIZE]]);
     expect(PedalboardService.findPlugins).not.toHaveBeenCalled();
+  });
+
+  it('goes to the last page when it holds fewer plugins than pages', async () => {
+    PedalboardService.getPlugins.mockImplementation(getTwoPluginsOnTwoPages);
+    view = renderMyPlugins({ location: { search: '' } });
+    await flushPromises();
+    clickPageButton({ container: view.container, label: '2' });
+    await flushPromises();
+
+    expect(PedalboardService.getPlugins.mock.calls).toEqual([[1, PAGE_SIZE], [2, PAGE_SIZE]]);
+  });
+
+  it('loads no page after the last one', async () => {
+    PedalboardService.getPlugins.mockImplementation(getPluginsOnThreePages);
+    view = renderMyPlugins({ location: { search: '' } });
+    await flushPromises();
+    clickPageButton({ container: view.container, label: '3' });
+    await flushPromises();
+    clickNavigation({ container: view.container, selector: '.page-suivante' });
+    await flushPromises();
+
+    expect(PedalboardService.getPlugins.mock.calls).toEqual([[1, PAGE_SIZE], [3, PAGE_SIZE]]);
+  });
+
+  it('loads no page before the first one', async () => {
+    PedalboardService.getPlugins.mockImplementation(getPluginsOnThreePages);
+    view = renderMyPlugins({ location: { search: '' } });
+    await flushPromises();
+    clickNavigation({ container: view.container, selector: '.page-precedente' });
+    await flushPromises();
+
+    expect(PedalboardService.getPlugins.mock.calls).toEqual([[1, PAGE_SIZE]]);
   });
 
   it('reloads the searched plugins of the page after a delete', async () => {
