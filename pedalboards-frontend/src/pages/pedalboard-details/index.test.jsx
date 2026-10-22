@@ -72,6 +72,7 @@ it('renders without crashing', async () => {
 
   // An answer without a plugin leaves the page with its empty state
   expect(await screen.findByText(EMPTY_STATE_TEXT)).toBeDefined();
+  expect(screen.getByText(EMPTY_STATE_TEXT).lang).toBe('fr');
 });
 
 it('shows the loader, then the plugin of the id of its route', async () => {
@@ -105,6 +106,7 @@ it.each([
   renderAt('/plugin/2');
 
   expect((await screen.findByRole('alert')).textContent).toBe(ERROR_TEXT);
+  expect(screen.getByRole('alert').lang).toBe('fr');
   expect(screen.queryByText(LOADER_TEXT)).toBeNull();
   expect(screen.queryByText(EMPTY_STATE_TEXT)).toBeNull();
 });

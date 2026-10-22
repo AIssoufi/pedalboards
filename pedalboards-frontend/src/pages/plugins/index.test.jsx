@@ -225,6 +225,7 @@ describe('PluginsPage', () => {
     await flushAnswers();
 
     expect((await screen.findByRole('alert')).textContent).toBe(ERROR_TEXT);
+    expect(screen.getByRole('alert').lang).toBe('fr');
     expect(screen.queryByText(EMPTY_GRID_TEXT)).toBeNull();
     expect(screen.queryByText(LOADER_TEXT)).toBeNull();
   });

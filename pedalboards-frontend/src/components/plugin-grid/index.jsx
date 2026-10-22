@@ -44,7 +44,7 @@ const PluginGrid = ({ plugins = NO_PLUGINS, isLoading = false }) => {
             <Plugin key={p._id} {...p} isScreenshotLazy={index >= FIRST_ROW_CARD_COUNT} />
           )
         )
-          : <p>Aucun plugin ne correspond à votre recherche !</p>
+          : <p lang="fr">Aucun plugin ne correspond à votre recherche !</p>
       }
     </div>
   );

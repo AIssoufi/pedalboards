@@ -88,7 +88,7 @@ const PluginsPage = () => {
         onCurrentPageChange={setCurrentPageHandler}
       />
       {hasFailed
-        ? <p role="alert">Impossible de charger les plugins, réessayez plus tard.</p>
+        ? <p role="alert" lang="fr">Impossible de charger les plugins, réessayez plus tard.</p>
         : <PluginGrid isLoading={isLoading} plugins={plugins} />}
       <Pagination
         currentPage={currentPage}
