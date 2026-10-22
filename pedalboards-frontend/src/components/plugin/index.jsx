@@ -80,7 +80,7 @@ const Plugin = ({
           <Tooltip
             key={category}
             content={(
-              <FilterTooltipContent heading="Categorie" value={category} kind="categories" />
+              <FilterTooltipContent heading="Category" value={category} kind="categories" />
             )}
             placement="top"
           >
