@@ -108,6 +108,29 @@ describe('EditPlugin', () => {
     expect(readField({ container: view.container, name: 'name' }).value).toBe('Reverb');
   });
 
+  it('shows no previous plugin when the plugin of a new route id fails', async () => {
+    view = render(<EditPlugin match={ROUTE_MATCH} />);
+    await flushPromises();
+    PedalboardService.getPlugin.mockRejectedValue(new Error('Plugin non trouvé'));
+    view.rerender(<EditPlugin match={{ params: { id: 'reverb' } }} />);
+    await flushPromises();
+
+    const { container } = view;
+
+    expect(container.querySelector('[role="alert"]').textContent).toBe('Plugin non trouvé');
+    expect(readField({ container, name: 'name' }).value).toBe('');
+  });
+
+  it('clears the message of a failed plugin while a new route id loads', async () => {
+    PedalboardService.getPlugin.mockRejectedValueOnce(new Error('Plugin non trouvé'));
+    view = render(<EditPlugin match={ROUTE_MATCH} />);
+    await flushPromises();
+    PedalboardService.getPlugin.mockReturnValueOnce(new Promise(() => {}));
+    view.rerender(<EditPlugin match={{ params: { id: 'reverb' } }} />);
+
+    expect(view.container.querySelector('[role="alert"]')).toBeNull();
+  });
+
   it('keeps the plugin of the new route id when the previous one answers last', async () => {
     let answerPreviousPlugin;
     PedalboardService.getPlugin.mockReturnValueOnce(new Promise((resolve) => {

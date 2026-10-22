@@ -11,16 +11,23 @@ import { PedalboardService } from 'services';
 // Helpers
 import { RequestHelper } from 'helpers';
 
+// Constants
+import { NO_PLUGIN } from './constants';
+
 /**
  * Page that edits the plugin of the route id: it loads the plugin, then fills the plugin form
- * with it. A new route id loads its plugin, and an answer for a previous id is ignored.
+ * with it. A new route id empties the form and the error, then loads its plugin, and an answer
+ * for a previous id is ignored.
  */
 const EditPlugin = ({ match = {} }) => {
-  const [plugin, setPlugin] = useState({});
+  const [plugin, setPlugin] = useState(NO_PLUGIN);
   const [errorMessage, setErrorMessage] = useState('');
   const { params: { id } = {} } = match;
 
   useEffect(() => {
+    setPlugin(NO_PLUGIN);
+    setErrorMessage('');
+
     if (!id) return undefined;
 
     // False once the route names another plugin or the page is left: the answer is then ignored
