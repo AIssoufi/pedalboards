@@ -38,6 +38,13 @@ describe('Pagination', () => {
     expect(readPageLabels(view.container)).toEqual(['1', '...', '5', '6', '7', '...', '54']);
   });
 
+  it('shows each page once on the first page of three', () => {
+    view = render(<Pagination currentPage={1} elementCount={3} onCurrentPageChange={() => {}} />);
+
+    expect(readPageLabels(view.container)).toEqual(['1', '2', '3']);
+    expect(console.error).not.toHaveBeenCalled();
+  });
+
   it('asks for the next page', () => {
     const onCurrentPageChange = jest.fn();
     view = render(

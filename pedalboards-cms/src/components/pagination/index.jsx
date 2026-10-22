@@ -7,6 +7,9 @@ import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 // Constants
 import { FIRST_PAGE, IGNORE_PAGE_CHANGE } from './constants';
 
+// Utils
+import { getRightPageNumbers } from './utils';
+
 // Style
 import './style.scss';
 
@@ -23,24 +26,6 @@ const getLeftPageNumbers = (currentPage) => {
   return results;
 };
 
-const getRightPageNumbers = (currentPage, elementCount) => {
-  const result = [];
-
-  if (currentPage === elementCount) { return result; }
-  result.push(currentPage + 1);
-  if (currentPage + 1 === elementCount) { return result; }
-  if (currentPage + 1 === 2) {
-    result.push(currentPage + 2);
-    if (currentPage + 3 !== elementCount) {
-      result.push('...');
-    }
-  } else if (currentPage + 1 !== elementCount && currentPage + 2 !== elementCount) {
-    result.push('...');
-  }
-  result.push(elementCount);
-  return result;
-};
-
 /**
  * Links to the previous page, the next page and the pages around the current one. Renders nothing
  * while the list has no page.
@@ -54,7 +39,7 @@ const Pagination = ({
   const goToNextPage = () => onCurrentPageChange(currentPage + 1);
 
   const leftPageNumbers = getLeftPageNumbers(currentPage);
-  const rigthPageNumbers = getRightPageNumbers(currentPage, elementCount);
+  const rightPageNumbers = getRightPageNumbers({ currentPage, pageCount: elementCount });
 
   return (
     <div className="navigation">
@@ -79,7 +64,7 @@ const Pagination = ({
           </button>
         ))}
         <button type="button" className="current-page">{currentPage}</button>
-        {rigthPageNumbers.map(pageNumber => (
+        {rightPageNumbers.map(pageNumber => (
           <button
             type="button"
             key={pageNumber}
@@ -104,11 +89,20 @@ const Pagination = ({
 };
 
 Pagination.propTypes = {
-  /** Page shown as current, from 1 */
+  /**
+   * Page shown as current, from 1.
+   * @default 1
+   */
   currentPage: PropTypes.number,
-  /** Number of pages of the list */
+  /**
+   * Number of pages of the list: the pagination renders nothing without one.
+   * @default 0
+   */
   elementCount: PropTypes.number,
-  /** Called with the number of the page that a click asks for */
+  /**
+   * Called with the number of the page that a click asks for.
+   * @default a handler that changes nothing
+   */
   onCurrentPageChange: PropTypes.func
 };
 
