@@ -44,7 +44,7 @@ const Pagination = ({
             {pageNumber}
           </button>
         ))}
-        <button type="button" className="current-page">{currentPage}</button>
+        <button type="button" className="current-page" aria-current="page">{currentPage}</button>
         {rightPageNumbers.map(pageNumber => (
           <button
             type="button"

@@ -32,6 +32,15 @@ describe('Pagination', () => {
     jest.restoreAllMocks();
   });
 
+  it('marks the shown page as the current one, and only that page', () => {
+    view = render(<Pagination currentPage={6} elementCount={54} />);
+
+    const currentPages = view.container.querySelectorAll('[aria-current]');
+
+    expect(Array.from(currentPages, page => page.textContent)).toEqual(['6']);
+    expect(currentPages[0].getAttribute('aria-current')).toBe('page');
+  });
+
   it('makes the previous and next pages buttons that the keyboard reaches and presses', () => {
     view = render(<Pagination currentPage={6} elementCount={54} />);
 
