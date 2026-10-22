@@ -1,88 +1,32 @@
 // Dependencies
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 // Components
-import { Pagination } from 'components';
-
-// Service
-import { PedalboardService } from 'services';
+import { Pagination, RequestError } from 'components';
 
 // Utils
 import { Env } from 'utils';
 
+// Hooks
+import usePluginList from './hooks/usePluginList';
+
 // Style
 import './style.scss';
 
-const MyPlugins = ({ location }) => {
-  const displayNumber = 10;
+/**
+ * Page that lists the plugins, `PAGE_SIZE` per page, with links to edit them and a button to delete
+ * them. The search of the address filters the list, and a new search reloads it from the first
+ * page.
+ */
+const MyPlugins = ({ location = {} }) => {
   const homePageUrl = Env.get('frontend');
-
-  const [plugins, setPlugins] = useState([]);
-  const [elementCount, setElementCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [countPlugins, setCountPlugins] = useState(-1);
-
-  useEffect(() => {
-    const { search } = location;
-
-    const fetchPlugin = () => (
-      search ? () => {
-        const searchParams = new URLSearchParams(search);
-
-        return PedalboardService.findPlugins(
-          searchParams,
-          currentPage,
-          displayNumber
-        );
-      } : PedalboardService.getPlugins(currentPage, displayNumber)
-    );
-
-    fetchPlugin().then((response) => {
-      const { data, count, numberPages } = response;
-
-      setPlugins(data);
-      setElementCount(count);
-      setCountPlugins(numberPages);
-    });
-  }, []);
-
-  const setCurrentPageHandler = (pageNumber) => {
-    const pageNumberIsNotValide = Number.isNaN(pageNumber)
-      || (pageNumber >= elementCount)
-      || (pageNumber <= 0);
-
-    if (pageNumberIsNotValide) return;
-
-    PedalboardService.getPlugins(
-      pageNumber,
-      displayNumber
-    ).then((response) => {
-      const {
-        data, count, currentPage: newPage, numberPages
-      } = response;
-
-      setPlugins(data);
-      setElementCount(count);
-      setCurrentPage(newPage);
-      setCountPlugins(numberPages);
-    });
-  };
-
-  const deletePluginHandler = (id) => {
-    PedalboardService.deletePlugin(id, currentPage, displayNumber)
-      .then((response) => {
-        const {
-          data, count, currentPage: newPage, numberPages
-        } = response;
-
-        setPlugins(data);
-        setElementCount(count);
-        setCurrentPage(newPage);
-        setCountPlugins(numberPages);
-      });
-  };
+  const { search = '' } = location;
+  const {
+    plugins, currentPage, pageCount, errorMessage, goToPage, deletePlugin
+  } = usePluginList({ search });
+  const hasPlugins = Array.isArray(plugins) && plugins.length > 0;
 
   return (
     <section className="my-plugin-container">
@@ -95,8 +39,9 @@ const MyPlugins = ({ location }) => {
           Ajouter un  plugin
         </Link>
       </header>
+      <RequestError message={errorMessage} />
       <main>
-        {plugins && plugins.length > 0
+        {hasPlugins
           ? plugins.map(({ _id, name }) => (
             <div className="plugin" key={_id}>
               <h2 className="title">{name}</h2>
@@ -114,7 +59,7 @@ const MyPlugins = ({ location }) => {
                 <button
                   type="button"
                   className="btn bg-white"
-                  onClick={() => deletePluginHandler(_id)}
+                  onClick={() => deletePlugin(_id)}
                 >
                   Supprimer
                 </button>
@@ -126,8 +71,8 @@ const MyPlugins = ({ location }) => {
       <footer>
         <Pagination
           currentPage={currentPage}
-          elementCount={countPlugins}
-          onCurrentPageChange={setCurrentPageHandler}
+          elementCount={pageCount}
+          onCurrentPageChange={goToPage}
         />
       </footer>
     </section>
@@ -135,7 +80,13 @@ const MyPlugins = ({ location }) => {
 };
 
 MyPlugins.propTypes = {
-  location: PropTypes.object.isRequired
+  /**
+   * Address of the page, given by the router: its `search` filters the plugins, as `?name=gate`.
+   * @default {}
+   */
+  location: PropTypes.shape({
+    search: PropTypes.string
+  })
 };
 
 export default MyPlugins;

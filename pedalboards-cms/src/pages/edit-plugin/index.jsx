@@ -3,36 +3,73 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 // Components
-import { AddPlugin } from 'components';
+import { AddPlugin, RequestError } from 'components';
 
 // Services
 import { PedalboardService } from 'services';
 
-const EditPlugin = ({ match }) => {
-  const [plugin, setPlugin] = useState({});
+// Helpers
+import { RequestHelper } from 'helpers';
+
+// Constants
+import { NO_PLUGIN } from './constants';
+
+/**
+ * Page that edits the plugin of the route id: it loads the plugin, then fills the plugin form
+ * with it. A new route id empties the form and the error, then loads its plugin, and an answer
+ * for a previous id is ignored.
+ */
+const EditPlugin = ({ match = {} }) => {
+  const [plugin, setPlugin] = useState(NO_PLUGIN);
+  const [errorMessage, setErrorMessage] = useState('');
+  const { params: { id } = {} } = match;
 
   useEffect(() => {
-    const {
-      params: {
-        id
-      } = {}
-    } = match;
+    setPlugin(NO_PLUGIN);
+    setErrorMessage('');
 
-    if (id) {
-      PedalboardService.getPlugin(id)
-        .then((response) => {
-          const { data } = response;
+    if (!id) return undefined;
 
-          setPlugin(data);
-        });
-    }
-  }, []);
+    // False once the route names another plugin or the page is left: the answer is then ignored
+    let isRoutePlugin = true;
 
-  return <AddPlugin edit {...plugin} />;
+    PedalboardService.getPlugin(id)
+      .then((response) => {
+        if (!isRoutePlugin) return;
+
+        const { data } = response || {};
+        const isPlugin = typeof data === 'object' && data !== null && !Array.isArray(data);
+
+        setPlugin(isPlugin ? data : NO_PLUGIN);
+        setErrorMessage('');
+      }, (error) => {
+        if (isRoutePlugin) setErrorMessage(RequestHelper.readErrorMessage(error));
+      });
+
+    return () => {
+      isRoutePlugin = false;
+    };
+  }, [id]);
+
+  return (
+    <>
+      <RequestError message={errorMessage} />
+      {/* The key mounts a new form once the plugin is loaded: its fields read their values once */}
+      <AddPlugin key={plugin._id} {...plugin} edit id={id} />
+    </>
+  );
 };
 
 EditPlugin.propTypes = {
-  match: PropTypes.object.isRequired
+  /**
+   * Match of the route, given by the router: its `params.id` names the plugin to edit.
+   * @default {}
+   */
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string
+    })
+  })
 };
 
 export default EditPlugin;

@@ -4,50 +4,29 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
+// Constants
+import { FIRST_PAGE, IGNORE_PAGE_CHANGE } from './constants';
+
+// Utils
+import { getLeftPageNumbers, getRightPageNumbers } from './utils';
+
 // Style
 import './style.scss';
 
-
-const getLeftPageNumbers = (currentPage) => {
-  const results = [];
-  if (currentPage <= 4) {
-    for (let index = 1; index < currentPage; index++) {
-      results.push(index);
-    }
-  } else {
-    results.push(1, '...', currentPage - 1);
-  }
-  return results;
-};
-
-const getRightPageNumbers = (currentPage, elementCount) => {
-  const result = [];
-
-  if (currentPage === elementCount) { return result; }
-  result.push(currentPage + 1);
-  if (currentPage + 1 === elementCount) { return result; }
-  if (currentPage + 1 === 2) {
-    result.push(currentPage + 2);
-    if (currentPage + 3 !== elementCount) {
-      result.push('...');
-    }
-  } else if (currentPage + 1 !== elementCount && currentPage + 2 !== elementCount) {
-    result.push('...');
-  }
-  result.push(elementCount);
-  return result;
-};
-
+/**
+ * Links to the previous page, the next page and the pages around the current one. Renders nothing
+ * while the list has no page.
+ */
 const Pagination = ({
-  elementCount, currentPage, onCurrentPageChange
+  elementCount = 0, currentPage = FIRST_PAGE, onCurrentPageChange = IGNORE_PAGE_CHANGE
 }) => {
   if (!elementCount || elementCount <= 0) return null;
 
   const goToPreviousPage = () => onCurrentPageChange(currentPage - 1);
   const goToNextPage = () => onCurrentPageChange(currentPage + 1);
 
-  const leftPageNumbers = getLeftPageNumbers(currentPage);
-  const rigthPageNumbers = getRightPageNumbers(currentPage, elementCount);
+  const leftPageNumbers = getLeftPageNumbers({ currentPage });
+  const rightPageNumbers = getRightPageNumbers({ currentPage, pageCount: elementCount });
 
   return (
     <div className="navigation">
@@ -72,7 +51,7 @@ const Pagination = ({
           </button>
         ))}
         <button type="button" className="current-page">{currentPage}</button>
-        {rigthPageNumbers.map(pageNumber => (
+        {rightPageNumbers.map(pageNumber => (
           <button
             type="button"
             key={pageNumber}
@@ -97,9 +76,21 @@ const Pagination = ({
 };
 
 Pagination.propTypes = {
-  currentPage: PropTypes.number.isRequired,
-  elementCount: PropTypes.number.isRequired,
-  onCurrentPageChange: PropTypes.func.isRequired
+  /**
+   * Page shown as current, from 1.
+   * @default 1
+   */
+  currentPage: PropTypes.number,
+  /**
+   * Number of pages of the list: the pagination renders nothing without one.
+   * @default 0
+   */
+  elementCount: PropTypes.number,
+  /**
+   * Called with the number of the page that a click asks for.
+   * @default a handler that changes nothing
+   */
+  onCurrentPageChange: PropTypes.func
 };
 
 export default Pagination;

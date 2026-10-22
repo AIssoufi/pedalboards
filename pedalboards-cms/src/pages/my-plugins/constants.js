@@ -1,0 +1,14 @@
+/** Number of plugins on one page of the list */
+export const PAGE_SIZE = 10;
+
+/** Page that the list shows first */
+export const FIRST_PAGE = 1;
+
+/**
+ * Number of pages of the list before its first page is loaded, or when an answer gives no valid
+ * count: the pagination shows none
+ */
+export const UNKNOWN_PAGE_COUNT = 0;
+
+/** Plugins of a list that has none, or whose answer gives no list */
+export const NO_PLUGINS = [];

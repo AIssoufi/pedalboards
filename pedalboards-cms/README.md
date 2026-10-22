@@ -24,6 +24,17 @@ Create React App 2. It is not deployed: it runs against the local API only.
 - The [README of the API](../pedalboards-core-service/README.md#write-routes-local-only) describes
   the routes and the form fields that the CMS sends.
 
+## Pages
+
+| Route | What it shows |
+| --- | --- |
+| `/plugins` | The plugins, page by page. `?name=gate` lists those whose name holds `gate` |
+| `/plugin/add` | The form that creates a plugin, with a required image |
+| `/plugin/edit/:id` | The same form, filled with the plugin, with an optional image |
+
+Saved without a new image, an edited plugin keeps its own, as it keeps its author. When a request
+fails, the page shows the message of the API, or why it could not reach it.
+
 ## Scripts
 
 | Script | What it does |

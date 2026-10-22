@@ -9,52 +9,71 @@ import PropTypes from 'prop-types';
 import 'react-tippy/dist/tippy.css';
 import './style.scss';
 
+// Components
+import RequestError from 'components/request-error';
+
 // Services
 import { PedalboardService } from 'services';
 
+// Helpers
+import { RequestHelper } from 'helpers';
+
+// Constants
+import { IMAGE_FIELD } from './constants';
+
+// Utils
+import { formDataToObject, readControlPorts, removeEmptyImage } from './utils';
+
+/**
+ * Form that creates a plugin, or edits the plugin it is given. Every prop is optional: without
+ * them, it is an empty create form.
+ */
 export default class AddPlugin extends Component {
   static propTypes = {
-    edit: PropTypes.bool.isRequired,
-    brand: PropTypes.string.isRequired,
-    categories: PropTypes.arrayOf(PropTypes.string).isRequired,
+    /** Edits the plugin instead of creating one. @default false */
+    edit: PropTypes.bool,
+    /** Id of the edited plugin: an edit without it sends nothing */
+    id: PropTypes.string,
+    /** Name of the plugin, its title in the list. @default '' */
+    name: PropTypes.string,
+    /** Maker of the plugin. @default '' */
+    brand: PropTypes.string,
+    /** Categories of the plugin, shown joined by commas. @default [] */
+    categories: PropTypes.arrayOf(PropTypes.string),
+    /**
+     * Control ports of the plugin. Without them, a new plugin starts with two samples and an edited
+     * one with none.
+     */
     controlPorts: PropTypes.arrayOf(PropTypes.shape({
       default: PropTypes.number,
       max: PropTypes.number,
       min: PropTypes.number,
       name: PropTypes.string
-    })).isRequired,
-    description: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
-    uri: PropTypes.string.isRequired
-  };
-
-  static defaultValue = {
-    edit: false
+    })),
+    /** Text that presents the plugin. @default '' */
+    description: PropTypes.string,
+    /** Short label of the plugin. @default '' */
+    label: PropTypes.string,
+    /** URI that identifies the plugin. @default '' */
+    uri: PropTypes.string,
+    /** Version of the plugin. @default '' */
+    version: PropTypes.string
   };
 
   constructor(props) {
     super(props);
     this.state = {
-      controlPorts: [{
-        name: 'Blend 1',
-        default: 0.25,
-        max: 0.00,
-        min: 1.00
-      }, {
-        name: 'Blend 2',
-        default: 0.25,
-        max: 0.00,
-        min: 1.00
-      }]
+      controlPorts: readControlPorts(props),
+      errorMessage: ''
     };
   }
 
   componentDidUpdate(prevProps) {
-    const { controlPorts } = this.props;
+    const { controlPorts, edit } = this.props;
 
     if (controlPorts !== prevProps.controlPorts) {
       this.setState({
-        controlPorts
+        controlPorts: readControlPorts({ controlPorts, edit })
       });
     }
   }
@@ -63,40 +82,52 @@ export default class AddPlugin extends Component {
     event.preventDefault();
 
     const form = event.target;
-    const formData = new FormData(form);
+    const formData = removeEmptyImage(new FormData(form));
     const {
       state: { controlPorts },
-      props: { edit }
+      props: { edit = false, id }
     } = this;
+    const isEditWithoutId = edit && !id;
+
+    if (isEditWithoutId) return;
 
     formData.append('controlPorts', JSON.stringify(controlPorts, null, 2));
+
+    // The edit leaves the author out, so the plugin keeps its own, and keeps the fields as typed
+    if (edit) {
+      PedalboardService.updatePlugin(id, formData).then(this.clearError, this.showError);
+      return;
+    }
+
     formData.append('author', JSON.stringify({
       avatarUrl: '',
       name: ''
     }, null, 2));
 
-    (edit
-      ? PedalboardService.updatePlugin(formData)
-      : PedalboardService.createPlugin(formData)
-    ).then(() => {
+    PedalboardService.createPlugin(formData).then(() => {
       form.reset();
-    });
+      this.clearError();
+    }, this.showError);
+  }
+
+  clearError = () => {
+    this.setState({ errorMessage: '' });
+  }
+
+  showError = (error) => {
+    this.setState({ errorMessage: RequestHelper.readErrorMessage(error) });
   }
 
   handleFormCPSubmit = (event) => {
     event.preventDefault();
 
     const form = event.target;
-    const formData = new FormData(form);
+    const controlPort = formDataToObject(new FormData(form));
 
-    const cp = {};
-    for (const d of formData.entries()) {
-      cp[d[0]] = d[1];
-    }
     this.setState(prevState => ({
       controlPorts: [
         ...prevState.controlPorts,
-        cp
+        controlPort
       ]
     }), () => form.reset());
   }
@@ -109,16 +140,23 @@ export default class AddPlugin extends Component {
 
   render() {
     const {
-      state: { controlPorts },
+      state: { controlPorts, errorMessage },
       props: {
-        label, uri, version, brand, categories, description, edit
+        name = '',
+        label = '',
+        uri = '',
+        version = '',
+        brand = '',
+        categories = [],
+        description = '',
+        edit = false
       }
     } = this;
 
     return (
       <section className="add-plugin">
         <header>
-          <h1>Ajouter un plugin</h1>
+          <h1>{edit ? 'Modifier le plugin' : 'Ajouter un plugin'}</h1>
         </header>
         <main>
           <form
@@ -127,7 +165,13 @@ export default class AddPlugin extends Component {
             ref={this.mainFormRef}
           >
             <div className="row">
-              <input type="text" name="name" placeholder="Name" required />
+              <input
+                type="text"
+                name="name"
+                placeholder="Name"
+                defaultValue={name}
+                required
+              />
               <input
                 type="text"
                 name="label"
@@ -164,7 +208,7 @@ export default class AddPlugin extends Component {
                 type="text"
                 name="categories"
                 placeholder="Categorie A, categorie B, categorie C, etc."
-                defaultValue={categories ? categories.join(', ') : ''}
+                defaultValue={Array.isArray(categories) ? categories.join(', ') : ''}
                 required
               />
             </div>
@@ -177,11 +221,17 @@ export default class AddPlugin extends Component {
               />
             </div>
             <div className="row">
-              <input type="file" name="image" className="btn bg-primary" required />
+              <input
+                type="file"
+                name={IMAGE_FIELD}
+                className="btn bg-primary"
+                required={!edit}
+              />
             </div>
+            <RequestError message={errorMessage} />
             <div className="create-btn-container">
               <Tooltip
-                title="Click to create the plugin"
+                title={edit ? 'Click to update the plugin' : 'Click to create the plugin'}
                 position="left"
               >
                 <button
