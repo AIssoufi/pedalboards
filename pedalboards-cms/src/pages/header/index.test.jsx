@@ -25,6 +25,14 @@ describe('Header', () => {
     expect(container.querySelector('button').closest('[lang]')).toBeNull();
   });
 
+  it('links to the list of plugins and to the form that adds one', () => {
+    view = render(<MemoryRouter><Header /></MemoryRouter>);
+
+    const linkTexts = [...view.container.querySelectorAll('nav a')].map(link => link.textContent);
+
+    expect(linkTexts).toEqual(['My plugins', 'Add plugin']);
+  });
+
   it('marks the English text alternative of the avatar inside the French page', () => {
     view = render(<MemoryRouter><Header /></MemoryRouter>);
 

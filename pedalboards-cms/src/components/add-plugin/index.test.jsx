@@ -100,6 +100,13 @@ describe('AddPlugin', () => {
     expect(fields.map(field => field.closest('[lang]').lang)).toEqual(FIELD_NAMES.map(() => 'en'));
   });
 
+  it('gives an example of categories in the placeholder of their field', () => {
+    view = render(<AddPlugin />);
+
+    expect(readField({ container: view.container, name: 'categories' }).placeholder)
+      .toBe('Category A, category B, category C, etc.');
+  });
+
   it('names its icon buttons after what they do', () => {
     view = render(<AddPlugin edit {...GATE} />);
 

@@ -28,7 +28,7 @@ const Header = () => (
         className="nav-item"
         activeClassName="active"
       >
-        Add plugn
+        Add plugin
       </NavLink>
     </nav>
   </header>

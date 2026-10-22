@@ -220,7 +220,7 @@ export default class AddPlugin extends Component {
                 type="text"
                 name="categories"
                 lang="en"
-                placeholder="Categorie A, categorie B, categorie C, etc."
+                placeholder="Category A, category B, category C, etc."
                 aria-label="Categories"
                 defaultValue={Array.isArray(categories) ? categories.join(', ') : ''}
                 required
