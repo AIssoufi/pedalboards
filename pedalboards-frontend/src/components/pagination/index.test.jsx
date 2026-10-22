@@ -22,7 +22,7 @@ describe('Pagination', () => {
     ({ container } = render(<Pagination {...props} />));
   };
 
-  const getItemTexts = () => [...container.querySelectorAll('.numero-de-page > *')]
+  const getItemTexts = () => [...container.querySelectorAll('.page-numbers > *')]
     .map(item => item.textContent);
 
   beforeEach(() => {

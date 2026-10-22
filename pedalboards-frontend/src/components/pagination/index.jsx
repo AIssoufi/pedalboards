@@ -46,7 +46,7 @@ const Pagination = ({
   return (
     <div className="navigation">
       <div
-        className="page-precedente"
+        className="previous-page"
         onClick={goToPreviousPage}
         onKeyPress={null}
         role="button"
@@ -55,7 +55,7 @@ const Pagination = ({
         <FontAwesomeIcon icon={faAngleLeft} />
         <p>PREVIOUS</p>
       </div>
-      <div className="numero-de-page">
+      <div className="page-numbers">
         {pageItems.map((pageItem, index) => {
           if (pageItem === PAGE_GAP) {
             // Two gaps can show, so the position tells them apart.
@@ -74,7 +74,7 @@ const Pagination = ({
         })}
       </div>
       <div
-        className="page-suivante"
+        className="next-page"
         onClick={goToNextPage}
         onKeyPress={null}
         role="button"
