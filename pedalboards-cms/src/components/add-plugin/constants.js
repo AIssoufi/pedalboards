@@ -2,13 +2,13 @@
 const SAMPLE_CONTROL_PORTS = [{
   name: 'Blend 1',
   default: 0.25,
-  max: 0.00,
-  min: 1.00
+  max: 1.00,
+  min: 0.00
 }, {
   name: 'Blend 2',
   default: 0.25,
-  max: 0.00,
-  min: 1.00
+  max: 1.00,
+  min: 0.00
 }];
 
 /** Control ports of an edited plugin that has none */
