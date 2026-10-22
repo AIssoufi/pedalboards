@@ -12,6 +12,12 @@ import './style.scss';
 // Services
 import { PedalboardService } from 'services';
 
+// Constants
+import { IMAGE_FIELD } from './constants';
+
+// Utils
+import { readControlPorts, removeEmptyImage } from './utils';
+
 /**
  * Form that creates a plugin, or edits the plugin it is given. Every prop is optional: without
  * them, it is an empty create form.
@@ -20,6 +26,10 @@ export default class AddPlugin extends Component {
   static propTypes = {
     /** Edits the plugin instead of creating one. @default false */
     edit: PropTypes.bool,
+    /** Id of the edited plugin: an edit without it sends nothing */
+    id: PropTypes.string,
+    /** @default '' */
+    name: PropTypes.string,
     /** @default '' */
     brand: PropTypes.string,
     /** Shown joined by commas. @default [] */
@@ -43,26 +53,16 @@ export default class AddPlugin extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      controlPorts: [{
-        name: 'Blend 1',
-        default: 0.25,
-        max: 0.00,
-        min: 1.00
-      }, {
-        name: 'Blend 2',
-        default: 0.25,
-        max: 0.00,
-        min: 1.00
-      }]
+      controlPorts: readControlPorts(props)
     };
   }
 
   componentDidUpdate(prevProps) {
-    const { controlPorts } = this.props;
+    const { controlPorts, edit } = this.props;
 
     if (controlPorts !== prevProps.controlPorts) {
       this.setState({
-        controlPorts
+        controlPorts: readControlPorts({ controlPorts, edit })
       });
     }
   }
@@ -71,22 +71,29 @@ export default class AddPlugin extends Component {
     event.preventDefault();
 
     const form = event.target;
-    const formData = new FormData(form);
+    const formData = removeEmptyImage(new FormData(form));
     const {
       state: { controlPorts },
-      props: { edit = false }
+      props: { edit = false, id }
     } = this;
+    const isEditWithoutId = edit && !id;
+
+    if (isEditWithoutId) return;
 
     formData.append('controlPorts', JSON.stringify(controlPorts, null, 2));
+
+    // The edit leaves the author out, so the plugin keeps its own, and keeps the fields as typed
+    if (edit) {
+      PedalboardService.updatePlugin(id, formData);
+      return;
+    }
+
     formData.append('author', JSON.stringify({
       avatarUrl: '',
       name: ''
     }, null, 2));
 
-    (edit
-      ? PedalboardService.updatePlugin(formData)
-      : PedalboardService.createPlugin(formData)
-    ).then(() => {
+    PedalboardService.createPlugin(formData).then(() => {
       form.reset();
     });
   }
@@ -119,6 +126,7 @@ export default class AddPlugin extends Component {
     const {
       state: { controlPorts },
       props: {
+        name = '',
         label = '',
         uri = '',
         version = '',
@@ -132,7 +140,7 @@ export default class AddPlugin extends Component {
     return (
       <section className="add-plugin">
         <header>
-          <h1>Ajouter un plugin</h1>
+          <h1>{edit ? 'Modifier le plugin' : 'Ajouter un plugin'}</h1>
         </header>
         <main>
           <form
@@ -141,7 +149,13 @@ export default class AddPlugin extends Component {
             ref={this.mainFormRef}
           >
             <div className="row">
-              <input type="text" name="name" placeholder="Name" required />
+              <input
+                type="text"
+                name="name"
+                placeholder="Name"
+                defaultValue={name}
+                required
+              />
               <input
                 type="text"
                 name="label"
@@ -191,11 +205,16 @@ export default class AddPlugin extends Component {
               />
             </div>
             <div className="row">
-              <input type="file" name="image" className="btn bg-primary" required />
+              <input
+                type="file"
+                name={IMAGE_FIELD}
+                className="btn bg-primary"
+                required={!edit}
+              />
             </div>
             <div className="create-btn-container">
               <Tooltip
-                title="Click to create the plugin"
+                title={edit ? 'Click to update the plugin' : 'Click to create the plugin'}
                 position="left"
               >
                 <button
