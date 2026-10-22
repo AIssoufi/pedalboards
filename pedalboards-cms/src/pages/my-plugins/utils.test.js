@@ -1,5 +1,44 @@
 // Utils
-import { isPageInRange } from './utils';
+import { isPageInRange, readLoadedPage, readPageCount } from './utils';
+
+describe('readPageCount', () => {
+  it.each([0, 1, 3, 54])('keeps a count of %i pages', (numberPages) => {
+    expect(readPageCount(numberPages)).toBe(numberPages);
+  });
+
+  it.each([
+    ['a negative count', -1],
+    ['a count that is not a whole number', 2.5],
+    ['a count that is not a number', NaN],
+    ['a count given as text', '3'],
+    ['null', null],
+    ['a missing count', undefined]
+  ])('gives an unknown count for %s', (label, numberPages) => {
+    expect(readPageCount(numberPages)).toBe(0);
+  });
+});
+
+describe('readLoadedPage', () => {
+  it.each([1, 2, 54])('keeps the loaded page %i', (loadedPage) => {
+    expect(readLoadedPage({ loadedPage, page: 3 })).toBe(loadedPage);
+  });
+
+  it.each([
+    ['the page before the first one', 0],
+    ['a negative page', -1],
+    ['a page that is not a whole number', 1.5],
+    ['a page that is not a number', NaN],
+    ['a page given as text', '2'],
+    ['null', null],
+    ['a missing page', undefined]
+  ])('gives the page asked for instead of %s', (label, loadedPage) => {
+    expect(readLoadedPage({ loadedPage, page: 3 })).toBe(3);
+  });
+
+  it('gives no page without parameters', () => {
+    expect(readLoadedPage()).toBeUndefined();
+  });
+});
 
 describe('isPageInRange', () => {
   it.each([

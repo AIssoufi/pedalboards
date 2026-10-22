@@ -13,7 +13,7 @@ import {
 } from '../../constants';
 
 // Utils
-import { isPageInRange } from '../../utils';
+import { isPageInRange, readLoadedPage, readPageCount } from '../../utils';
 
 /**
  * Loads the plugins of my plugins one page at a time, filtered by the search of the address when
@@ -61,21 +61,21 @@ const usePluginList = ({ search = '' } = {}) => {
     pluginsRequest.then((response) => {
       if (!isLastRequest()) return;
 
-      const {
-        data, currentPage: loadedPage = page, numberPages = UNKNOWN_PAGE_COUNT
-      } = response || {};
-      const hasPages = numberPages > UNKNOWN_PAGE_COUNT;
+      const { data, currentPage: loadedPage, numberPages } = response || {};
+      const loadedPageCount = readPageCount(numberPages);
+      const hasPages = loadedPageCount > UNKNOWN_PAGE_COUNT;
       // A delete can empty the last page: the list has fewer pages than the one asked for
-      const isPastLastPage = hasPages && page > numberPages;
+      const isPastLastPage = hasPages && page > loadedPageCount;
+      const hasPluginList = Array.isArray(data);
 
       if (isPastLastPage) {
-        loadPlugins({ page: numberPages });
+        loadPlugins({ page: loadedPageCount });
         return;
       }
 
-      setPlugins(Array.isArray(data) ? data : NO_PLUGINS);
-      setCurrentPage(loadedPage);
-      setPageCount(numberPages);
+      setPlugins(hasPluginList ? data : NO_PLUGINS);
+      setCurrentPage(readLoadedPage({ loadedPage, page }));
+      setPageCount(loadedPageCount);
       setErrorMessage('');
     }, (error) => {
       if (isLastRequest()) showError(error);

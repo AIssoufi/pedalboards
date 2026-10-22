@@ -112,14 +112,49 @@ describe('usePluginList', () => {
     });
   });
 
-  it('gives no plugin for data that is not a list', async () => {
+  it.each([
+    ['null', null],
+    ['a text', 'Reverb'],
+    ['a number', 42],
+    ['an object', {}]
+  ])('gives no plugin for data that is %s', async (label, data) => {
     PedalboardService.getPlugins.mockResolvedValue({
-      data: null, count: 0, currentPage: 1, numberPages: 0
+      data, count: 0, currentPage: 1, numberPages: 0
     });
     hook = renderPluginList();
     await flushPromises();
 
     expect(hook.result.current.plugins).toEqual([]);
+  });
+
+  it.each([
+    ['null', null],
+    ['a text', '3'],
+    ['a number that is not whole', 2.5]
+  ])('gives no page for a page count that is %s', async (label, numberPages) => {
+    PedalboardService.getPlugins.mockResolvedValue({
+      data: [GATE], count: 1, currentPage: 1, numberPages
+    });
+    hook = renderPluginList();
+    await flushPromises();
+
+    expect(PedalboardService.getPlugins).toHaveBeenCalledTimes(1);
+    expect(hook.result.current).toMatchObject({ plugins: [GATE], pageCount: 0 });
+  });
+
+  it.each([
+    ['null', null],
+    ['a text', '2']
+  ])('stays on the page asked for when the loaded page is %s', async (label, currentPage) => {
+    hook = renderPluginList();
+    await flushPromises();
+    PedalboardService.getPlugins.mockResolvedValue({
+      data: [GATE], count: 25, currentPage, numberPages: 3
+    });
+    act(() => hook.result.current.goToPage(2));
+    await flushPromises();
+
+    expect(hook.result.current.currentPage).toBe(2);
   });
 
   it('loads the first page again when the search changes', async () => {
