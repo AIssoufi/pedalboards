@@ -67,6 +67,21 @@ it('calls onSubmit with the form when the select loses the focus', () => {
   expect(Object.fromEntries(formData)).toEqual({ value: '', label: 'label' });
 });
 
+it('names the text field and the search button, and ties the label to the select', () => {
+  render(<Search />);
+
+  expect(screen.getByRole('textbox', { name: 'Search Plugins' })).toBeDefined();
+  expect(screen.getByRole('button', { name: 'Search' })).toBeDefined();
+  expect(screen.getByLabelText('in').tagName).toBe('SELECT');
+});
+
+it('gives each search its own select id', () => {
+  render(<><Search /><Search /></>);
+
+  const [firstSelect, secondSelect] = screen.getAllByLabelText('in');
+  expect(firstSelect.id).not.toBe(secondSelect.id);
+});
+
 it('submits without onSubmit', () => {
   render(<Search />);
 
