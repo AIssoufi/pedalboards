@@ -26,6 +26,7 @@ const MyPlugins = ({ location = {} }) => {
   const {
     plugins, currentPage, pageCount, errorMessage, goToPage, deletePlugin
   } = usePluginList({ search });
+  const hasPlugins = Array.isArray(plugins) && plugins.length > 0;
 
   return (
     <section className="my-plugin-container">
@@ -40,7 +41,7 @@ const MyPlugins = ({ location = {} }) => {
       </header>
       <RequestError message={errorMessage} />
       <main>
-        {plugins && plugins.length > 0
+        {hasPlugins
           ? plugins.map(({ _id, name }) => (
             <div className="plugin" key={_id}>
               <h2 className="title">{name}</h2>
