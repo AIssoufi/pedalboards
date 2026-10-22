@@ -60,6 +60,19 @@ describe('Pagination', () => {
     expect(onCurrentPageChange.mock.calls).toEqual([[54], [5], [7]]);
   });
 
+  it('makes PREVIOUS and NEXT buttons that the keyboard reaches and presses', () => {
+    renderPagination({ currentPage: 6, elementCount: 54 });
+
+    ['PREVIOUS', 'NEXT'].forEach((name) => {
+      const button = screen.getByRole('button', { name });
+
+      // A native button takes the focus with Tab and clicks on Enter and Space
+      expect(button.tagName).toBe('BUTTON');
+      expect(button.type).toBe('button');
+      expect(button.hasAttribute('tabindex')).toBe(false);
+    });
+  });
+
   it('renders nothing without props', () => {
     renderPagination();
 

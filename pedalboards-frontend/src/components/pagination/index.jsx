@@ -45,16 +45,10 @@ const Pagination = ({
 
   return (
     <div className="navigation">
-      <div
-        className="previous-page"
-        onClick={goToPreviousPage}
-        onKeyPress={null}
-        role="button"
-        tabIndex={0}
-      >
+      <button type="button" className="previous-page" onClick={goToPreviousPage}>
         <FontAwesomeIcon icon={faAngleLeft} />
-        <p>PREVIOUS</p>
-      </div>
+        <span>PREVIOUS</span>
+      </button>
       <div className="page-numbers">
         {pageItems.map((pageItem, index) => {
           if (pageItem === PAGE_GAP) {
@@ -73,16 +67,10 @@ const Pagination = ({
           );
         })}
       </div>
-      <div
-        className="next-page"
-        onClick={goToNextPage}
-        onKeyPress={null}
-        role="button"
-        tabIndex={-1}
-      >
-        <p>NEXT</p>
+      <button type="button" className="next-page" onClick={goToNextPage}>
+        <span>NEXT</span>
         <FontAwesomeIcon icon={faAngleRight} />
-      </div>
+      </button>
     </div>
   );
 };
