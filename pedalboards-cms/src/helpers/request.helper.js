@@ -1,3 +1,6 @@
+// Utils
+import { isNonEmptyText } from 'utils/text';
+
 // Constants
 import { NETWORK_ERROR_MESSAGE, RESPONSE_ERROR_MESSAGE } from './constants';
 
@@ -16,7 +19,7 @@ const readBody = response => response.json().catch(() => ({}));
  * @returns {Error} the error, with the status in `status`
  */
 const toResponseError = ({ body, status }) => {
-  const hasMessage = Boolean(body) && typeof body.msg === 'string' && body.msg !== '';
+  const hasMessage = Boolean(body) && isNonEmptyText(body.msg);
   const message = hasMessage ? body.msg : `${RESPONSE_ERROR_MESSAGE} (${status})`;
 
   return Object.assign(new Error(message), { status });
@@ -62,7 +65,7 @@ const remove = url => request(url, { method: 'DELETE' });
  * readErrorMessage(undefined); // 'La requête a échoué'
  */
 const readErrorMessage = (error) => {
-  const hasMessage = Boolean(error) && typeof error.message === 'string' && error.message !== '';
+  const hasMessage = Boolean(error) && isNonEmptyText(error.message);
 
   return hasMessage ? error.message : RESPONSE_ERROR_MESSAGE;
 };

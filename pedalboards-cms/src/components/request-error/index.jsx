@@ -2,6 +2,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+// Utils
+import { isNonEmptyText } from 'utils/text';
+
 // Style
 import './style.scss';
 
@@ -10,9 +13,7 @@ import './style.scss';
  * without a message.
  */
 const RequestError = ({ message = '' }) => {
-  const hasMessage = typeof message === 'string' && message !== '';
-
-  if (!hasMessage) return null;
+  if (!isNonEmptyText(message)) return null;
 
   return <p className="request-error" role="alert">{message}</p>;
 };
