@@ -2,11 +2,48 @@
 import { NO_CONTROL_PORTS, SAMPLE_CONTROL_PORTS } from './constants';
 
 // Utils
-import { readControlPorts, removeEmptyImage } from './utils';
+import { formDataToObject, readControlPorts, removeEmptyImage } from './utils';
 
 const PORTS = [{
   name: 'Threshold', default: 0.5, max: 1, min: 0
 }];
+
+describe('formDataToObject', () => {
+  it('gives the value of each field by its name', () => {
+    const formData = new FormData();
+    formData.append('name', 'Gain');
+    formData.append('default', '0.5');
+
+    expect(formDataToObject(formData)).toEqual({ name: 'Gain', default: '0.5' });
+  });
+
+  it('keeps the last value of a name given several times', () => {
+    const formData = new FormData();
+    formData.append('name', 'Gain');
+    formData.append('name', 'Volume');
+
+    expect(formDataToObject(formData)).toEqual({ name: 'Volume' });
+  });
+
+  it('keeps an empty value', () => {
+    const formData = new FormData();
+    formData.append('name', '');
+
+    expect(formDataToObject(formData)).toEqual({ name: '' });
+  });
+
+  it('gives no field for a form without fields', () => {
+    expect(formDataToObject(new FormData())).toEqual({});
+  });
+
+  it.each([
+    ['a missing form', undefined],
+    ['null', null],
+    ['an object that is not a form', { name: 'Gain' }]
+  ])('gives no field for %s', (label, formData) => {
+    expect(formDataToObject(formData)).toEqual({});
+  });
+});
 
 describe('readControlPorts', () => {
   it('gives the control ports of the plugin', () => {

@@ -30,7 +30,28 @@ const removeEmptyImage = (formData) => {
   return formData;
 };
 
+/**
+ * Gives the fields of a form as an object of their values, keyed by field name. A name given
+ * several times keeps its last value.
+ * @param {FormData} [formData] fields of a form
+ * @returns {Object<string, string|File>} the value of each field, or no field without a form
+ *
+ * @example
+ * formDataToObject(new FormData(controlPortForm)); // { name: 'Gain', default: '0.5', ... }
+ */
+const formDataToObject = (formData) => {
+  const isFormData = Boolean(formData) && typeof formData.entries === 'function';
+
+  if (!isFormData) return {};
+
+  return Array.from(formData.entries()).reduce((fields, [name, value]) => ({
+    ...fields,
+    [name]: value
+  }), {});
+};
+
 export {
+  formDataToObject,
   readControlPorts,
   removeEmptyImage
 };

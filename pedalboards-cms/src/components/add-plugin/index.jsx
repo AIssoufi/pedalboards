@@ -22,7 +22,7 @@ import { RequestHelper } from 'helpers';
 import { IMAGE_FIELD } from './constants';
 
 // Utils
-import { readControlPorts, removeEmptyImage } from './utils';
+import { formDataToObject, readControlPorts, removeEmptyImage } from './utils';
 
 /**
  * Form that creates a plugin, or edits the plugin it is given. Every prop is optional: without
@@ -122,16 +122,12 @@ export default class AddPlugin extends Component {
     event.preventDefault();
 
     const form = event.target;
-    const formData = new FormData(form);
+    const controlPort = formDataToObject(new FormData(form));
 
-    const cp = {};
-    for (const d of formData.entries()) {
-      cp[d[0]] = d[1];
-    }
     this.setState(prevState => ({
       controlPorts: [
         ...prevState.controlPorts,
-        cp
+        controlPort
       ]
     }), () => form.reset());
   }
