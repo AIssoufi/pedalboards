@@ -51,3 +51,9 @@ it.each([
   const pluginsLink = screen.getByRole('link', { name: 'Plugins' });
   expect(pluginsLink.classList.contains('active')).toBe(isActive);
 });
+
+it('names the menu icon after the page it leads to', async () => {
+  await renderHeader({ cmsUrl: '' });
+
+  expect(screen.getByRole('link', { name: 'Home' }).getAttribute('href')).toBe('/');
+});
