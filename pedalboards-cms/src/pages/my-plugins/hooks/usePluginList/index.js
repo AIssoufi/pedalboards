@@ -16,7 +16,7 @@ import { isPageInRange } from '../../utils';
 /**
  * Loads the plugins of my plugins one page at a time, filtered by the search of the address when
  * it has one. A new search reloads the list from the first page, and only the answer of the last
- * request updates the list or its error.
+ * request updates the list or its error, never once the page is left.
  * @param {Object} [params]
  * @param {string} [params.search=''] search of the address, as `?name=gate`
  * @returns {{
@@ -38,6 +38,8 @@ const usePluginList = ({ search = '' } = {}) => {
 
   // Number of the last list request, so that an older answer never replaces a newer one
   const lastListRequest = useRef(0);
+  // True once the page is left: the answers that arrive later update nothing
+  const hasLeftPage = useRef(false);
 
   const showError = (error) => {
     setErrorMessage(RequestHelper.readErrorMessage(error));
@@ -50,7 +52,7 @@ const usePluginList = ({ search = '' } = {}) => {
       ? PedalboardService.findPlugins(searchParams, page, PAGE_SIZE)
       : PedalboardService.getPlugins(page, PAGE_SIZE);
     const request = lastListRequest.current + 1;
-    const isLastRequest = () => request === lastListRequest.current;
+    const isLastRequest = () => !hasLeftPage.current && request === lastListRequest.current;
 
     lastListRequest.current = request;
     pluginsRequest.then((response) => {
@@ -71,6 +73,10 @@ const usePluginList = ({ search = '' } = {}) => {
     loadPlugins({ page: FIRST_PAGE });
   }, [search]);
 
+  useEffect(() => () => {
+    hasLeftPage.current = true;
+  }, []);
+
   const goToPage = (page) => {
     if (!isPageInRange({ page, pageCount })) return;
 
@@ -80,7 +86,11 @@ const usePluginList = ({ search = '' } = {}) => {
   // The API answers a delete with a page of every plugin: load the page again with the search
   const deletePlugin = (id) => {
     PedalboardService.deletePlugin(id, currentPage, PAGE_SIZE)
-      .then(() => loadPlugins({ page: currentPage }), showError);
+      .then(() => {
+        if (!hasLeftPage.current) loadPlugins({ page: currentPage });
+      }, (error) => {
+        if (!hasLeftPage.current) showError(error);
+      });
   };
 
   return {

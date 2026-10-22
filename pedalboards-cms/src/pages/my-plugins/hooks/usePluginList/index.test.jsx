@@ -150,6 +150,52 @@ describe('usePluginList', () => {
     expect(hook.result.current.plugins).toEqual([REVERB]);
   });
 
+  it('updates nothing when the plugins answer after the page is left', async () => {
+    let answerPlugins;
+    PedalboardService.getPlugins.mockReturnValueOnce(new Promise((resolve) => {
+      answerPlugins = resolve;
+    }));
+    hook = renderPluginList();
+    hook.unmount();
+    hook = undefined;
+    answerPlugins({ data: [GATE], count: 1, currentPage: 1, numberPages: 1 });
+    await flushPromises();
+
+    expect(console.error).not.toHaveBeenCalled();
+  });
+
+  it('updates nothing when a request fails after the page is left', async () => {
+    let failPlugins;
+    PedalboardService.getPlugins.mockReturnValueOnce(new Promise((resolve, reject) => {
+      failPlugins = reject;
+    }));
+    hook = renderPluginList();
+    hook.unmount();
+    hook = undefined;
+    failPlugins(new Error('La requête a échoué (500)'));
+    await flushPromises();
+
+    expect(console.error).not.toHaveBeenCalled();
+  });
+
+  it('updates nothing when a delete fails after the page is left', async () => {
+    let failDelete;
+    PedalboardService.deletePlugin.mockReturnValueOnce(new Promise((resolve, reject) => {
+      failDelete = reject;
+    }));
+    hook = renderPluginList();
+    await flushPromises();
+    // Forgets the act() warnings of the first load, which React 16.8 gives for any async update
+    console.error.mockClear();
+    act(() => hook.result.current.deletePlugin('gate'));
+    hook.unmount();
+    hook = undefined;
+    failDelete(new Error('Plugin non trouvé'));
+    await flushPromises();
+
+    expect(console.error).not.toHaveBeenCalled();
+  });
+
   it('gives the message of a failed request, then clears it once a page loads', async () => {
     PedalboardService.getPlugins.mockRejectedValueOnce(new Error('La requête a échoué (500)'));
     hook = renderPluginList();
