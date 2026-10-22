@@ -284,7 +284,7 @@ describe('MyPlugins', () => {
     await flushPromises();
     clickPageButton({ container: view.container, label: '3' });
     await flushPromises();
-    clickNavigation({ container: view.container, selector: '.page-suivante' });
+    clickNavigation({ container: view.container, selector: '.next-page' });
     await flushPromises();
 
     expect(PedalboardService.getPlugins.mock.calls).toEqual([[1, PAGE_SIZE], [3, PAGE_SIZE]]);
@@ -294,7 +294,7 @@ describe('MyPlugins', () => {
     PedalboardService.getPlugins.mockImplementation(getPluginsOnThreePages);
     view = renderMyPlugins({ location: { search: '' } });
     await flushPromises();
-    clickNavigation({ container: view.container, selector: '.page-precedente' });
+    clickNavigation({ container: view.container, selector: '.previous-page' });
     await flushPromises();
 
     expect(PedalboardService.getPlugins.mock.calls).toEqual([[1, PAGE_SIZE]]);

@@ -9,13 +9,13 @@ import { render } from 'utils/testing';
 import Pagination from './index';
 
 const readPageLabels = container => Array.from(
-  container.querySelectorAll('.numero-de-page button'),
+  container.querySelectorAll('.page-numbers button'),
   button => button.textContent
 );
 
 const clickNextPage = (container) => {
   act(() => {
-    container.querySelector('.page-suivante').click();
+    container.querySelector('.next-page').click();
   });
 };
 

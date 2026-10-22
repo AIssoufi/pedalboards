@@ -3,7 +3,7 @@
 .navigation {
   display: flex;
   justify-content: center;
-  .numero-de-page {
+  .page-numbers {
     margin: 40px 20px;
     button {
       margin: 0 3px;
@@ -23,7 +23,7 @@
       font-size: 1.5em;
     }
   }
-  .page-precedente, .page-suivante {
+  .previous-page, .next-page {
     display: flex;
     align-items: center;
     &:hover{
