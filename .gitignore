@@ -8,6 +8,8 @@
 
 # production
 **/build
+# report of `pnpm report:bundle` in the frontend
+**/bundle-report.html
 
 # local state of wrangler, such as `wrangler pages dev` at the root
 **/.wrangler

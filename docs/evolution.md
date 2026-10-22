@@ -324,3 +324,44 @@ The frontend has no audit advisory left, since those of `lodash` are gone; the w
 the same ones, those of the CMS. The tests count the frontend and its scripts.
 
 Decision: [0009. Run the frontend store on Redux Toolkit, with hooks and no prop-types](decisions/0009-redux-toolkit-and-hooks.md)
+
+## Since 2026: a lighter plugins page
+
+The plugins page no longer downloads the details of a plugin: the details page loads them, their
+helpers and their style in their own chunk with `React.lazy`, and shows the loader in their card
+meanwhile, or its error message when that chunk fails to load. The cards give their screenshot
+the width and height that the API sends, so that the browser reserves its place before it
+arrives, and load the screenshots below the first row only once they near the viewport. The page
+opens its connection to `api.moddevices.com`, the host of the screenshots, while its scripts
+load. `pnpm report:bundle` writes the share of each package and module in the scripts, with
+rollup-plugin-visualizer.
+
+| Figure | Before (`f280804e`) | After |
+| --- | --- | --- |
+| Frontend JS that `/plugins` loads, raw / gzipped | 339,878 B / 109,394 B | 338,627 B / 109,264 B |
+| Frontend JS of the details, that only `/plugin/:id` loads, raw / gzipped | in the main script | 2,116 B / 785 B |
+| Frontend CSS that `/plugins` loads, raw / gzipped | 8,125 B / 2,083 B | 6,204 B / 1,779 B |
+| Frontend tests, all passing | 418 | 448 |
+| Frontend test run, median of 3 | 1.4 s | 1.4 s |
+| Frontend build, median of 3 | 0.3 s | 0.3 s |
+| Install after deleting `node_modules`, median of 3 | 1.4 s | 1.5 s |
+| Workspace audit advisories, critical / high / moderate / low | 27 / 99 / 69 / 24 | 27 / 99 / 69 / 24 |
+| Lighthouse of `/plugins` in the built frontend, performance / accessibility / best practices / SEO | 72 / 83 / 100 / 91 | 77 / 83 / 100 / 91 |
+| Lighthouse performance of `/plugins`, each run | 67, 72, 72 | 77, 77, 77 |
+| Largest contentful paint of `/plugins`, median of 3 | 5.7 s | 5.3 s |
+| Cumulative layout shift of `/plugins`, median of 3 | 0.104 | 0 |
+| Screenshots that `/plugins` loads on a phone | 10 | 9 |
+
+The base and the branch were measured in turn on an Apple M3 (8 cores), with Node.js 24.22.0 and
+pnpm 12.14.0, three runs each, `node_modules` deleted before each install and the build output
+before each build, with `measure-migration.mjs`, which gzips at the default level of Node.js.
+Lighthouse 12.8.2 emulates a phone of 412 by 823 pixels, with a simulated slow network. The
+JavaScript that `/plugins` loads was already below the 113,368 B gzipped of the frontend before
+React 19, since `lodash` and `redux-logger` left it with Redux Toolkit. The details leave it,
+but Vite adds the helper that loads the style of their chunk, the cards gain the attributes of
+their screenshot and the page an error boundary, so it shrinks by 130 B gzipped only. React DOM
+is 63.4% of it, React Router 11.5% and Font Awesome 8.3%, by the bundle report; the code of the
+app is 4.4%. The performance score comes from the screenshots, loaded from a remote host: the
+largest contentful paint, the first screenshot, ranges from 5.7 to 7.0 s before and from 5.1 to
+5.3 s after, and the screenshots no longer move the cards as they arrive. The rendered pages are
+the same in pixels at 390, 768, 1280 and 1920 pixels wide.

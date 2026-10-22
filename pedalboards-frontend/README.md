@@ -17,8 +17,13 @@ Run them in this folder, or from the root with `pnpm --filter pedalboards-fronte
 | `pnpm lint`             | Lints the app with ESLint, and fails on any warning                      |
 | `pnpm check:dev-server` | Starts the dev server on a free port and checks that it serves the app   |
 | `pnpm check:bundle`     | Fails when the scripts of `build/` hold development-only code; run `pnpm build` first |
+| `pnpm report:bundle`    | Builds the app and writes `bundle-report.html`, the share of each package and module in its scripts |
 
 - `pnpm dev` fails when port 3001 is taken, rather than moving to 3002, the port of the CMS.
+- `pnpm report:bundle` measures the minified scripts through source maps
+  ([rollup-plugin-visualizer](https://github.com/btd/rollup-plugin-visualizer)), so it also writes
+  `.map` files into `build/`: run `pnpm build` again before publishing that folder. The report
+  gives no gzip size.
 - The store checks in development and in the tests only that the state is never mutated and
   holds only serializable values (Redux Toolkit): the production build leaves these checks out,
   and `pnpm check:bundle` fails when they ship.

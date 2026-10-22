@@ -133,3 +133,37 @@ it('shows the screenshot without a link to the details when the plugin has no id
   expect(screen.getByRole('img').getAttribute('src')).toBe('http://example.com/screenshot');
   expect(screen.queryByRole('link')).toBeNull();
 });
+
+describe('screenshot', () => {
+  const SCREENSHOT_URL = 'http://example.com/screenshot';
+
+  it('gets the size of the API and loads at once by default', () => {
+    renderPlugin({ screenshotUrl: SCREENSHOT_URL, imageWidth: 261, imageHeight: 430 });
+
+    const screenshot = screen.getByRole('img');
+    expect(screenshot.getAttribute('width')).toBe('261');
+    expect(screenshot.getAttribute('height')).toBe('430');
+    expect(screenshot.hasAttribute('loading')).toBe(false);
+  });
+
+  it.each([
+    ['missing', undefined],
+    ['null', null],
+    ['zero', 0],
+    ['negative', -261],
+    ['not a number', NaN],
+    ['a string', '261']
+  ])('has no size when the size of the API is %s', (description, size) => {
+    renderPlugin({ screenshotUrl: SCREENSHOT_URL, imageWidth: size, imageHeight: size });
+
+    const screenshot = screen.getByRole('img');
+    expect(screenshot.hasAttribute('width')).toBe(false);
+    expect(screenshot.hasAttribute('height')).toBe(false);
+  });
+
+  it('loads only near the viewport when lazy', () => {
+    renderPlugin({ screenshotUrl: SCREENSHOT_URL, isScreenshotLazy: true });
+
+    expect(screen.getByRole('img').getAttribute('loading')).toBe('lazy');
+  });
+});
