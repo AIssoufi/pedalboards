@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 // Components
-import { AddPlugin } from 'components';
+import { AddPlugin, RequestError } from 'components';
 
 // Services
 import { PedalboardService } from 'services';
@@ -45,7 +45,7 @@ const EditPlugin = ({ match = {} }) => {
 
   return (
     <>
-      {errorMessage && <p className="request-error" role="alert">{errorMessage}</p>}
+      <RequestError message={errorMessage} />
       {/* The key mounts a new form once the plugin is loaded: its fields read their values once */}
       <AddPlugin key={plugin._id} {...plugin} edit id={id} />
     </>

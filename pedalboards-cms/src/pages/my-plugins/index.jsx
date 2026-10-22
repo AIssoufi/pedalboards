@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 // Components
-import { Pagination } from 'components';
+import { Pagination, RequestError } from 'components';
 
 // Service
 import { PedalboardService } from 'services';
@@ -96,7 +96,7 @@ const MyPlugins = ({ location = {} }) => {
           Ajouter un  plugin
         </Link>
       </header>
-      {errorMessage && <p className="request-error" role="alert">{errorMessage}</p>}
+      <RequestError message={errorMessage} />
       <main>
         {plugins && plugins.length > 0
           ? plugins.map(({ _id, name }) => (

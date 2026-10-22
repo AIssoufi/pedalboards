@@ -9,6 +9,9 @@ import PropTypes from 'prop-types';
 import 'react-tippy/dist/tippy.css';
 import './style.scss';
 
+// Components
+import RequestError from 'components/request-error';
+
 // Services
 import { PedalboardService } from 'services';
 
@@ -229,7 +232,7 @@ export default class AddPlugin extends Component {
                 required={!edit}
               />
             </div>
-            {errorMessage && <p className="request-error" role="alert">{errorMessage}</p>}
+            <RequestError message={errorMessage} />
             <div className="create-btn-container">
               <Tooltip
                 title={edit ? 'Click to update the plugin' : 'Click to create the plugin'}
