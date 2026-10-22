@@ -83,7 +83,7 @@ const PedalboardDetails = ({
           )
           : null}
       </header>
-      {label && <h2>{label}</h2>}
+      {label && <h1>{label}</h1>}
       <div className="plugin-media-container">
         {screenshotUrl && (
           <img className="plugin-media" src={screenshotUrl} alt={toScreenshotAlt(label)} />

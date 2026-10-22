@@ -43,9 +43,11 @@
     }
   }
 
-  & > h2 {
+  // Keeps the margins that the title had as an h2
+  & > h1 {
     font-weight: bold;
     font-size: 1.5em;
+    margin: 0.83em 0;
     color: $bg-primary-color;
   }
 

@@ -132,6 +132,13 @@ describe('PluginsPage', () => {
     expect(screen.queryByText(LOADER_TEXT)).toBeNull();
   });
 
+  it('titles the page with its one top level heading', async () => {
+    await renderPage({ url: '/plugins' });
+
+    expect(screen.getAllByRole('heading', { level: 1 }).map(({ textContent }) => textContent))
+      .toEqual(['Plugins']);
+  });
+
   it('shows the empty state for an answer without plugins', async () => {
     await renderPage({ url: '/plugins', countPlugins: 0 });
 
