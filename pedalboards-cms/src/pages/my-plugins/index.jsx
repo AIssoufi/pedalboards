@@ -15,7 +15,7 @@ import { Env } from 'utils';
 // Style
 import './style.scss';
 
-const MyPlugins = ({ location }) => {
+const MyPlugins = ({ location = {} }) => {
   const displayNumber = 10;
   const homePageUrl = Env.get('frontend');
 
@@ -25,22 +25,14 @@ const MyPlugins = ({ location }) => {
   const [countPlugins, setCountPlugins] = useState(-1);
 
   useEffect(() => {
-    const { search } = location;
+    const searchParams = new URLSearchParams(location.search);
+    const hasSearch = Array.from(searchParams.keys()).length > 0;
+    const pluginsRequest = hasSearch
+      ? PedalboardService.findPlugins(searchParams, currentPage, displayNumber)
+      : PedalboardService.getPlugins(currentPage, displayNumber);
 
-    const fetchPlugin = () => (
-      search ? () => {
-        const searchParams = new URLSearchParams(search);
-
-        return PedalboardService.findPlugins(
-          searchParams,
-          currentPage,
-          displayNumber
-        );
-      } : PedalboardService.getPlugins(currentPage, displayNumber)
-    );
-
-    fetchPlugin().then((response) => {
-      const { data, count, numberPages } = response;
+    pluginsRequest.then((response) => {
+      const { data = [], count = 0, numberPages = 0 } = response;
 
       setPlugins(data);
       setElementCount(count);
@@ -135,7 +127,10 @@ const MyPlugins = ({ location }) => {
 };
 
 MyPlugins.propTypes = {
-  location: PropTypes.object.isRequired
+  /** Address of the page, given by the router: its `search` filters the plugins, as `?name=gate` */
+  location: PropTypes.shape({
+    search: PropTypes.string
+  })
 };
 
 export default MyPlugins;
