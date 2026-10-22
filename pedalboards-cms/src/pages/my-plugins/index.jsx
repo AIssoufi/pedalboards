@@ -1,25 +1,16 @@
 // Dependencies
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 // Components
 import { Pagination, RequestError } from 'components';
 
-// Service
-import { PedalboardService } from 'services';
-
-// Helpers
-import { RequestHelper } from 'helpers';
-
 // Utils
 import { Env } from 'utils';
 
-// Constants
-import { FIRST_PAGE, PAGE_SIZE } from './constants';
-
-// Utils
-import { isPageInRange } from './utils';
+// Hooks
+import usePluginList from './hooks/usePluginList';
 
 // Style
 import './style.scss';
@@ -30,60 +21,10 @@ import './style.scss';
  */
 const MyPlugins = ({ location = {} }) => {
   const homePageUrl = Env.get('frontend');
-
-  const [plugins, setPlugins] = useState([]);
-  const [currentPage, setCurrentPage] = useState(FIRST_PAGE);
-  const [countPlugins, setCountPlugins] = useState(-1);
-  const [errorMessage, setErrorMessage] = useState('');
-
-  // Number of the last list request, so that an older answer never replaces a newer one
-  const lastListRequest = useRef(0);
   const { search = '' } = location;
-
-  const showError = (error) => {
-    setErrorMessage(RequestHelper.readErrorMessage(error));
-  };
-
-  // Loads one page of the plugins, filtered by the search of the address when it has one
-  const loadPlugins = ({ page }) => {
-    const searchParams = new URLSearchParams(search);
-    const hasSearch = Array.from(searchParams.keys()).length > 0;
-    const pluginsRequest = hasSearch
-      ? PedalboardService.findPlugins(searchParams, page, PAGE_SIZE)
-      : PedalboardService.getPlugins(page, PAGE_SIZE);
-    const request = lastListRequest.current + 1;
-    const isLastRequest = () => request === lastListRequest.current;
-
-    lastListRequest.current = request;
-    pluginsRequest.then((response) => {
-      if (!isLastRequest()) return;
-
-      const { data = [], currentPage: loadedPage = page, numberPages = 0 } = response;
-
-      setPlugins(data);
-      setCurrentPage(loadedPage);
-      setCountPlugins(numberPages);
-      setErrorMessage('');
-    }, (error) => {
-      if (isLastRequest()) showError(error);
-    });
-  };
-
-  useEffect(() => {
-    loadPlugins({ page: FIRST_PAGE });
-  }, [search]);
-
-  const setCurrentPageHandler = (pageNumber) => {
-    if (!isPageInRange({ page: pageNumber, pageCount: countPlugins })) return;
-
-    loadPlugins({ page: pageNumber });
-  };
-
-  // The API answers a delete with a page of every plugin: load the page again with the search
-  const deletePluginHandler = (id) => {
-    PedalboardService.deletePlugin(id, currentPage, PAGE_SIZE)
-      .then(() => loadPlugins({ page: currentPage }), showError);
-  };
+  const {
+    plugins, currentPage, pageCount, errorMessage, goToPage, deletePlugin
+  } = usePluginList({ search });
 
   return (
     <section className="my-plugin-container">
@@ -116,7 +57,7 @@ const MyPlugins = ({ location = {} }) => {
                 <button
                   type="button"
                   className="btn bg-white"
-                  onClick={() => deletePluginHandler(_id)}
+                  onClick={() => deletePlugin(_id)}
                 >
                   Supprimer
                 </button>
@@ -128,8 +69,8 @@ const MyPlugins = ({ location = {} }) => {
       <footer>
         <Pagination
           currentPage={currentPage}
-          elementCount={countPlugins}
-          onCurrentPageChange={setCurrentPageHandler}
+          elementCount={pageCount}
+          onCurrentPageChange={goToPage}
         />
       </footer>
     </section>
