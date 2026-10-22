@@ -11,13 +11,9 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe('the methods of one plugin', () => {
-  it.each([
-    ['getPlugin', id => PedalboardService.getPlugin(id)],
-    ['updatePlugin', id => PedalboardService.updatePlugin(id, {})],
-    ['deletePlugin', id => PedalboardService.deletePlugin(id)]
-  ])('%s keeps the id in one path segment', async (name, call) => {
-    await call('a/b?c#d e');
+describe('getPlugin', () => {
+  it('keeps the id in one path segment', async () => {
+    await PedalboardService.getPlugin('a/b?c#d e');
 
     expect(fetchedUrl()).toMatch(/\/api\/plugin\/a%2Fb%3Fc%23d%20e$/);
   });

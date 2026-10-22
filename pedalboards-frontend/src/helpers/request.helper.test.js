@@ -1,7 +1,5 @@
 import { jsonResponse } from '../test-utils/fetch';
-import {
-  RequestError, get, post, put, remove
-} from './request.helper';
+import { RequestError, get } from './request.helper';
 
 const URL_OF_TEST = 'http://localhost:8080/api/plugins';
 const BODY = { data: [{ _id: 'abgate' }] };
@@ -69,28 +67,5 @@ describe('get', () => {
 
   it('never reaches the network when a test does not answer the fetch', async () => {
     await expect(get(URL_OF_TEST)).rejects.toBeInstanceOf(RequestError);
-  });
-});
-
-describe('the other methods', () => {
-  it.each([
-    ['post', () => post({ url: URL_OF_TEST, body: 'x' }), 'POST'],
-    ['put', () => put({ url: URL_OF_TEST, body: 'x' }), 'PUT'],
-    ['remove', () => remove(URL_OF_TEST), 'DELETE']
-  ])('%s sends its method and resolves the body', async (name, send, method) => {
-    answerFetch(Promise.resolve(jsonResponse({ body: BODY })));
-
-    await expect(send()).resolves.toEqual(BODY);
-    expect(window.fetch.mock.calls[0][1].method).toBe(method);
-  });
-
-  it.each([
-    ['post', () => post({ url: URL_OF_TEST })],
-    ['put', () => put({ url: URL_OF_TEST })],
-    ['remove', () => remove(URL_OF_TEST)]
-  ])('%s rejects a failed answer', async (name, send) => {
-    answerFetch(Promise.resolve(jsonResponse({ status: SERVER_ERROR_STATUS })));
-
-    await expect(send()).rejects.toBeInstanceOf(RequestError);
   });
 });

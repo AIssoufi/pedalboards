@@ -50,20 +50,6 @@ class PedalboardsService {
   async getPlugin(id) {
     return RequestHelper.get(this.pluginUrl(id));
   }
-
-  async updatePlugin(id, data) {
-    return RequestHelper.put({ url: this.pluginUrl(id), body: data });
-  }
-
-  async createPlugin(data) {
-    const url = `${this.url}/api/plugin`;
-
-    return RequestHelper.post({ url, body: data });
-  }
-
-  async deletePlugin(id) {
-    return RequestHelper.remove(this.pluginUrl(id));
-  }
 }
 
 export default new PedalboardsService();
