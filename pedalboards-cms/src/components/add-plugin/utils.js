@@ -15,13 +15,18 @@ const readControlPorts = ({ controlPorts, edit = false } = {}) => {
   return edit ? NO_CONTROL_PORTS : SAMPLE_CONTROL_PORTS;
 };
 
+// True for the fields of a form, false for a missing value or any other object
+const isFormData = value => value instanceof FormData;
+
 /**
  * Removes the image field of a form when no file was chosen, so that an edit keeps the image
  * of the plugin. A file input without a file sends an empty, nameless file.
- * @param {FormData} formData fields of the plugin form, changed in place
- * @returns {FormData} the same fields
+ * @param {FormData} [formData] fields of the plugin form, changed in place
+ * @returns {FormData} the same fields, or the value given when it is not a form
  */
 const removeEmptyImage = (formData) => {
+  if (!isFormData(formData)) return formData;
+
   const image = formData.get(IMAGE_FIELD);
   const hasChosenImage = Boolean(image && image.size);
 
@@ -40,9 +45,7 @@ const removeEmptyImage = (formData) => {
  * formDataToObject(new FormData(controlPortForm)); // { name: 'Gain', default: '0.5', ... }
  */
 const formDataToObject = (formData) => {
-  const isFormData = Boolean(formData) && typeof formData.entries === 'function';
-
-  if (!isFormData) return {};
+  if (!isFormData(formData)) return {};
 
   return Array.from(formData.entries()).reduce((fields, [name, value]) => ({
     ...fields,

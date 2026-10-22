@@ -103,4 +103,12 @@ describe('removeEmptyImage', () => {
     expect(removeEmptyImage(formData).has('image')).toBe(false);
     expect(formData.get('name')).toBe('Gate');
   });
+
+  it.each([
+    ['a missing form', undefined],
+    ['null', null],
+    ['an object that is not a form', { image: '' }]
+  ])('gives back %s as it is', (label, formData) => {
+    expect(removeEmptyImage(formData)).toBe(formData);
+  });
 });
