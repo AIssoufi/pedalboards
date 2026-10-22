@@ -40,6 +40,12 @@ it('renders without crashing', () => {
   expect(screen.getByRole('img', { name: 'Screenshot of lorem' })).toBeDefined();
 });
 
+it('titles the page with the label of the plugin', () => {
+  renderDetails({ label: 'abGate' });
+
+  expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('abGate');
+});
+
 it('displays a description holding markup as literal text', () => {
   renderDetails({
     author: { name: 'Lorem' },
