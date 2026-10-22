@@ -48,6 +48,12 @@ const renderMyPlugins = props => render(
   </MemoryRouter>
 );
 
+const rerenderMyPlugins = ({ view: renderedView, props }) => renderedView.rerender(
+  <MemoryRouter>
+    <MyPlugins {...props} />
+  </MemoryRouter>
+);
+
 const readTitles = container => Array.from(
   container.querySelectorAll('.plugin .title'),
   title => title.textContent
@@ -191,6 +197,74 @@ describe('MyPlugins', () => {
 
     expect(PedalboardService.getPlugins.mock.calls).toEqual([[1, PAGE_SIZE], [2, PAGE_SIZE]]);
     expect(PedalboardService.findPlugins).not.toHaveBeenCalled();
+  });
+
+  it('lists the first page of a new search of the address', async () => {
+    PedalboardService.findPlugins.mockImplementation(findPluginsOnTwoPages);
+    view = renderMyPlugins({ location: { search: '?name=gate' } });
+    await flushPromises();
+    clickPageButton({ container: view.container, label: '2' });
+    await flushPromises();
+    PedalboardService.findPlugins.mockResolvedValue({
+      data: [{ _id: 'reverb', name: 'Reverb' }], count: 1, currentPage: 1, numberPages: 1
+    });
+    rerenderMyPlugins({ view, props: { location: { search: '?name=reverb' } } });
+    await flushPromises();
+
+    expect(readSearchCalls()).toEqual([
+      ['name=gate', 1, PAGE_SIZE],
+      ['name=gate', 2, PAGE_SIZE],
+      ['name=reverb', 1, PAGE_SIZE]
+    ]);
+    expect(readTitles(view.container)).toEqual(['Reverb']);
+  });
+
+  it('lists every plugin once the search leaves the address', async () => {
+    view = renderMyPlugins({ location: { search: '?name=gate' } });
+    await flushPromises();
+    rerenderMyPlugins({ view, props: { location: { search: '' } } });
+    await flushPromises();
+
+    expect(PedalboardService.getPlugins.mock.calls).toEqual([[1, PAGE_SIZE]]);
+    expect(readTitles(view.container)).toEqual(['Gate', 'Reverb']);
+  });
+
+  it('keeps the plugins of the new search when the previous one answers last', async () => {
+    let answerPreviousSearch;
+    PedalboardService.findPlugins.mockReturnValueOnce(new Promise((resolve) => {
+      answerPreviousSearch = resolve;
+    }));
+    view = renderMyPlugins({ location: { search: '?name=reverb' } });
+    rerenderMyPlugins({ view, props: { location: { search: '?name=gate' } } });
+    await flushPromises();
+    answerPreviousSearch({ data: [{ _id: 'reverb', name: 'Reverb' }], count: 1, numberPages: 1 });
+    await flushPromises();
+
+    expect(readTitles(view.container)).toEqual(['Gate']);
+  });
+
+  it('keeps the error of the new search when the previous one fails last', async () => {
+    let failPreviousSearch;
+    PedalboardService.findPlugins.mockReturnValueOnce(new Promise((resolve, reject) => {
+      failPreviousSearch = reject;
+    }));
+    view = renderMyPlugins({ location: { search: '?name=reverb' } });
+    rerenderMyPlugins({ view, props: { location: { search: '?name=gate' } } });
+    await flushPromises();
+    failPreviousSearch(new Error('La requête a échoué (500)'));
+    await flushPromises();
+
+    expect(readErrorText(view.container)).toBeNull();
+    expect(readTitles(view.container)).toEqual(['Gate']);
+  });
+
+  it('loads nothing again when the search of the address stays the same', async () => {
+    view = renderMyPlugins({ location: { search: '?name=gate' } });
+    await flushPromises();
+    rerenderMyPlugins({ view, props: { location: { search: '?name=gate' } } });
+    await flushPromises();
+
+    expect(PedalboardService.findPlugins).toHaveBeenCalledTimes(1);
   });
 
   it('goes to the last page when it holds fewer plugins than pages', async () => {
