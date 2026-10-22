@@ -12,24 +12,32 @@ import './style.scss';
 // Services
 import { PedalboardService } from 'services';
 
+/**
+ * Form that creates a plugin, or edits the plugin it is given. Every prop is optional: without
+ * them, it is an empty create form.
+ */
 export default class AddPlugin extends Component {
   static propTypes = {
-    edit: PropTypes.bool.isRequired,
-    brand: PropTypes.string.isRequired,
-    categories: PropTypes.arrayOf(PropTypes.string).isRequired,
+    /** Edits the plugin instead of creating one. @default false */
+    edit: PropTypes.bool,
+    /** @default '' */
+    brand: PropTypes.string,
+    /** Shown joined by commas. @default [] */
+    categories: PropTypes.arrayOf(PropTypes.string),
     controlPorts: PropTypes.arrayOf(PropTypes.shape({
       default: PropTypes.number,
       max: PropTypes.number,
       min: PropTypes.number,
       name: PropTypes.string
-    })).isRequired,
-    description: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
-    uri: PropTypes.string.isRequired
-  };
-
-  static defaultValue = {
-    edit: false
+    })),
+    /** @default '' */
+    description: PropTypes.string,
+    /** @default '' */
+    label: PropTypes.string,
+    /** @default '' */
+    uri: PropTypes.string,
+    /** @default '' */
+    version: PropTypes.string
   };
 
   constructor(props) {
@@ -66,7 +74,7 @@ export default class AddPlugin extends Component {
     const formData = new FormData(form);
     const {
       state: { controlPorts },
-      props: { edit }
+      props: { edit = false }
     } = this;
 
     formData.append('controlPorts', JSON.stringify(controlPorts, null, 2));
@@ -111,7 +119,13 @@ export default class AddPlugin extends Component {
     const {
       state: { controlPorts },
       props: {
-        label, uri, version, brand, categories, description, edit
+        label = '',
+        uri = '',
+        version = '',
+        brand = '',
+        categories = [],
+        description = '',
+        edit = false
       }
     } = this;
 
@@ -164,7 +178,7 @@ export default class AddPlugin extends Component {
                 type="text"
                 name="categories"
                 placeholder="Categorie A, categorie B, categorie C, etc."
-                defaultValue={categories ? categories.join(', ') : ''}
+                defaultValue={Array.isArray(categories) ? categories.join(', ') : ''}
                 required
               />
             </div>
