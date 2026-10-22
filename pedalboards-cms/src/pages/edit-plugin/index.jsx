@@ -37,9 +37,10 @@ const EditPlugin = ({ match = {} }) => {
       .then((response) => {
         if (!isRoutePlugin) return;
 
-        const { data = {} } = response;
+        const { data } = response || {};
+        const isPlugin = typeof data === 'object' && data !== null && !Array.isArray(data);
 
-        setPlugin(data);
+        setPlugin(isPlugin ? data : NO_PLUGIN);
         setErrorMessage('');
       }, (error) => {
         if (isRoutePlugin) setErrorMessage(RequestHelper.readErrorMessage(error));

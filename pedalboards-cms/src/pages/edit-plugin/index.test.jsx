@@ -86,6 +86,32 @@ describe('EditPlugin', () => {
     expect(readField({ container: view.container, name: 'name' }).value).toBe('');
   });
 
+  it('shows an empty edit form for an empty response body', async () => {
+    PedalboardService.getPlugin.mockResolvedValue(null);
+    view = render(<EditPlugin match={ROUTE_MATCH} />);
+    await flushPromises();
+
+    const { container } = view;
+
+    expect(readField({ container, name: 'name' }).value).toBe('');
+    expect(container.querySelector('[role="alert"]')).toBeNull();
+  });
+
+  it.each([
+    ['null', null],
+    ['a text', 'Reverb'],
+    ['a number', 42],
+    ['a list', [GATE]]
+  ])('shows an empty edit form for a plugin that is %s', async (label, data) => {
+    PedalboardService.getPlugin.mockResolvedValue({ data });
+    view = render(<EditPlugin match={ROUTE_MATCH} />);
+    await flushPromises();
+
+    const nameField = readField({ container: view.container, name: 'name' });
+
+    expect(nameField.value).toBe('');
+  });
+
   it('shows the message of a plugin that cannot be loaded', async () => {
     PedalboardService.getPlugin.mockRejectedValue(new Error('Plugin non trouvé'));
     view = render(<EditPlugin match={ROUTE_MATCH} />);
