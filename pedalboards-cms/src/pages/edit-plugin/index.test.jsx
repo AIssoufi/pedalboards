@@ -24,7 +24,7 @@ const GATE = {
 
 const REVERB = { _id: 'reverb', name: 'Reverb' };
 
-const ROUTE_MATCH ={ params: { id: 'gate' } };
+const ROUTE_MATCH = { params: { id: 'gate' } };
 
 const readField = ({ container, name }) => container.querySelector(`[name="${name}"]`);
 

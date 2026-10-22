@@ -9,6 +9,9 @@ import { PedalboardService } from 'services';
 // Utils
 import { flushPromises, render } from 'utils/testing';
 
+// Constants
+import { PAGE_SIZE } from './constants';
+
 // Components
 import MyPlugins from './index';
 
@@ -39,8 +42,6 @@ const getTwoPluginsOnTwoPages = getPluginsOnPages({ count: 2, numberPages: 2 });
 const getPluginsOnThreePages = getPluginsOnPages({ count: 25, numberPages: 3 });
 
 const EMPTY_STATE_TEXT = 'Vous n\'avez ajouté aucun plugin';
-
-const PAGE_SIZE = 10;
 
 const renderMyPlugins = props => render(
   <MemoryRouter>
@@ -90,7 +91,7 @@ const readSearchCalls = () => PedalboardService.findPlugins.mock.calls.map(
   ([searchParams, page, pageSize]) => [searchParams.toString(), page, pageSize]
 );
 
-const isPropTypeWarning =([message]) => String(message).includes('Failed prop type');
+const isPropTypeWarning = ([message]) => String(message).includes('Failed prop type');
 
 const readPropTypeWarnings = () => console.error.mock.calls.filter(isPropTypeWarning);
 
