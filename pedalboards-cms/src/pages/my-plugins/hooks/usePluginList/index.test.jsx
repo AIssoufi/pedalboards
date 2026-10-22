@@ -221,6 +221,52 @@ describe('usePluginList', () => {
     expect(PedalboardService.getPlugins).toHaveBeenLastCalledWith(2, PAGE_SIZE);
   });
 
+  it('goes to the new last page when a delete empties the last one', async () => {
+    hook = renderPluginList();
+    await flushPromises();
+    act(() => hook.result.current.goToPage(3));
+    await flushPromises();
+    PedalboardService.getPlugins.mockImplementation(page => Promise.resolve({
+      data: page === 3 ? [] : [REVERB], count: 20, currentPage: page, numberPages: 2
+    }));
+    act(() => hook.result.current.deletePlugin('gate'));
+    await flushPromises();
+
+    expect(PedalboardService.getPlugins).toHaveBeenLastCalledWith(2, PAGE_SIZE);
+    expect(hook.result.current).toMatchObject({
+      plugins: [REVERB], currentPage: 2, pageCount: 2
+    });
+  });
+
+  it('stays on the first page when a delete empties the whole list', async () => {
+    hook = renderPluginList();
+    await flushPromises();
+    PedalboardService.getPlugins.mockResolvedValue({
+      data: [], count: 0, currentPage: 1, numberPages: 0
+    });
+    act(() => hook.result.current.deletePlugin('gate'));
+    await flushPromises();
+
+    expect(PedalboardService.getPlugins).toHaveBeenCalledTimes(2);
+    expect(hook.result.current).toMatchObject({ plugins: [], currentPage: 1, pageCount: 0 });
+  });
+
+  it('loads the last page only once when the service gives a page past it', async () => {
+    hook = renderPluginList();
+    await flushPromises();
+    act(() => hook.result.current.goToPage(3));
+    await flushPromises();
+    PedalboardService.getPlugins.mockResolvedValue({
+      data: [], count: 20, currentPage: 3, numberPages: 2
+    });
+    act(() => hook.result.current.deletePlugin('gate'));
+    await flushPromises();
+
+    const callsAfterDelete = PedalboardService.getPlugins.mock.calls.slice(2);
+
+    expect(callsAfterDelete).toEqual([[3, PAGE_SIZE], [2, PAGE_SIZE]]);
+  });
+
   it('keeps the plugins and gives the message of a failed delete', async () => {
     PedalboardService.deletePlugin.mockRejectedValue(new Error('Plugin non trouvé'));
     hook = renderPluginList();

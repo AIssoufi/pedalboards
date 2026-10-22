@@ -16,7 +16,8 @@ import { isPageInRange } from '../../utils';
 /**
  * Loads the plugins of my plugins one page at a time, filtered by the search of the address when
  * it has one. A new search reloads the list from the first page, and only the answer of the last
- * request updates the list or its error, never once the page is left.
+ * request updates the list or its error, never once the page is left. A page past the last one,
+ * as after the delete of the last plugin of the last page, loads the last page instead.
  * @param {Object} [params]
  * @param {string} [params.search=''] search of the address, as `?name=gate`
  * @returns {{
@@ -59,6 +60,13 @@ const usePluginList = ({ search = '' } = {}) => {
       if (!isLastRequest()) return;
 
       const { data = [], currentPage: loadedPage = page, numberPages = 0 } = response;
+      // A delete can empty the last page: the list has fewer pages than the one asked for
+      const isPastLastPage = numberPages >= FIRST_PAGE && page > numberPages;
+
+      if (isPastLastPage) {
+        loadPlugins({ page: numberPages });
+        return;
+      }
 
       setPlugins(data);
       setCurrentPage(loadedPage);
