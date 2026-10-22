@@ -29,6 +29,12 @@ code {
   }
 }
 
+// Message of a request that failed, above the list or in a form
+.request-error {
+  margin: 0 0 10px;
+  color: $error-text-color;
+}
+
 .bg-primary {
   color: $bg-text-primary-color;
   background-color: $bg-primary-color;

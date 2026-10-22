@@ -22,7 +22,9 @@ const GATE = {
   controlPorts: []
 };
 
-const ROUTE_MATCH = { params: { id: 'gate' } };
+const REVERB = { _id: 'reverb', name: 'Reverb' };
+
+const ROUTE_MATCH ={ params: { id: 'gate' } };
 
 const readField = ({ container, name }) => container.querySelector(`[name="${name}"]`);
 
@@ -82,6 +84,58 @@ describe('EditPlugin', () => {
     await flushPromises();
 
     expect(readField({ container: view.container, name: 'name' }).value).toBe('');
+  });
+
+  it('shows the message of a plugin that cannot be loaded', async () => {
+    PedalboardService.getPlugin.mockRejectedValue(new Error('Plugin non trouvé'));
+    view = render(<EditPlugin match={ROUTE_MATCH} />);
+    await flushPromises();
+
+    const { container } = view;
+
+    expect(container.querySelector('[role="alert"]').textContent).toBe('Plugin non trouvé');
+    expect(readField({ container, name: 'name' }).value).toBe('');
+  });
+
+  it('fills the form with the plugin of a new route id', async () => {
+    view = render(<EditPlugin match={ROUTE_MATCH} />);
+    await flushPromises();
+    PedalboardService.getPlugin.mockResolvedValue({ data: REVERB });
+    view.rerender(<EditPlugin match={{ params: { id: 'reverb' } }} />);
+    await flushPromises();
+
+    expect(PedalboardService.getPlugin.mock.calls).toEqual([['gate'], ['reverb']]);
+    expect(readField({ container: view.container, name: 'name' }).value).toBe('Reverb');
+  });
+
+  it('keeps the plugin of the new route id when the previous one answers last', async () => {
+    let answerPreviousPlugin;
+    PedalboardService.getPlugin.mockReturnValueOnce(new Promise((resolve) => {
+      answerPreviousPlugin = resolve;
+    }));
+    PedalboardService.getPlugin.mockResolvedValue({ data: REVERB });
+    view = render(<EditPlugin match={ROUTE_MATCH} />);
+    view.rerender(<EditPlugin match={{ params: { id: 'reverb' } }} />);
+    await flushPromises();
+    answerPreviousPlugin({ data: GATE });
+    await flushPromises();
+
+    expect(readField({ container: view.container, name: 'name' }).value).toBe('Reverb');
+  });
+
+  it('updates nothing when the plugin answers after the page is left', async () => {
+    let answerPlugin;
+    jest.spyOn(console, 'error');
+    PedalboardService.getPlugin.mockReturnValueOnce(new Promise((resolve) => {
+      answerPlugin = resolve;
+    }));
+    view = render(<EditPlugin match={ROUTE_MATCH} />);
+    view.unmount();
+    view = undefined;
+    answerPlugin({ data: GATE });
+    await flushPromises();
+
+    expect(console.error).not.toHaveBeenCalled();
   });
 
   it('requests nothing without a route id', async () => {

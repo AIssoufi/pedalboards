@@ -8,31 +8,55 @@ import { AddPlugin } from 'components';
 // Services
 import { PedalboardService } from 'services';
 
+// Helpers
+import { RequestHelper } from 'helpers';
+
 /**
  * Page that edits the plugin of the route id: it loads the plugin, then fills the plugin form
- * with it.
+ * with it. A new route id loads its plugin, and an answer for a previous id is ignored.
  */
 const EditPlugin = ({ match = {} }) => {
   const [plugin, setPlugin] = useState({});
+  const [errorMessage, setErrorMessage] = useState('');
   const { params: { id } = {} } = match;
 
   useEffect(() => {
-    if (id) {
-      PedalboardService.getPlugin(id)
-        .then((response) => {
-          const { data = {} } = response;
+    if (!id) return undefined;
 
-          setPlugin(data);
-        });
-    }
-  }, []);
+    // False once the route names another plugin or the page is left: the answer is then ignored
+    let isRoutePlugin = true;
 
-  // The key mounts a new form once the plugin is loaded, since its fields read their values once
-  return <AddPlugin key={plugin._id} {...plugin} edit id={id} />;
+    PedalboardService.getPlugin(id)
+      .then((response) => {
+        if (!isRoutePlugin) return;
+
+        const { data = {} } = response;
+
+        setPlugin(data);
+        setErrorMessage('');
+      }, (error) => {
+        if (isRoutePlugin) setErrorMessage(RequestHelper.readErrorMessage(error));
+      });
+
+    return () => {
+      isRoutePlugin = false;
+    };
+  }, [id]);
+
+  return (
+    <>
+      {errorMessage && <p className="request-error" role="alert">{errorMessage}</p>}
+      {/* The key mounts a new form once the plugin is loaded: its fields read their values once */}
+      <AddPlugin key={plugin._id} {...plugin} edit id={id} />
+    </>
+  );
 };
 
 EditPlugin.propTypes = {
-  /** Match of the route, given by the router: its `params.id` names the plugin to edit */
+  /**
+   * Match of the route, given by the router: its `params.id` names the plugin to edit.
+   * @default {}
+   */
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string

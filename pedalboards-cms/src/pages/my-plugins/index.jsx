@@ -9,6 +9,9 @@ import { Pagination } from 'components';
 // Service
 import { PedalboardService } from 'services';
 
+// Helpers
+import { RequestHelper } from 'helpers';
+
 // Utils
 import { Env } from 'utils';
 
@@ -23,6 +26,11 @@ const MyPlugins = ({ location = {} }) => {
   const [elementCount, setElementCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [countPlugins, setCountPlugins] = useState(-1);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const showError = (error) => {
+    setErrorMessage(RequestHelper.readErrorMessage(error));
+  };
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -37,7 +45,8 @@ const MyPlugins = ({ location = {} }) => {
       setPlugins(data);
       setElementCount(count);
       setCountPlugins(numberPages);
-    });
+      setErrorMessage('');
+    }, showError);
   }, []);
 
   const setCurrentPageHandler = (pageNumber) => {
@@ -59,7 +68,8 @@ const MyPlugins = ({ location = {} }) => {
       setElementCount(count);
       setCurrentPage(newPage);
       setCountPlugins(numberPages);
-    });
+      setErrorMessage('');
+    }, showError);
   };
 
   const deletePluginHandler = (id) => {
@@ -73,7 +83,8 @@ const MyPlugins = ({ location = {} }) => {
         setElementCount(count);
         setCurrentPage(newPage);
         setCountPlugins(numberPages);
-      });
+        setErrorMessage('');
+      }, showError);
   };
 
   return (
@@ -87,6 +98,7 @@ const MyPlugins = ({ location = {} }) => {
           Ajouter un  plugin
         </Link>
       </header>
+      {errorMessage && <p className="request-error" role="alert">{errorMessage}</p>}
       <main>
         {plugins && plugins.length > 0
           ? plugins.map(({ _id, name }) => (

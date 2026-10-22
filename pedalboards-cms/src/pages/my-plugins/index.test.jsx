@@ -1,6 +1,7 @@
 // Dependencies
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
+import { act } from 'react-dom/test-utils';
 
 // Services
 import { PedalboardService } from 'services';
@@ -38,7 +39,13 @@ const readTitles = container => Array.from(
   title => title.textContent
 );
 
-const isPropTypeWarning = ([message]) => String(message).includes('Failed prop type');
+const readErrorText = (container) => {
+  const error = container.querySelector('[role="alert"]');
+
+  return error && error.textContent;
+};
+
+const isPropTypeWarning =([message]) => String(message).includes('Failed prop type');
 
 const readPropTypeWarnings = () => console.error.mock.calls.filter(isPropTypeWarning);
 
@@ -101,6 +108,37 @@ describe('MyPlugins', () => {
 
     expect(view.container.textContent).toContain(EMPTY_STATE_TEXT);
     expect(readPropTypeWarnings()).toEqual([]);
+  });
+
+  it('shows the message of a failed search', async () => {
+    PedalboardService.findPlugins.mockRejectedValue(
+      new Error('Le service des plugins ne répond pas')
+    );
+    view = renderMyPlugins({ location: { search: '?name=gate' } });
+    await flushPromises();
+
+    expect(readErrorText(view.container)).toBe('Le service des plugins ne répond pas');
+    expect(view.container.textContent).toContain(EMPTY_STATE_TEXT);
+  });
+
+  it('keeps the list and shows the message of a failed delete', async () => {
+    jest.spyOn(PedalboardService, 'deletePlugin').mockRejectedValue(new Error('Plugin non trouvé'));
+    view = renderMyPlugins({ location: { search: '' } });
+    await flushPromises();
+    act(() => {
+      view.container.querySelector('.plugin button').click();
+    });
+    await flushPromises();
+
+    expect(readErrorText(view.container)).toBe('Plugin non trouvé');
+    expect(readTitles(view.container)).toEqual(['Gate', 'Reverb']);
+  });
+
+  it('shows no message once the plugins are loaded', async () => {
+    view = renderMyPlugins({ location: { search: '' } });
+    await flushPromises();
+
+    expect(readErrorText(view.container)).toBeNull();
   });
 
   it('lists every plugin without a location', async () => {

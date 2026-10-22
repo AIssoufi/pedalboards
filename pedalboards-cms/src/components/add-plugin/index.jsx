@@ -12,6 +12,9 @@ import './style.scss';
 // Services
 import { PedalboardService } from 'services';
 
+// Helpers
+import { RequestHelper } from 'helpers';
+
 // Constants
 import { IMAGE_FIELD } from './constants';
 
@@ -28,32 +31,37 @@ export default class AddPlugin extends Component {
     edit: PropTypes.bool,
     /** Id of the edited plugin: an edit without it sends nothing */
     id: PropTypes.string,
-    /** @default '' */
+    /** Name of the plugin, its title in the list. @default '' */
     name: PropTypes.string,
-    /** @default '' */
+    /** Maker of the plugin. @default '' */
     brand: PropTypes.string,
-    /** Shown joined by commas. @default [] */
+    /** Categories of the plugin, shown joined by commas. @default [] */
     categories: PropTypes.arrayOf(PropTypes.string),
+    /**
+     * Control ports of the plugin. Without them, a new plugin starts with two samples and an edited
+     * one with none.
+     */
     controlPorts: PropTypes.arrayOf(PropTypes.shape({
       default: PropTypes.number,
       max: PropTypes.number,
       min: PropTypes.number,
       name: PropTypes.string
     })),
-    /** @default '' */
+    /** Text that presents the plugin. @default '' */
     description: PropTypes.string,
-    /** @default '' */
+    /** Short label of the plugin. @default '' */
     label: PropTypes.string,
-    /** @default '' */
+    /** URI that identifies the plugin. @default '' */
     uri: PropTypes.string,
-    /** @default '' */
+    /** Version of the plugin. @default '' */
     version: PropTypes.string
   };
 
   constructor(props) {
     super(props);
     this.state = {
-      controlPorts: readControlPorts(props)
+      controlPorts: readControlPorts(props),
+      errorMessage: ''
     };
   }
 
@@ -84,7 +92,7 @@ export default class AddPlugin extends Component {
 
     // The edit leaves the author out, so the plugin keeps its own, and keeps the fields as typed
     if (edit) {
-      PedalboardService.updatePlugin(id, formData);
+      PedalboardService.updatePlugin(id, formData).then(this.clearError, this.showError);
       return;
     }
 
@@ -95,7 +103,16 @@ export default class AddPlugin extends Component {
 
     PedalboardService.createPlugin(formData).then(() => {
       form.reset();
-    });
+      this.clearError();
+    }, this.showError);
+  }
+
+  clearError = () => {
+    this.setState({ errorMessage: '' });
+  }
+
+  showError = (error) => {
+    this.setState({ errorMessage: RequestHelper.readErrorMessage(error) });
   }
 
   handleFormCPSubmit = (event) => {
@@ -124,7 +141,7 @@ export default class AddPlugin extends Component {
 
   render() {
     const {
-      state: { controlPorts },
+      state: { controlPorts, errorMessage },
       props: {
         name = '',
         label = '',
@@ -212,6 +229,7 @@ export default class AddPlugin extends Component {
                 required={!edit}
               />
             </div>
+            {errorMessage && <p className="request-error" role="alert">{errorMessage}</p>}
             <div className="create-btn-container">
               <Tooltip
                 title={edit ? 'Click to update the plugin' : 'Click to create the plugin'}

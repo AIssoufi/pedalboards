@@ -30,6 +30,12 @@ const readMainForm = container => container.querySelector('form');
 
 const readSentForm = method => method.mock.calls[0][1];
 
+const readErrorText = (container) => {
+  const error = container.querySelector('[role="alert"]');
+
+  return error && error.textContent;
+};
+
 const isPropTypeWarning = ([message]) => String(message).includes('Failed prop type');
 
 const readPropTypeWarnings = () => console.error.mock.calls.filter(isPropTypeWarning);
@@ -93,6 +99,32 @@ describe('AddPlugin', () => {
       expect(PedalboardService.updatePlugin).not.toHaveBeenCalled();
       expect(JSON.parse(formData.get('controlPorts'))).toHaveLength(2);
       expect(JSON.parse(formData.get('author'))).toEqual({ avatarUrl: '', name: '' });
+      expect(readErrorText(view.container)).toBeNull();
+    });
+
+    it('shows the message of a failed create and keeps the fields', async () => {
+      PedalboardService.createPlugin.mockRejectedValue(
+        new Error('a plugin with this name already exists')
+      );
+      view = render(<AddPlugin />);
+
+      const nameField = readField({ container: view.container, name: 'name' });
+
+      nameField.value = 'Gate';
+      submitForm(readMainForm(view.container));
+      await flushPromises();
+
+      expect(readErrorText(view.container)).toBe('a plugin with this name already exists');
+      expect(nameField.value).toBe('Gate');
+    });
+
+    it('shows a fallback message for an error without one', async () => {
+      PedalboardService.createPlugin.mockRejectedValue(new Error(''));
+      view = render(<AddPlugin />);
+      submitForm(readMainForm(view.container));
+      await flushPromises();
+
+      expect(readErrorText(view.container)).toBe('La requête a échoué');
     });
   });
 
@@ -160,6 +192,26 @@ describe('AddPlugin', () => {
 
       expect(portRows).toHaveLength(2);
       expect(portRows[1].textContent).toContain('Threshold');
+    });
+
+    it('shows the message of a failed update', async () => {
+      PedalboardService.updatePlugin.mockRejectedValue(new Error('Plugin non trouvé'));
+      view = render(<AddPlugin edit {...GATE} />);
+      submitForm(readMainForm(view.container));
+      await flushPromises();
+
+      expect(readErrorText(view.container)).toBe('Plugin non trouvé');
+    });
+
+    it('clears the message once a new save succeeds', async () => {
+      PedalboardService.updatePlugin.mockRejectedValueOnce(new Error('invalid parameters'));
+      view = render(<AddPlugin edit {...GATE} />);
+      submitForm(readMainForm(view.container));
+      await flushPromises();
+      submitForm(readMainForm(view.container));
+      await flushPromises();
+
+      expect(readErrorText(view.container)).toBeNull();
     });
 
     it('sends nothing without the id of the plugin', async () => {
