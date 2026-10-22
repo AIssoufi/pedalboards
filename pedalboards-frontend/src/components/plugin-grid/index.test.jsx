@@ -51,6 +51,16 @@ it('renders a card linking to the details of each plugin', () => {
   expect(screen.queryByText(EMPTY_STATE_TEXT)).toBeNull();
 });
 
+it('loads the screenshots of the first row at once, the others once they near the viewport', () => {
+  const plugins = Array.from({ length: 7 }, (value, index) => ({
+    _id: `plugin-${index}`, screenshotUrl: `http://example.com/screenshot-${index}`
+  }));
+  renderGrid({ plugins });
+
+  const loadings = screen.getAllByRole('img').map(screenshot => screenshot.getAttribute('loading'));
+  expect(loadings).toEqual([null, null, null, null, null, 'lazy', 'lazy']);
+});
+
 it('shows the loader in place of the cards while loading', () => {
   renderGrid({ plugins: PLUGINS, isLoading: true });
 

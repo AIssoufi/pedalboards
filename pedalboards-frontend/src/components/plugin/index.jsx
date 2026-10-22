@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 
 // Utils
 import { buildPluginFilterLink, isPluginFilterValue } from '../../utils/plugin-filter';
+import { toImageDimension } from './utils';
 
 // Components
 import Tooltip from '../tooltip';
@@ -22,6 +23,11 @@ import './style.scss';
  * @property {string} [brand=''] - Brand, linking to the plugins of that brand. Hidden when empty.
  * @property {Array<string>} [categories=[]] - Categories, each linking to the plugins of that
  *   category.
+ * @property {number} [imageHeight] - Height of the screenshot in pixels, see `imageWidth`.
+ * @property {number} [imageWidth] - Width of the screenshot in pixels, which with its height
+ *   reserves its space in the card before it loads. Ignored unless a whole number above 0.
+ * @property {boolean} [isScreenshotLazy=false] - Loads the screenshot only once the card nears the
+ *   viewport, for the cards below the first row.
  * @property {string} [label=''] - Label, linking to the plugins of that label. Hidden when empty.
  * @property {string} [name=''] - Name, shown in the tooltip of the screenshot.
  * @property {string} [screenshotUrl=''] - URL of the screenshot. The image is omitted when empty.
@@ -35,10 +41,19 @@ import './style.scss';
  * @param {PluginProps} props - Props of the component.
  */
 const Plugin = ({
-  _id = '', name = '', screenshotUrl = '', categories = [], brand = '', label = ''
+  _id = '', name = '', screenshotUrl = '', imageWidth, imageHeight, isScreenshotLazy = false,
+  categories = [], brand = '', label = ''
 }) => {
   const categoryList = Array.isArray(categories) ? categories.filter(isPluginFilterValue) : [];
-  const screenshot = screenshotUrl && <img src={screenshotUrl} alt="Plugin screenshot" />;
+  const screenshot = screenshotUrl && (
+    <img
+      src={screenshotUrl}
+      alt="Plugin screenshot"
+      width={toImageDimension(imageWidth)}
+      height={toImageDimension(imageHeight)}
+      loading={isScreenshotLazy ? 'lazy' : undefined}
+    />
+  );
 
   return (
     <div className="plugin">
