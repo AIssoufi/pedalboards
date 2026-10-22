@@ -16,8 +16,9 @@ import usePluginList from './hooks/usePluginList';
 import './style.scss';
 
 /**
- * Page that lists the plugins, ten per page, with links to edit them and a button to delete them.
- * The search of the address filters the list, and a new search reloads it from the first page.
+ * Page that lists the plugins, `PAGE_SIZE` per page, with links to edit them and a button to delete
+ * them. The search of the address filters the list, and a new search reloads it from the first
+ * page.
  */
 const MyPlugins = ({ location = {} }) => {
   const homePageUrl = Env.get('frontend');
