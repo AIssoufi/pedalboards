@@ -9,13 +9,13 @@ import { render } from 'utils/testing';
 import Pagination from './index';
 
 const readPageLabels = container => Array.from(
-  container.querySelectorAll('.numero-de-page button'),
+  container.querySelectorAll('.page-numbers button'),
   button => button.textContent
 );
 
 const clickNextPage = (container) => {
   act(() => {
-    container.querySelector('.page-suivante').click();
+    container.querySelector('.next-page').click();
   });
 };
 
@@ -30,6 +30,28 @@ describe('Pagination', () => {
     if (view) view.unmount();
     view = undefined;
     jest.restoreAllMocks();
+  });
+
+  it('marks the shown page as the current one, and only that page', () => {
+    view = render(<Pagination currentPage={6} elementCount={54} />);
+
+    const currentPages = view.container.querySelectorAll('[aria-current]');
+
+    expect(Array.from(currentPages, page => page.textContent)).toEqual(['6']);
+    expect(currentPages[0].getAttribute('aria-current')).toBe('page');
+  });
+
+  it('makes the previous and next pages buttons that the keyboard reaches and presses', () => {
+    view = render(<Pagination currentPage={6} elementCount={54} />);
+
+    ['.previous-page', '.next-page'].forEach((selector) => {
+      const button = view.container.querySelector(selector);
+
+      // A native button takes the focus with Tab and clicks on Enter and Space
+      expect(button.tagName).toBe('BUTTON');
+      expect(button.type).toBe('button');
+      expect(button.hasAttribute('tabindex')).toBe(false);
+    });
   });
 
   it('shows the pages around the current one', () => {

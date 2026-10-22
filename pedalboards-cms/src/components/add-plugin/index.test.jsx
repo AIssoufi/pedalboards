@@ -12,6 +12,11 @@ import AddPlugin from './index';
 
 const TEXT_FIELDS = ['name', 'label', 'uri', 'version', 'brand', 'categories', 'description'];
 
+const FIELD_NAMES = [
+  'Name', 'Label', 'URI', 'Version', 'Brand', 'Categories', 'Description', 'Screenshot',
+  'Control port name', 'Default value', 'Maximal value', 'Minimal value'
+];
+
 const GATE = {
   id: 'gate',
   name: 'Gate',
@@ -66,6 +71,48 @@ describe('AddPlugin', () => {
     expect(fieldValues).toEqual(TEXT_FIELDS.map(() => ''));
     expect(container.querySelector('button[type="submit"]').textContent).toContain('Create');
     expect(readPropTypeWarnings()).toEqual([]);
+  });
+
+  it('marks its English fields, button and control ports inside the French page', () => {
+    view = render(<AddPlugin />);
+
+    const { container } = view;
+    const englishElements = [
+      ...container.querySelectorAll('input[placeholder], textarea'),
+      container.querySelector('button[type="submit"]'),
+      container.querySelector('.control-ports')
+    ];
+
+    expect(englishElements.map(element => element.closest('[lang]').lang))
+      .toEqual(englishElements.map(() => 'en'));
+    expect(container.querySelector('h1').closest('[lang]')).toBeNull();
+  });
+
+  it('names each field of the plugin and of the control ports in English', () => {
+    view = render(<AddPlugin />);
+
+    const fields = [...view.container.querySelectorAll('input, textarea')];
+
+    expect(fields.map(field => field.getAttribute('aria-label'))).toEqual(FIELD_NAMES);
+    expect(fields.map(field => field.closest('[lang]').lang)).toEqual(FIELD_NAMES.map(() => 'en'));
+  });
+
+  it('names its icon buttons after what they do', () => {
+    view = render(<AddPlugin edit {...GATE} />);
+
+    const iconButtons = view.container.querySelectorAll('.control-ports button');
+
+    expect([...iconButtons].map(button => button.getAttribute('aria-label')))
+      .toEqual(['Add the control port', 'Remove Threshold']);
+  });
+
+  it('names a control port without a name generically in the tooltip of its remove button', () => {
+    view = render(<AddPlugin edit {...GATE} controlPorts={[{ default: 0.5, max: 1, min: 0 }]} />);
+
+    const removeButton = view.container.querySelector('.control-ports [aria-label^="Remove"]');
+    const tooltip = removeButton.parentElement;
+    // react-tippy moves the title of the element it wraps to data-original-title
+    expect(tooltip.getAttribute('data-original-title')).toBe('Click to remove this control port');
   });
 
   it('leaves the categories empty when they are not a list', () => {

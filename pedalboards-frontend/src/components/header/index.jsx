@@ -14,10 +14,15 @@ import './style.scss';
 const ADMIN_PANEL_URL = getAdminPanelUrl(Env.get('backend'));
 const HAS_ADMIN_PANEL = ADMIN_PANEL_URL !== null;
 
+/**
+ * Bar at the top of every page: the menu icon, which leads home on small screens, the credit of
+ * the author, the link to the plugins and, when the CMS has an address, the link to its admin
+ * panel.
+ */
 const Header = () => (
   <nav className="toolbar whiteframe">
     <div className="toolbar-content">
-      <Link to="/" className="mobile-menu-button">
+      <Link to="/" className="mobile-menu-button" aria-label="Home">
         <span className="icon-bar" />
         <span className="icon-bar" />
         <span className="icon-bar" />

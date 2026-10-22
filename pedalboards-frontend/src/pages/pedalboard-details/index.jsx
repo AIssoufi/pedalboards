@@ -24,7 +24,9 @@ import './style.scss';
 const PedalboardDetails = lazy(() => import('../../components/pedalboard-details'));
 
 // Shown when the plugin or the chunk of its details fails to load
-const LOAD_ERROR_ALERT = <p role="alert">Impossible de charger ce plugin, réessayez plus tard.</p>;
+const LOAD_ERROR_ALERT = (
+  <p role="alert" lang="fr">Impossible de charger ce plugin, réessayez plus tard.</p>
+);
 
 /**
  * Page of one plugin, the one of the `id` parameter of its route: shows the loader while the
@@ -77,7 +79,7 @@ const PedalboardDetailsPage = () => {
         </ErrorBoundary>
       );
     }
-    return <p>Pas de données disponible</p>;
+    return <p lang="fr">Pas de données disponible</p>;
   };
 
   return (

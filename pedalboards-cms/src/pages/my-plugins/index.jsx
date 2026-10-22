@@ -8,9 +8,13 @@ import { Pagination, RequestError } from 'components';
 
 // Utils
 import { Env } from 'utils';
+import { toPluginActionLabel } from './utils';
 
 // Hooks
 import usePluginList from './hooks/usePluginList';
+
+// Constants
+import { DELETE_ACTION, EDIT_ACTION, VIEW_ACTION } from './constants';
 
 // Style
 import './style.scss';
@@ -51,17 +55,27 @@ const MyPlugins = ({ location = {} }) => {
                   rel="noopener noreferrer"
                   target="_blank"
                   className="btn bg-white"
+                  aria-label={toPluginActionLabel({
+                    action: VIEW_ACTION, pluginName: name, opensInNewTab: true
+                  })}
                 >
-                  Voir
+                  {VIEW_ACTION}
 
                 </a>
-                <Link to={`plugin/edit/${_id}`} className="btn bg-white">Éditer</Link>
+                <Link
+                  to={`plugin/edit/${_id}`}
+                  className="btn bg-white"
+                  aria-label={toPluginActionLabel({ action: EDIT_ACTION, pluginName: name })}
+                >
+                  {EDIT_ACTION}
+                </Link>
                 <button
                   type="button"
                   className="btn bg-white"
+                  aria-label={toPluginActionLabel({ action: DELETE_ACTION, pluginName: name })}
                   onClick={() => deletePlugin(_id)}
                 >
-                  Supprimer
+                  {DELETE_ACTION}
                 </button>
               </div>
             </div>))

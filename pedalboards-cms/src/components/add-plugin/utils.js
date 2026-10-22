@@ -1,5 +1,11 @@
 // Constants
-import { IMAGE_FIELD, NO_CONTROL_PORTS, SAMPLE_CONTROL_PORTS } from './constants';
+import {
+  GENERIC_REMOVE_PORT_LABEL,
+  GENERIC_REMOVE_PORT_TOOLTIP,
+  IMAGE_FIELD,
+  NO_CONTROL_PORTS,
+  SAMPLE_CONTROL_PORTS
+} from './constants';
 
 /**
  * Gives the control ports that the form shows: those of the plugin, none for an edited plugin
@@ -53,8 +59,44 @@ const formDataToObject = (formData) => {
   }), {});
 };
 
+/**
+ * Gives the accessible name of the button that removes a control port, after the name of the port.
+ * @param {*} [name] name of the control port
+ * @returns {string} "Remove" and the trimmed name, or a generic name when the name is not a text
+ *   with a character other than a space
+ *
+ * @example
+ * toRemovePortLabel('Gain'); // 'Remove Gain'
+ * toRemovePortLabel(undefined); // 'Remove this control port'
+ */
+const toRemovePortLabel = (name) => {
+  const trimmedName = typeof name === 'string' ? name.trim() : '';
+  if (!trimmedName) return GENERIC_REMOVE_PORT_LABEL;
+
+  return `Remove ${trimmedName}`;
+};
+
+/**
+ * Gives the tooltip of the button that removes a control port, after the name of the port.
+ * @param {*} [name] name of the control port
+ * @returns {string} "Click to remove" and the trimmed name, or a generic tooltip when the name is
+ *   not a text with a character other than a space
+ *
+ * @example
+ * toRemovePortTooltip('Gain'); // 'Click to remove Gain'
+ * toRemovePortTooltip(undefined); // 'Click to remove this control port'
+ */
+const toRemovePortTooltip = (name) => {
+  const trimmedName = typeof name === 'string' ? name.trim() : '';
+  if (!trimmedName) return GENERIC_REMOVE_PORT_TOOLTIP;
+
+  return `Click to remove ${trimmedName}`;
+};
+
 export {
   formDataToObject,
   readControlPorts,
-  removeEmptyImage
+  removeEmptyImage,
+  toRemovePortLabel,
+  toRemovePortTooltip
 };

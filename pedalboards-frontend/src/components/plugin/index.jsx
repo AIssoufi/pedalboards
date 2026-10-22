@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 
 // Utils
 import { buildPluginFilterLink, isPluginFilterValue } from '../../utils/plugin-filter';
+import { toScreenshotAlt } from '../../utils/screenshot-alt';
 import { toImageDimension } from './utils';
 
 // Components
@@ -28,7 +29,8 @@ import './style.scss';
  *   reserves its space in the card before it loads. Ignored unless a whole number above 0.
  * @property {boolean} [isScreenshotLazy=false] - Loads the screenshot only once the card nears the
  *   viewport, for the cards below the first row.
- * @property {string} [label=''] - Label, linking to the plugins of that label. Hidden when empty.
+ * @property {string} [label=''] - Label, linking to the plugins of that label, and naming the
+ *   screenshot for screen readers. Hidden when empty.
  * @property {string} [name=''] - Name, shown in the tooltip of the screenshot.
  * @property {string} [screenshotUrl=''] - URL of the screenshot. The image is omitted when empty.
  */
@@ -48,7 +50,7 @@ const Plugin = ({
   const screenshot = screenshotUrl && (
     <img
       src={screenshotUrl}
-      alt="Plugin screenshot"
+      alt={toScreenshotAlt(label)}
       width={toImageDimension(imageWidth)}
       height={toImageDimension(imageHeight)}
       loading={isScreenshotLazy ? 'lazy' : undefined}

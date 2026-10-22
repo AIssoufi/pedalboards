@@ -42,7 +42,7 @@ it('renders without crashing', () => {
     uri: 'http://example.com'
   });
 
-  expect(screen.getByRole('img', { name: 'Plugin screenshot' })).toBeDefined();
+  expect(screen.getByRole('img', { name: 'Screenshot of lorem' })).toBeDefined();
 });
 
 it('renders without props', () => {
@@ -132,6 +132,12 @@ it('shows the screenshot without a link to the details when the plugin has no id
 
   expect(screen.getByRole('img').getAttribute('src')).toBe('http://example.com/screenshot');
   expect(screen.queryByRole('link')).toBeNull();
+});
+
+it('describes the screenshot of a plugin without a label with a generic text', () => {
+  renderPlugin({ screenshotUrl: 'http://example.com/screenshot' });
+
+  expect(screen.getByRole('img', { name: 'Plugin screenshot' })).toBeDefined();
 });
 
 describe('screenshot', () => {

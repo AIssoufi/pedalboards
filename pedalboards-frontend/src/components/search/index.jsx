@@ -1,5 +1,5 @@
 // Dependencies
-import { useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
@@ -10,7 +10,9 @@ import Tooltip from '../tooltip';
 import useDebouncedCallback from './hooks/useDebouncedCallback';
 
 // Constants
-import { SEARCH_DEBOUNCE_MS, SEARCH_FIELD_OPTIONS } from './constants';
+import {
+  SEARCH_BUTTON_NAME, SEARCH_DEBOUNCE_MS, SEARCH_FIELD_OPTIONS, SEARCH_TEXT_NAME
+} from './constants';
 
 // Utils
 import { isTextOfValue, toSearchField, toSearchText } from './utils';
@@ -32,13 +34,14 @@ import './style.scss';
 /**
  * Search form of the plugins: a text field and the field of the plugins it searches in, which
  * show the filter of the URL (`value` and `field`) and follow it when it changes. Calls
- * `onSubmit` with the data of the form on submit, when the select loses the focus, and once the
- * typing in the text field pauses.
+ * `onSubmit` with the data of the form on submit, and once the typing in the text field or the
+ * choice of the select pauses.
  *
  * @param {SearchProps} props - Props of the component.
  */
 const Search = ({ value, field, onSubmit }) => {
   const formRef = useRef(null);
+  const selectId = useId();
   const urlText = toSearchText(value);
   const urlField = toSearchField(field);
   const [text, setText] = useState(urlText);
@@ -78,6 +81,11 @@ const Search = ({ value, field, onSubmit }) => {
     submitLater();
   };
 
+  const handleFieldChange = (event) => {
+    setSelectedField(event.target.value);
+    submitLater();
+  };
+
   return (
     <form
       ref={formRef}
@@ -88,7 +96,8 @@ const Search = ({ value, field, onSubmit }) => {
         <input
           type="text"
           name="value"
-          placeholder="Search Plugins"
+          placeholder={SEARCH_TEXT_NAME}
+          aria-label={SEARCH_TEXT_NAME}
           value={text}
           onChange={handleTextChange}
         />
@@ -96,20 +105,22 @@ const Search = ({ value, field, onSubmit }) => {
           content={<i>Click to launch the search</i>}
           placement="top"
         >
-          <button type="submit"><FontAwesomeIcon icon={faSearch} /></button>
+          <button type="submit" aria-label={SEARCH_BUTTON_NAME}>
+            <FontAwesomeIcon icon={faSearch} />
+          </button>
         </Tooltip>
       </div>
       <div className="filter">
-        <label htmlFor="options">in</label>
+        <label htmlFor={selectId}>in</label>
         <Tooltip
           content={<i>Choose a search filter</i>}
           placement="bottom"
         >
           <select
+            id={selectId}
             name="label"
             value={selectedField}
-            onChange={event => setSelectedField(event.target.value)}
-            onBlur={submitForm}
+            onChange={handleFieldChange}
           >
             {SEARCH_FIELD_OPTIONS.map(option => (
               <option key={option.value} value={option.value}>{option.label}</option>

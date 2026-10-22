@@ -6,6 +6,7 @@ import Loader from '../loader';
 
 // Utils
 import { buildPluginFilterLink, isPluginFilterValue } from '../../utils/plugin-filter';
+import { toScreenshotAlt } from '../../utils/screenshot-alt';
 import { isControlPort, toCellText } from './utils';
 
 // Style
@@ -33,7 +34,8 @@ import './style.scss';
  * @property {Array<ControlPort>} [controlPorts=[]] - Control ports, one row each in the table.
  *   Entries that are not objects are skipped, and a field that is neither a text nor a number
  *   leaves its cell empty.
- * @property {string} [label=''] - Label, shown as the title. Hidden when empty.
+ * @property {string} [label=''] - Label, shown as the title and naming the screenshot for screen
+ *   readers. Hidden when empty.
  * @property {number} [pedalboardCount=0] - Number of pedalboards using the plugin. Hidden when 0.
  * @property {string} [screenshotUrl=''] - URL of the screenshot. The image is omitted when empty.
  * @property {string} [uri=''] - URI of the plugin, linked in the header. The link is omitted when
@@ -83,7 +85,7 @@ const PedalboardDetails = ({
       {label && <h2>{label}</h2>}
       <div className="plugin-media-container">
         {screenshotUrl && (
-          <img className="plugin-media" src={screenshotUrl} alt="Plugin screenshot" />
+          <img className="plugin-media" src={screenshotUrl} alt={toScreenshotAlt(label)} />
         )}
       </div>
       <div className="category-container">

@@ -23,6 +23,7 @@ it('renders its empty state without props', () => {
   renderGrid();
 
   expect(screen.getByText(EMPTY_STATE_TEXT)).toBeDefined();
+  expect(screen.getByText(EMPTY_STATE_TEXT).lang).toBe('fr');
 });
 
 it('renders its empty state with an empty list', () => {
@@ -65,6 +66,7 @@ it('shows the loader in place of the cards while loading', () => {
   renderGrid({ plugins: PLUGINS, isLoading: true });
 
   expect(screen.getByText(LOADER_TEXT)).toBeDefined();
+  expect(screen.getByText(LOADER_TEXT).lang).toBe('fr');
   expect(screen.queryAllByRole('link')).toHaveLength(0);
 });
 

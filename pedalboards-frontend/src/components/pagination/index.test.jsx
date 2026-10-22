@@ -22,7 +22,7 @@ describe('Pagination', () => {
     ({ container } = render(<Pagination {...props} />));
   };
 
-  const getItemTexts = () => [...container.querySelectorAll('.numero-de-page > *')]
+  const getItemTexts = () => [...container.querySelectorAll('.page-numbers > *')]
     .map(item => item.textContent);
 
   beforeEach(() => {
@@ -42,6 +42,15 @@ describe('Pagination', () => {
     expect(console.error).not.toHaveBeenCalled();
   });
 
+  it('marks the shown page as the current one, and only that page', () => {
+    renderPagination({ currentPage: 6, elementCount: 54 });
+
+    const currentPages = container.querySelectorAll('[aria-current]');
+
+    expect([...currentPages].map(page => page.textContent)).toEqual(['6']);
+    expect(currentPages[0].getAttribute('aria-current')).toBe('page');
+  });
+
   it('shows each page of a short list once', () => {
     renderPagination({ currentPage: 1, elementCount: 3 });
 
@@ -58,6 +67,19 @@ describe('Pagination', () => {
     fireEvent.click(screen.getByRole('button', { name: 'NEXT' }));
 
     expect(onCurrentPageChange.mock.calls).toEqual([[54], [5], [7]]);
+  });
+
+  it('makes PREVIOUS and NEXT buttons that the keyboard reaches and presses', () => {
+    renderPagination({ currentPage: 6, elementCount: 54 });
+
+    ['PREVIOUS', 'NEXT'].forEach((name) => {
+      const button = screen.getByRole('button', { name });
+
+      // A native button takes the focus with Tab and clicks on Enter and Space
+      expect(button.tagName).toBe('BUTTON');
+      expect(button.type).toBe('button');
+      expect(button.hasAttribute('tabindex')).toBe(false);
+    });
   });
 
   it('renders nothing without props', () => {

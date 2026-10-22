@@ -54,17 +54,51 @@ it('calls onSubmit with the form once the typing in the text field pauses', () =
   }
 });
 
-it('calls onSubmit with the form when the select loses the focus', () => {
+it('submits nothing when the focus leaves the select', () => {
   const onSubmit = vi.fn();
   render(<Search onSubmit={onSubmit} />);
   const select = screen.getByRole('combobox');
-  select.value = 'label';
 
+  fireEvent.focus(select);
   fireEvent.blur(select);
 
-  expect(onSubmit).toHaveBeenCalledTimes(1);
-  const [formData] = onSubmit.mock.calls[0];
-  expect(Object.fromEntries(formData)).toEqual({ value: '', label: 'label' });
+  expect(onSubmit).not.toHaveBeenCalled();
+});
+
+it('calls onSubmit with the form once the choice of the select pauses', () => {
+  vi.useFakeTimers();
+  try {
+    const onSubmit = vi.fn();
+    render(<Search onSubmit={onSubmit} />);
+    const select = screen.getByRole('combobox');
+
+    fireEvent.change(select, { target: { value: 'categories' } });
+    fireEvent.change(select, { target: { value: 'label' } });
+    vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS - 1);
+    expect(onSubmit).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    const [formData] = onSubmit.mock.calls[0];
+    expect(Object.fromEntries(formData)).toEqual({ value: '', label: 'label' });
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+it('names the text field and the search button, and ties the label to the select', () => {
+  render(<Search />);
+
+  expect(screen.getByRole('textbox', { name: 'Search Plugins' })).toBeDefined();
+  expect(screen.getByRole('button', { name: 'Search' })).toBeDefined();
+  expect(screen.getByLabelText('in').tagName).toBe('SELECT');
+});
+
+it('gives each search its own select id', () => {
+  render(<><Search /><Search /></>);
+
+  const [firstSelect, secondSelect] = screen.getAllByLabelText('in');
+  expect(firstSelect.id).not.toBe(secondSelect.id);
 });
 
 it('submits without onSubmit', () => {
