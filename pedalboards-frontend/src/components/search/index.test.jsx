@@ -21,6 +21,13 @@ it('renders without crashing', () => {
   expect(screen.getByRole('textbox')).toBeDefined();
 });
 
+it('names each field to search in', () => {
+  render(<Search />);
+
+  const optionTexts = screen.getAllByRole('option').map(option => option.textContent);
+  expect(optionTexts).toEqual(['brand', 'category', 'label']);
+});
+
 it('calls onSubmit with the text and the field to search in', () => {
   const onSubmit = vi.fn();
   render(<Search onSubmit={onSubmit} />);
