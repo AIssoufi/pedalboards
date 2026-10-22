@@ -37,6 +37,7 @@ it('renders without crashing', () => {
   });
 
   expect(screen.getByRole('heading', { name: 'lorem' })).toBeDefined();
+  expect(screen.getByRole('img', { name: 'Screenshot of lorem' })).toBeDefined();
 });
 
 it('displays a description holding markup as literal text', () => {
