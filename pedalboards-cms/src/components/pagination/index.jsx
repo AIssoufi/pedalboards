@@ -4,6 +4,9 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
+// Constants
+import { FIRST_PAGE, IGNORE_PAGE_CHANGE } from './constants';
+
 // Style
 import './style.scss';
 
@@ -38,8 +41,12 @@ const getRightPageNumbers = (currentPage, elementCount) => {
   return result;
 };
 
+/**
+ * Links to the previous page, the next page and the pages around the current one. Renders nothing
+ * while the list has no page.
+ */
 const Pagination = ({
-  elementCount, currentPage, onCurrentPageChange
+  elementCount = 0, currentPage = FIRST_PAGE, onCurrentPageChange = IGNORE_PAGE_CHANGE
 }) => {
   if (!elementCount || elementCount <= 0) return null;
 
@@ -97,9 +104,12 @@ const Pagination = ({
 };
 
 Pagination.propTypes = {
-  currentPage: PropTypes.number.isRequired,
-  elementCount: PropTypes.number.isRequired,
-  onCurrentPageChange: PropTypes.func.isRequired
+  /** Page shown as current, from 1 */
+  currentPage: PropTypes.number,
+  /** Number of pages of the list */
+  elementCount: PropTypes.number,
+  /** Called with the number of the page that a click asks for */
+  onCurrentPageChange: PropTypes.func
 };
 
 export default Pagination;
