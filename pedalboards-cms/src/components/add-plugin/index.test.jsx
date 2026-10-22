@@ -12,6 +12,11 @@ import AddPlugin from './index';
 
 const TEXT_FIELDS = ['name', 'label', 'uri', 'version', 'brand', 'categories', 'description'];
 
+const FIELD_NAMES = [
+  'Name', 'Label', 'URI', 'Version', 'Brand', 'Categories', 'Description', 'Screenshot',
+  'Control port name', 'Default value', 'Maximal value', 'Minimal value'
+];
+
 const GATE = {
   id: 'gate',
   name: 'Gate',
@@ -81,6 +86,24 @@ describe('AddPlugin', () => {
     expect(englishElements.map(element => element.closest('[lang]').lang))
       .toEqual(englishElements.map(() => 'en'));
     expect(container.querySelector('h1').closest('[lang]')).toBeNull();
+  });
+
+  it('names each field of the plugin and of the control ports in English', () => {
+    view = render(<AddPlugin />);
+
+    const fields = [...view.container.querySelectorAll('input, textarea')];
+
+    expect(fields.map(field => field.getAttribute('aria-label'))).toEqual(FIELD_NAMES);
+    expect(fields.map(field => field.closest('[lang]').lang)).toEqual(FIELD_NAMES.map(() => 'en'));
+  });
+
+  it('names its icon buttons after what they do', () => {
+    view = render(<AddPlugin edit {...GATE} />);
+
+    const iconButtons = view.container.querySelectorAll('.control-ports button');
+
+    expect([...iconButtons].map(button => button.getAttribute('aria-label')))
+      .toEqual(['Add the control port', 'Remove Threshold']);
   });
 
   it('leaves the categories empty when they are not a list', () => {

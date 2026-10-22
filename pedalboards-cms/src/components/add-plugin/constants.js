@@ -17,7 +17,11 @@ const NO_CONTROL_PORTS = [];
 /** Name of the file field of the form */
 const IMAGE_FIELD = 'image';
 
+/** Name of the button that removes a control port without a name */
+const GENERIC_REMOVE_PORT_LABEL = 'Remove this control port';
+
 export {
+  GENERIC_REMOVE_PORT_LABEL,
   IMAGE_FIELD,
   NO_CONTROL_PORTS,
   SAMPLE_CONTROL_PORTS

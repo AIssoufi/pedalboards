@@ -22,7 +22,9 @@ import { RequestHelper } from 'helpers';
 import { IMAGE_FIELD } from './constants';
 
 // Utils
-import { formDataToObject, readControlPorts, removeEmptyImage } from './utils';
+import {
+  formDataToObject, readControlPorts, removeEmptyImage, toRemovePortLabel
+} from './utils';
 
 /**
  * Form that creates a plugin, or edits the plugin it is given. Every prop is optional: without
@@ -170,6 +172,7 @@ export default class AddPlugin extends Component {
                 name="name"
                 lang="en"
                 placeholder="Name"
+                aria-label="Name"
                 defaultValue={name}
                 required
               />
@@ -178,6 +181,7 @@ export default class AddPlugin extends Component {
                 name="label"
                 lang="en"
                 placeholder="Label"
+                aria-label="Label"
                 defaultValue={label}
                 required
               />
@@ -188,6 +192,7 @@ export default class AddPlugin extends Component {
                 name="uri"
                 lang="en"
                 placeholder="URI"
+                aria-label="URI"
                 defaultValue={uri}
                 required
               />
@@ -196,6 +201,7 @@ export default class AddPlugin extends Component {
                 name="version"
                 lang="en"
                 placeholder="Version"
+                aria-label="Version"
                 defaultValue={version}
                 required
               />
@@ -206,6 +212,7 @@ export default class AddPlugin extends Component {
                 name="brand"
                 lang="en"
                 placeholder="Brand"
+                aria-label="Brand"
                 defaultValue={brand}
                 required
               />
@@ -214,6 +221,7 @@ export default class AddPlugin extends Component {
                 name="categories"
                 lang="en"
                 placeholder="Categorie A, categorie B, categorie C, etc."
+                aria-label="Categories"
                 defaultValue={Array.isArray(categories) ? categories.join(', ') : ''}
                 required
               />
@@ -222,6 +230,7 @@ export default class AddPlugin extends Component {
               <textarea
                 lang="en"
                 placeholder="Description"
+                aria-label="Description"
                 name="description"
                 defaultValue={description}
                 required
@@ -231,6 +240,8 @@ export default class AddPlugin extends Component {
               <input
                 type="file"
                 name={IMAGE_FIELD}
+                lang="en"
+                aria-label="Screenshot"
                 className="btn bg-primary"
                 required={!edit}
               />
@@ -279,6 +290,7 @@ export default class AddPlugin extends Component {
                           type="text"
                           name="name"
                           placeholder="name"
+                          aria-label="Control port name"
                           required
                         />
                       </Tooltip>
@@ -292,6 +304,7 @@ export default class AddPlugin extends Component {
                           type="text"
                           name="default"
                           placeholder="default"
+                          aria-label="Default value"
                           required
                         />
                       </Tooltip>
@@ -305,6 +318,7 @@ export default class AddPlugin extends Component {
                           type="text"
                           name="max"
                           placeholder="max"
+                          aria-label="Maximal value"
                           required
                         />
                       </Tooltip>
@@ -318,6 +332,7 @@ export default class AddPlugin extends Component {
                           type="text"
                           name="min"
                           placeholder="min"
+                          aria-label="Minimal value"
                           required
                         />
                       </Tooltip>
@@ -327,7 +342,13 @@ export default class AddPlugin extends Component {
                         title="Click to add new control port"
                         position="left"
                       >
-                        <button type="submit" className="btn bg-secondary"><FontAwesomeIcon icon={faPlus} /></button>
+                        <button
+                          type="submit"
+                          className="btn bg-secondary"
+                          aria-label="Add the control port"
+                        >
+                          <FontAwesomeIcon icon={faPlus} />
+                        </button>
                       </Tooltip>
                     </td>
                   </tr>
@@ -345,6 +366,7 @@ export default class AddPlugin extends Component {
                           <button
                             type="button"
                             className="btn bg-secondary"
+                            aria-label={toRemovePortLabel(cp.name)}
                             onClick={() => this.removeControlPort(index)}
                           >
                             <FontAwesomeIcon icon={faTrash} />

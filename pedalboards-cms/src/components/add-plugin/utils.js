@@ -1,5 +1,7 @@
 // Constants
-import { IMAGE_FIELD, NO_CONTROL_PORTS, SAMPLE_CONTROL_PORTS } from './constants';
+import {
+  GENERIC_REMOVE_PORT_LABEL, IMAGE_FIELD, NO_CONTROL_PORTS, SAMPLE_CONTROL_PORTS
+} from './constants';
 
 /**
  * Gives the control ports that the form shows: those of the plugin, none for an edited plugin
@@ -53,8 +55,26 @@ const formDataToObject = (formData) => {
   }), {});
 };
 
+/**
+ * Gives the accessible name of the button that removes a control port, after the name of the port.
+ * @param {*} [name] name of the control port
+ * @returns {string} "Remove" and the trimmed name, or a generic name when the name is not a text
+ *   with a character other than a space
+ *
+ * @example
+ * toRemovePortLabel('Gain'); // 'Remove Gain'
+ * toRemovePortLabel(undefined); // 'Remove this control port'
+ */
+const toRemovePortLabel = (name) => {
+  const trimmedName = typeof name === 'string' ? name.trim() : '';
+  if (!trimmedName) return GENERIC_REMOVE_PORT_LABEL;
+
+  return `Remove ${trimmedName}`;
+};
+
 export {
   formDataToObject,
   readControlPorts,
-  removeEmptyImage
+  removeEmptyImage,
+  toRemovePortLabel
 };

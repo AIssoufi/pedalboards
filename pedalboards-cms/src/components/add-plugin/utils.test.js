@@ -1,8 +1,10 @@
 // Constants
-import { NO_CONTROL_PORTS, SAMPLE_CONTROL_PORTS } from './constants';
+import { GENERIC_REMOVE_PORT_LABEL, NO_CONTROL_PORTS, SAMPLE_CONTROL_PORTS } from './constants';
 
 // Utils
-import { formDataToObject, readControlPorts, removeEmptyImage } from './utils';
+import {
+  formDataToObject, readControlPorts, removeEmptyImage, toRemovePortLabel
+} from './utils';
 
 const PORTS = [{
   name: 'Threshold', default: 0.5, max: 1, min: 0
@@ -110,5 +112,25 @@ describe('removeEmptyImage', () => {
     ['an object that is not a form', { image: '' }]
   ])('gives back %s as it is', (label, formData) => {
     expect(removeEmptyImage(formData)).toBe(formData);
+  });
+});
+
+describe('toRemovePortLabel', () => {
+  it('names the control port to remove', () => {
+    expect(toRemovePortLabel('Threshold')).toBe('Remove Threshold');
+  });
+
+  it('trims the spaces around the name', () => {
+    expect(toRemovePortLabel('  Threshold ')).toBe('Remove Threshold');
+  });
+
+  it.each([
+    ['an empty name', ''],
+    ['a name of spaces', '   '],
+    ['a missing name', undefined],
+    ['null', null],
+    ['a number', 42]
+  ])('gives a generic label for %s', (label, name) => {
+    expect(toRemovePortLabel(name)).toBe(GENERIC_REMOVE_PORT_LABEL);
   });
 });
