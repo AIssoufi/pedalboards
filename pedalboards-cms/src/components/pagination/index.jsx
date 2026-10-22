@@ -14,8 +14,8 @@ import { getLeftPageNumbers, getRightPageNumbers } from './utils';
 import './style.scss';
 
 /**
- * Links to the previous page, the next page and the pages around the current one. Renders nothing
- * while the list has no page.
+ * Buttons to the previous page, the next page and the pages around the current one, which marks
+ * the current page for screen readers. Renders nothing while the list has no page.
  */
 const Pagination = ({
   elementCount = 0, currentPage = FIRST_PAGE, onCurrentPageChange = IGNORE_PAGE_CHANGE
@@ -30,16 +30,10 @@ const Pagination = ({
 
   return (
     <div className="navigation">
-      <div
-        className="previous-page"
-        onClick={goToPreviousPage}
-        onKeyPress={null}
-        role="button"
-        tabIndex={0}
-      >
+      <button type="button" className="previous-page" onClick={goToPreviousPage}>
         <FontAwesomeIcon icon={faAngleLeft} />
-        <p>Page pérécedente</p>
-      </div>
+        <span>Page pérécedente</span>
+      </button>
       <div className="page-numbers">
         {leftPageNumbers.map(pageNumber => (
           <button
@@ -61,16 +55,10 @@ const Pagination = ({
           </button>
         ))}
       </div>
-      <div
-        className="next-page"
-        onClick={goToNextPage}
-        onKeyPress={null}
-        role="button"
-        tabIndex={-1}
-      >
-        <p>Page suivante</p>
+      <button type="button" className="next-page" onClick={goToNextPage}>
+        <span>Page suivante</span>
         <FontAwesomeIcon icon={faAngleRight} />
-      </div>
+      </button>
     </div>
   );
 };

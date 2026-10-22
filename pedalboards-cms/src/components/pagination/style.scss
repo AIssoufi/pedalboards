@@ -26,11 +26,17 @@
   .previous-page, .next-page {
     display: flex;
     align-items: center;
+    // Native buttons, drawn as the plain text and icons they replaced
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    background: none;
+    border: none;
     &:hover{
       color: $bg-primary-color;
       cursor: pointer;
     }
-    p {
+    span {
       margin: 0 10px;
     }
     svg {

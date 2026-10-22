@@ -32,6 +32,19 @@ describe('Pagination', () => {
     jest.restoreAllMocks();
   });
 
+  it('makes the previous and next pages buttons that the keyboard reaches and presses', () => {
+    view = render(<Pagination currentPage={6} elementCount={54} />);
+
+    ['.previous-page', '.next-page'].forEach((selector) => {
+      const button = view.container.querySelector(selector);
+
+      // A native button takes the focus with Tab and clicks on Enter and Space
+      expect(button.tagName).toBe('BUTTON');
+      expect(button.type).toBe('button');
+      expect(button.hasAttribute('tabindex')).toBe(false);
+    });
+  });
+
   it('shows the pages around the current one', () => {
     view = render(<Pagination currentPage={6} elementCount={54} onCurrentPageChange={() => {}} />);
 
