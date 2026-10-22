@@ -68,6 +68,21 @@ describe('AddPlugin', () => {
     expect(readPropTypeWarnings()).toEqual([]);
   });
 
+  it('marks its English fields, button and control ports inside the French page', () => {
+    view = render(<AddPlugin />);
+
+    const { container } = view;
+    const englishElements = [
+      ...container.querySelectorAll('input[placeholder], textarea'),
+      container.querySelector('button[type="submit"]'),
+      container.querySelector('.control-ports')
+    ];
+
+    expect(englishElements.map(element => element.closest('[lang]').lang))
+      .toEqual(englishElements.map(() => 'en'));
+    expect(container.querySelector('h1').closest('[lang]')).toBeNull();
+  });
+
   it('leaves the categories empty when they are not a list', () => {
     view = render(<AddPlugin categories={null} />);
 

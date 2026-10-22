@@ -168,6 +168,7 @@ export default class AddPlugin extends Component {
               <input
                 type="text"
                 name="name"
+                lang="en"
                 placeholder="Name"
                 defaultValue={name}
                 required
@@ -175,6 +176,7 @@ export default class AddPlugin extends Component {
               <input
                 type="text"
                 name="label"
+                lang="en"
                 placeholder="Label"
                 defaultValue={label}
                 required
@@ -184,6 +186,7 @@ export default class AddPlugin extends Component {
               <input
                 type="text"
                 name="uri"
+                lang="en"
                 placeholder="URI"
                 defaultValue={uri}
                 required
@@ -191,6 +194,7 @@ export default class AddPlugin extends Component {
               <input
                 type="text"
                 name="version"
+                lang="en"
                 placeholder="Version"
                 defaultValue={version}
                 required
@@ -200,6 +204,7 @@ export default class AddPlugin extends Component {
               <input
                 type="text"
                 name="brand"
+                lang="en"
                 placeholder="Brand"
                 defaultValue={brand}
                 required
@@ -207,6 +212,7 @@ export default class AddPlugin extends Component {
               <input
                 type="text"
                 name="categories"
+                lang="en"
                 placeholder="Categorie A, categorie B, categorie C, etc."
                 defaultValue={Array.isArray(categories) ? categories.join(', ') : ''}
                 required
@@ -214,6 +220,7 @@ export default class AddPlugin extends Component {
             </div>
             <div className="row">
               <textarea
+                lang="en"
                 placeholder="Description"
                 name="description"
                 defaultValue={description}
@@ -237,6 +244,7 @@ export default class AddPlugin extends Component {
                 <button
                   type="submit"
                   className="btn bg-primary"
+                  lang="en"
                 >
                   <FontAwesomeIcon icon={faPlus} />
                   {' '}
@@ -246,7 +254,7 @@ export default class AddPlugin extends Component {
               </Tooltip>
             </div>
           </form>
-          <div className="control-ports">
+          <div className="control-ports" lang="en">
             <header>
               <h2>Control ports</h2>
             </header>
