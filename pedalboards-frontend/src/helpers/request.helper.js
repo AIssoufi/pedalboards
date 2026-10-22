@@ -16,12 +16,6 @@ class RequestError extends Error {
   }
 }
 
-// Default header
-
-const header = {
-  'Content-Type': 'application/json; charset=utf-8'
-};
-
 /**
  * Sends a request and reads its JSON answer.
  *
@@ -56,16 +50,7 @@ const request = async ({ url, init }) => {
 
 const get = url => request({ url });
 
-const post = ({ url, body = {} }) => request({ url, init: { method: 'POST', header, body } });
-
-const put = ({ url, body = {} }) => request({ url, init: { method: 'PUT', header, body } });
-
-const remove = url => request({ url, init: { method: 'DELETE' } });
-
 export {
   RequestError,
-  get,
-  post,
-  put,
-  remove
+  get
 };

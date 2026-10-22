@@ -44,8 +44,8 @@ const loadPlugins = createAsyncThunk(
   `${PLUGINS_SLICE_NAME}/load`,
   async ({ filters, page, pageSize }) => {
     const answer = hasPluginFilters(filters)
-      ? await PedalboardService.findPlugins(filters, page, pageSize)
-      : await PedalboardService.getPlugins(page, pageSize);
+      ? await PedalboardService.findPlugins({ filters, page, pageSize })
+      : await PedalboardService.getPlugins({ page, pageSize });
 
     return toPluginsPage(answer);
   }
