@@ -122,6 +122,16 @@ describe('MyPlugins', () => {
     expect(readTitles(view.container)).toEqual(['Gate']);
   });
 
+  it('names each action after its plugin, and the view after its new tab', async () => {
+    view = renderMyPlugins();
+    await flushPromises();
+
+    const actions = view.container.querySelectorAll('.plugin:first-child .controls > *');
+
+    expect(Array.from(actions, action => action.getAttribute('aria-label')))
+      .toEqual(['Voir Gate (nouvel onglet)', 'Éditer Gate', 'Supprimer Gate']);
+  });
+
   it('lists every plugin without a search', async () => {
     view = renderMyPlugins({ location: { search: '' } });
     await flushPromises();

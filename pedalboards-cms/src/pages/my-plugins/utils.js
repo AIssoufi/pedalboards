@@ -1,5 +1,5 @@
 // Constants
-import { FIRST_PAGE, UNKNOWN_PAGE_COUNT } from './constants';
+import { FIRST_PAGE, NEW_TAB_NOTE, UNKNOWN_PAGE_COUNT } from './constants';
 
 /**
  * Reads the number of pages that an answer of the list gives: a whole number of zero or more,
@@ -51,4 +51,30 @@ export const isPageInRange = ({ page, pageCount } = {}) => {
   const isWholePage = Number.isInteger(page);
 
   return isWholePage && page >= FIRST_PAGE && page <= pageCount;
+};
+
+/**
+ * Gives the accessible name of an action on a plugin of the list, so that each "Voir", "Éditer" or
+ * "Supprimer" tells which plugin it acts on. It starts with the visible text of the action.
+ * @param {Object} [params]
+ * @param {string} [params.action=''] visible text of the action
+ * @param {*} [params.pluginName] name of the plugin
+ * @param {boolean} [params.opensInNewTab=false] whether the action opens a new tab, which the
+ *   name then says
+ * @returns {string} the action and the trimmed name, or the action alone when the name is not a
+ *   text with a character other than a space, followed by `NEW_TAB_NOTE` for a new tab; the
+ *   missing parts are left out with their space
+ *
+ * @example
+ * toPluginActionLabel({ action: 'Éditer', pluginName: 'Gate' }); // 'Éditer Gate'
+ * toPluginActionLabel({ action: 'Éditer' }); // 'Éditer'
+ * toPluginActionLabel({ action: 'Voir', pluginName: 'Gate', opensInNewTab: true });
+ * // 'Voir Gate (nouvel onglet)'
+ */
+export const toPluginActionLabel = ({ action = '', pluginName, opensInNewTab = false } = {}) => {
+  const trimmedName = typeof pluginName === 'string' ? pluginName.trim() : '';
+  const newTabNote = opensInNewTab ? NEW_TAB_NOTE : '';
+
+  // Leaves the missing parts out, so that no space stands for them
+  return [action, trimmedName, newTabNote].filter(Boolean).join(' ');
 };
