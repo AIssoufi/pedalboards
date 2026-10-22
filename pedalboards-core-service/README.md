@@ -52,8 +52,6 @@ pnpm start:local
 - The deployed Worker never mounts these routes: [`src/index.js`](src/index.js) imports the read
   router only, and `pnpm check:bundle` fails when the bundle written by `pnpm build` holds a write
   route or the multipart parser. The CI runs it.
-- `public/screenshots` holds images that the former Express service received from the CMS. No
-  record of `data/plugins.json` uses them.
 
 ## Data
 
