@@ -42,6 +42,15 @@ describe('Pagination', () => {
     expect(console.error).not.toHaveBeenCalled();
   });
 
+  it('marks the shown page as the current one, and only that page', () => {
+    renderPagination({ currentPage: 6, elementCount: 54 });
+
+    const currentPages = container.querySelectorAll('[aria-current]');
+
+    expect([...currentPages].map(page => page.textContent)).toEqual(['6']);
+    expect(currentPages[0].getAttribute('aria-current')).toBe('page');
+  });
+
   it('shows each page of a short list once', () => {
     renderPagination({ currentPage: 1, elementCount: 3 });
 

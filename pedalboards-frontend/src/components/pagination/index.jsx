@@ -57,7 +57,9 @@ const Pagination = ({
           }
           if (pageItem === shownPage) {
             return (
-              <button key={pageItem} type="button" className="current-page">{pageItem}</button>
+              <button key={pageItem} type="button" className="current-page" aria-current="page">
+                {pageItem}
+              </button>
             );
           }
           return (
