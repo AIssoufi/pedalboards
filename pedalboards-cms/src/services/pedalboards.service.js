@@ -14,6 +14,15 @@ class PedalboardService {
   }
 
   /**
+   * Builds the address of a plugin, its id encoded so that a `/`, `?` or `#` stays in the id.
+   * @param {string} id id of the plugin
+   * @returns {string} the address of the plugin
+   */
+  buildPluginUrl(id) {
+    return `${this.url}/api/plugin/${encodeURIComponent(id)}`;
+  }
+
+  /**
    * Loads a page of every plugin.
    * @param {Object|null} [params]
    * @param {number} [params.page=1] number of the page, from 1
@@ -63,7 +72,7 @@ class PedalboardService {
   async getPlugin(id) {
     if (!isNonEmptyText(id)) throw new Error(MISSING_PLUGIN_ID_MESSAGE);
 
-    const url = `${this.url}/api/plugin/${id}`;
+    const url = this.buildPluginUrl(id);
 
     return RequestHelper.get(url);
   }
@@ -81,7 +90,7 @@ class PedalboardService {
 
     if (!isNonEmptyText(id)) throw new Error(MISSING_PLUGIN_ID_MESSAGE);
 
-    const url = `${this.url}/api/plugin/${id}`;
+    const url = this.buildPluginUrl(id);
 
     return RequestHelper.put({ url, body: formData });
   }
@@ -106,7 +115,7 @@ class PedalboardService {
 
     if (!isNonEmptyText(id)) throw new Error(MISSING_PLUGIN_ID_MESSAGE);
 
-    const url = new URL(`${this.url}/api/plugin/${id}`);
+    const url = new URL(this.buildPluginUrl(id));
 
     url.searchParams.append('page', page);
     url.searchParams.append('pagesize', pageSize);

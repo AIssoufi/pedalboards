@@ -9,6 +9,12 @@ const FIRST_PAGE_URL = `${SERVICE_URL}/api/plugins?page=1&pagesize=10`;
 
 const MISSING_ID_MESSAGE = 'Le plugin n\'a pas d\'identifiant';
 
+// Id holding the characters that would change the path, the query or the fragment of an address
+const RESERVED_ID = 'gate/v2?mode=fast#top';
+
+// Address of the plugin of that id, the id encoded
+const RESERVED_ID_URL = `${SERVICE_URL}/api/plugin/gate%2Fv2%3Fmode%3Dfast%23top`;
+
 // Address and options of the only request sent, the address as a text
 const readSentRequest = () => {
   const [[url, options]] = global.fetch.mock.calls;
@@ -96,6 +102,12 @@ describe('PedalboardService', () => {
       });
     });
 
+    it('encodes the id in the address of the plugin', async () => {
+      await PedalboardService.getPlugin(RESERVED_ID);
+
+      expect(readSentRequest().url).toBe(RESERVED_ID_URL);
+    });
+
     it('rejects a plugin without an id, and sends nothing', async () => {
       const loads = [
         PedalboardService.getPlugin(),
@@ -120,6 +132,12 @@ describe('PedalboardService', () => {
         url: `${SERVICE_URL}/api/plugin/gate`,
         options: { method: 'PUT', body: formData }
       });
+    });
+
+    it('encodes the id in the address of the plugin', async () => {
+      await PedalboardService.updatePlugin({ id: RESERVED_ID, formData: new FormData() });
+
+      expect(readSentRequest().url).toBe(RESERVED_ID_URL);
     });
 
     it('rejects a plugin without an id, and sends nothing', async () => {
@@ -164,6 +182,12 @@ describe('PedalboardService', () => {
       await PedalboardService.deletePlugin({ id: 'gate' });
 
       expect(readSentRequest().url).toBe(`${SERVICE_URL}/api/plugin/gate?page=1&pagesize=10`);
+    });
+
+    it('encodes the id in the address of the plugin and keeps the page in the query', async () => {
+      await PedalboardService.deletePlugin({ id: RESERVED_ID, page: 2, pageSize: 5 });
+
+      expect(readSentRequest().url).toBe(`${RESERVED_ID_URL}?page=2&pagesize=5`);
     });
 
     it('rejects a plugin without an id, and sends nothing', async () => {
