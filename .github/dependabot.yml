@@ -1,0 +1,32 @@
+# Weekly version updates. Dependabot security updates are on in the repository settings, and
+# they follow the ignore rules below too.
+version: 2
+updates:
+  # The pnpm workspace: Dependabot reads pnpm-workspace.yaml at the root and updates the
+  # package.json of each app with the shared pnpm-lock.yaml
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      npm-minor-and-patch:
+        update-types:
+          - minor
+          - patch
+    # The Create React App 2 tooling of the CMS goes away with #45: no update for it until then.
+    # An ignore rule covers the whole workspace, so it only names packages that the CMS alone uses
+    ignore:
+      - dependency-name: react-scripts
+      - dependency-name: eslint-config-airbnb
+      - dependency-name: eslint-plugin-import
+      - dependency-name: http-proxy-middleware
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions-minor-and-patch:
+        update-types:
+          - minor
+          - patch
