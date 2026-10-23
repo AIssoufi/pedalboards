@@ -216,6 +216,12 @@ to `master`, and again when its title changes. Its job, Commit messages:
    requests of bots, such as Dependabot's `Bump x from 1 to 2`, whose commits pass as commits of
    a bot.
 
+Dependabot opens its pull requests each week ([config](.github/dependabot.yml)):
+
+- one per ecosystem (npm, GitHub Actions) for the minor and patch updates, and one per major update;
+- none for the Create React App 2 tooling of the CMS until
+  [#45](https://github.com/AIssoufi/pedalboards/issues/45), security updates included.
+
 ## Deployment
 
 The site runs on Cloudflare at [pedalboards.issoufi.fr](https://pedalboards.issoufi.fr), on one
