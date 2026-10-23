@@ -365,3 +365,25 @@ app is 4.4%. The performance score comes from the screenshots, loaded from a rem
 largest contentful paint, the first screenshot, ranges from 5.7 to 7.0 s before and from 5.1 to
 5.3 s after, and the screenshots no longer move the cards as they arrive. The rendered pages are
 the same in pixels at 390, 768, 1280 and 1920 pixels wide.
+
+## Since 2026: security headers and cached assets
+
+Cloudflare Pages sends the headers of `pedalboards-frontend/public/_headers`, which Vite copies
+to the build and `pnpm check:bundle` checks. Every page gets Strict-Transport-Security,
+X-Frame-Options, a Permissions-Policy and a Content Security Policy that reports its violations
+without blocking anything yet. The files of `assets/`, named after a hash of their content, are
+cached for a year as immutable, so a repeat visit no longer asks the server whether they changed.
+
+| Figure | Before (live site) | After (preview of the branch) |
+| --- | --- | --- |
+| Security headers of `/` | none of the four | the four, the policy as Report-Only |
+| `Cache-Control` of `/assets/*` | `public, max-age=0, must-revalidate` | `public, max-age=31536000, immutable` |
+| Requests for the JS and the CSS on a repeat visit | 2, each answered 304 (300 B) | 0, read from the browser cache |
+| Bytes transferred for the JS and the CSS on a repeat visit | 600 B | 0 B |
+| Policy violations on `/plugins`, a filtered `/plugins` and `/plugin/:id` | no policy | 0 |
+
+Both sides serve the same build, with the same asset names, measured on 2026-10-23 with
+`curl -sSI` and, for the repeat visits, with the Resource Timing of Chrome on a second load of
+`/plugins`. The HTML keeps `max-age=0`, so a new deployment shows at once. The violations were
+read with a `ReportingObserver`, which an image loaded from an origin outside the policy
+triggers as expected.
