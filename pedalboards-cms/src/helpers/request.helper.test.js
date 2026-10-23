@@ -75,13 +75,15 @@ describe('RequestHelper', () => {
       json: () => Promise.reject(new SyntaxError('Unexpected token < in JSON'))
     }));
 
-    await expect(put(URL, new FormData())).rejects.toThrow('La requête a échoué (502)');
+    await expect(put({ url: URL, body: new FormData() }))
+      .rejects.toThrow('La requête a échoué (502)');
   });
 
   it('ignores a message of the service that is not a text', async () => {
     respondWith({ status: 400, body: { msg: { code: 1 } } });
 
-    await expect(post(URL, new FormData())).rejects.toThrow('La requête a échoué (400)');
+    await expect(post({ url: URL, body: new FormData() }))
+      .rejects.toThrow('La requête a échoué (400)');
   });
 
   it('rejects a request that never reaches the service', async () => {
@@ -97,7 +99,7 @@ describe('RequestHelper', () => {
     const body = new FormData();
 
     respondWith({ status: 201, body: {} });
-    await post(URL, body);
+    await post({ url: URL, body });
 
     expect(global.fetch).toHaveBeenCalledWith(URL, { method: 'POST', body });
   });
@@ -106,7 +108,7 @@ describe('RequestHelper', () => {
     const body = new FormData();
 
     respondWith({ status: 200, body: {} });
-    await put(URL, body);
+    await put({ url: URL, body });
 
     expect(global.fetch).toHaveBeenCalledWith(URL, { method: 'PUT', body });
   });
@@ -123,6 +125,44 @@ describe('RequestHelper', () => {
     await remove(URL);
 
     expect(global.fetch).toHaveBeenCalledWith(URL, { method: 'DELETE' });
+  });
+
+  it('sends a post or a put without a body', async () => {
+    respondWith({ status: 200, body: {} });
+    await post({ url: URL });
+    await put({ url: URL });
+
+    expect(global.fetch.mock.calls).toEqual([
+      [URL, { method: 'POST', body: undefined }],
+      [URL, { method: 'PUT', body: undefined }]
+    ]);
+  });
+
+  it('accepts the address as a URL', async () => {
+    const url = new window.URL(URL);
+
+    respondWith({ status: 200, body: {} });
+    await get(url);
+
+    expect(global.fetch).toHaveBeenCalledWith(url, undefined);
+  });
+
+  it('rejects a request without an address, and never sends it', async () => {
+    const requests = [
+      get(undefined),
+      get(''),
+      post(),
+      post(null),
+      post({ body: new FormData() }),
+      put(),
+      put(null),
+      put({ url: null }),
+      remove(undefined)
+    ];
+    const errors = await Promise.all(requests.map(sent => sent.catch(caught => caught)));
+
+    expect(errors.map(error => error.message)).toEqual(requests.map(() => 'La requête a échoué'));
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 });
 

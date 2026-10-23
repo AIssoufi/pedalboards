@@ -42,13 +42,13 @@ class PedalboardService {
   async updatePlugin(id, data) {
     const url = `${this.url}/api/plugin/${id}`;
 
-    return RequestHelper.put(url, data);
+    return RequestHelper.put({ url, body: data });
   }
 
   async createPlugin(data) {
     const url = `${this.url}/api/plugin`;
 
-    return RequestHelper.post(url, data);
+    return RequestHelper.post({ url, body: data });
   }
 
   async deletePlugin(id, page = 1, pagesize = 10) {
