@@ -97,7 +97,8 @@ describe('the title of the page', () => {
   it.each([
     ['has no label', {}],
     ['has an empty label', { label: '' }],
-    ['has a null label', { label: null }]
+    ['has a null label', { label: null }],
+    ['has a label made only of spaces', { label: '   ' }]
   ])('names the page generically when the plugin %s', async (description, labelField) => {
     mockFetch(() => ({ uri: 'https://plugin/2', ...labelField }));
     renderAt('/plugin/2');
