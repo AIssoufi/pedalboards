@@ -242,7 +242,7 @@ export default class AddPlugin extends Component {
                 name={IMAGE_FIELD}
                 lang="en"
                 aria-label="Screenshot"
-                className="btn bg-primary"
+                className="btn"
                 required={!edit}
               />
             </div>

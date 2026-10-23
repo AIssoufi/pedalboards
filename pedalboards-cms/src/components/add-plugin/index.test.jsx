@@ -97,6 +97,16 @@ describe('AddPlugin', () => {
     expect(view.container.querySelector('main')).toBeNull();
   });
 
+  it('keeps the dark text of the buttons on the light background of the screenshot field', () => {
+    view = render(<AddPlugin />);
+
+    const screenshotField = readField({ container: view.container, name: IMAGE_FIELD });
+    // The rows of the form paint every field light grey, where the white text of bg-primary
+    // cannot be read
+    expect(screenshotField.classList.contains('btn')).toBe(true);
+    expect(screenshotField.classList.contains('bg-primary')).toBe(false);
+  });
+
   it('names each field of the plugin and of the control ports in English', () => {
     view = render(<AddPlugin />);
 
