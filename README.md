@@ -15,6 +15,8 @@ A store of audio plugins: virtual effect pedals that visitors browse, search and
 - The project started in 2018 as a student project. Its tools and architecture since then, with
   the reason for each change, are in [`docs/evolution.md`](docs/evolution.md) and the decision
   records of [`docs/decisions`](docs/decisions).
+- AI coding agents maintain the project under its owner's review: see the
+  [AI agent workflow](docs/ai-workflow/overview.md).
 
 ## Tech stack
 
@@ -36,7 +38,7 @@ A store of audio plugins: virtual effect pedals that visitors browse, search and
 | pedalboards-cms          | The admin app that creates, edits and deletes the plugins, not deployed      | React, Sass, Create React App |
 | tools/commit-messages    | The commitlint rule and the hook script that check the [commit messages](#commit-messages), with their tests | Node.js, commitlint |
 | tools/dev-server-check   | The check that a dev server starts and serves its app, with the tests of its helpers | Node.js |
-| docs                     | The [history of the project](docs/evolution.md) and its [decision records](docs/decisions) | Markdown |
+| docs                     | The [history of the project](docs/evolution.md), its [decision records](docs/decisions) and the [AI agent workflow](docs/ai-workflow/overview.md) | Markdown |
 | .husky                   | The git hooks that `pnpm install` turns on                                   | husky |
 
 ## Run it locally

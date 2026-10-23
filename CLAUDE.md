@@ -13,6 +13,7 @@ A store of audio plugins: a pnpm workspace of three apps on Node.js 24 (`.nvmrc`
 - `tools/`: the commitlint rule, the hook script and the dev server check, tested with
   `node --test`.
 - `docs/decisions/`: the decision records; `docs/evolution.md`: the measured steps of the stack.
+- `docs/ai-workflow/`: how the agents work here ([overview](docs/ai-workflow/overview.md)).
 
 ## Commands
 
