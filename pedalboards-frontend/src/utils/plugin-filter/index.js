@@ -4,6 +4,7 @@ import { PAGE_PARAM, PLUGIN_FILTER_FIELDS, PLUGINS_PATHNAME } from './constants'
 
 // Utils
 import { isPageCount, isPageNumber } from '../page';
+import { isNonBlankText } from '../text';
 
 /**
  * Tells whether a field is one the plugins page filters on.
@@ -19,7 +20,7 @@ const isPluginFilterField = field => PLUGIN_FILTER_FIELDS.includes(field);
  * @param {*} value - Value read from the API, a URL or a form.
  * @returns {boolean} True for a string that is not blank.
  */
-const isPluginFilterValue = value => typeof value === 'string' && value.trim() !== '';
+const isPluginFilterValue = value => isNonBlankText(value);
 
 /**
  * Builds the filters of the plugins page from one field and its value.

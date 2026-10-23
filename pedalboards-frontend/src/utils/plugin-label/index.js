@@ -1,3 +1,6 @@
+// Utils
+import { isNonBlankText } from '../text';
+
 /**
  * Tells whether the label of a plugin can title its page: a label made only of spaces would give
  * a heading that names nothing.
@@ -8,6 +11,6 @@
  * isPluginLabelShown('abGate'); // true
  * isPluginLabelShown('   '); // false
  */
-const isPluginLabelShown = label => typeof label === 'string' && label.trim() !== '';
+const isPluginLabelShown = label => isNonBlankText(label);
 
 export { isPluginLabelShown };
