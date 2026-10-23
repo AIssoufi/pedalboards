@@ -41,6 +41,8 @@ A store of audio plugins: virtual effect pedals that visitors browse, search and
 
 ## Run it locally
 
+The conventions that contributors and coding agents follow are in [`CLAUDE.md`](CLAUDE.md).
+
 ### Prerequisites
 
 - Node.js 24, the version of [`.nvmrc`](.nvmrc): `nvm use` selects it.
