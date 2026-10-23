@@ -60,7 +60,7 @@ describe('EditPlugin', () => {
     submitForm(view.container.querySelector('form'));
     await flushPromises();
 
-    const [[id, formData]] = PedalboardService.updatePlugin.mock.calls;
+    const [[{ id, formData }]] = PedalboardService.updatePlugin.mock.calls;
 
     expect(id).toBe('gate');
     expect(formData.get('label')).toBe('Noise gate');

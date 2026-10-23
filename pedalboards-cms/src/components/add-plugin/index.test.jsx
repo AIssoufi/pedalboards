@@ -33,7 +33,7 @@ const GATE = {
 
 const readMainForm = container => container.querySelector('form');
 
-const readSentForm = method => method.mock.calls[0][1];
+const readSentForm = method => method.mock.calls[0][0].formData;
 
 const readErrorText = (container) => {
   const error = container.querySelector('[role="alert"]');
@@ -193,7 +193,7 @@ describe('AddPlugin', () => {
       submitForm(readMainForm(view.container));
       await flushPromises();
 
-      const [[id, formData]] = PedalboardService.updatePlugin.mock.calls;
+      const [[{ id, formData }]] = PedalboardService.updatePlugin.mock.calls;
 
       expect(PedalboardService.createPlugin).not.toHaveBeenCalled();
       expect(id).toBe('gate');

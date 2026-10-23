@@ -52,8 +52,8 @@ const usePluginList = ({ search = '' } = {}) => {
     const searchParams = new URLSearchParams(search);
     const hasSearch = Array.from(searchParams.keys()).length > 0;
     const pluginsRequest = hasSearch
-      ? PedalboardService.findPlugins(searchParams, page, PAGE_SIZE)
-      : PedalboardService.getPlugins(page, PAGE_SIZE);
+      ? PedalboardService.findPlugins({ searchParams, page, pageSize: PAGE_SIZE })
+      : PedalboardService.getPlugins({ page, pageSize: PAGE_SIZE });
     const request = lastListRequest.current + 1;
     const isLastRequest = () => !hasLeftPage.current && request === lastListRequest.current;
 
@@ -98,7 +98,7 @@ const usePluginList = ({ search = '' } = {}) => {
 
   // The API answers a delete with a page of every plugin: load the page again with the search
   const deletePlugin = (id) => {
-    PedalboardService.deletePlugin(id, currentPage, PAGE_SIZE)
+    PedalboardService.deletePlugin({ id, page: currentPage, pageSize: PAGE_SIZE })
       .then(() => {
         if (!hasLeftPage.current) loadPlugins({ page: currentPage });
       }, (error) => {

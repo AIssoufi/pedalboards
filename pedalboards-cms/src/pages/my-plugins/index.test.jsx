@@ -29,11 +29,11 @@ const FOUND_PLUGINS = {
   numberPages: 1
 };
 
-const findPluginsOnTwoPages = (searchParams, page) => Promise.resolve({
+const findPluginsOnTwoPages = ({ page }) => Promise.resolve({
   ...FOUND_PLUGINS, count: 12, currentPage: page, numberPages: 2
 });
 
-const getPluginsOnPages = ({ count, numberPages }) => page => Promise.resolve({
+const getPluginsOnPages = ({ count, numberPages }) => ({ page }) => Promise.resolve({
   ...ALL_PLUGINS, count, currentPage: page, numberPages
 });
 
@@ -88,8 +88,11 @@ const clickFirstDeleteButton = (container) => {
 };
 
 const readSearchCalls = () => PedalboardService.findPlugins.mock.calls.map(
-  ([searchParams, page, pageSize]) => [searchParams.toString(), page, pageSize]
+  ([{ searchParams, page, pageSize }]) => [searchParams.toString(), page, pageSize]
 );
+
+// Arguments of the call that loads a page of every plugin
+const buildPageCall = page => [{ page, pageSize: PAGE_SIZE }];
 
 const isPropTypeWarning = ([message]) => String(message).includes('Failed prop type');
 
@@ -114,7 +117,7 @@ describe('MyPlugins', () => {
     view = renderMyPlugins({ location: { search: '?name=gate' } });
     await flushPromises();
 
-    const [[searchParams, page]] = PedalboardService.findPlugins.mock.calls;
+    const [[{ searchParams, page }]] = PedalboardService.findPlugins.mock.calls;
 
     expect(searchParams.get('name')).toBe('gate');
     expect(page).toBe(1);
@@ -206,7 +209,7 @@ describe('MyPlugins', () => {
     clickPageButton({ container: view.container, label: '2' });
     await flushPromises();
 
-    expect(PedalboardService.getPlugins.mock.calls).toEqual([[1, PAGE_SIZE], [2, PAGE_SIZE]]);
+    expect(PedalboardService.getPlugins.mock.calls).toEqual([buildPageCall(1), buildPageCall(2)]);
     expect(PedalboardService.findPlugins).not.toHaveBeenCalled();
   });
 
@@ -236,7 +239,7 @@ describe('MyPlugins', () => {
     rerenderMyPlugins({ view, props: { location: { search: '' } } });
     await flushPromises();
 
-    expect(PedalboardService.getPlugins.mock.calls).toEqual([[1, PAGE_SIZE]]);
+    expect(PedalboardService.getPlugins.mock.calls).toEqual([buildPageCall(1)]);
     expect(readTitles(view.container)).toEqual(['Gate', 'Reverb']);
   });
 
@@ -285,7 +288,7 @@ describe('MyPlugins', () => {
     clickPageButton({ container: view.container, label: '2' });
     await flushPromises();
 
-    expect(PedalboardService.getPlugins.mock.calls).toEqual([[1, PAGE_SIZE], [2, PAGE_SIZE]]);
+    expect(PedalboardService.getPlugins.mock.calls).toEqual([buildPageCall(1), buildPageCall(2)]);
   });
 
   it('loads no page after the last one', async () => {
@@ -297,7 +300,7 @@ describe('MyPlugins', () => {
     clickNavigation({ container: view.container, selector: '.next-page' });
     await flushPromises();
 
-    expect(PedalboardService.getPlugins.mock.calls).toEqual([[1, PAGE_SIZE], [3, PAGE_SIZE]]);
+    expect(PedalboardService.getPlugins.mock.calls).toEqual([buildPageCall(1), buildPageCall(3)]);
   });
 
   it('loads no page before the first one', async () => {
@@ -307,7 +310,7 @@ describe('MyPlugins', () => {
     clickNavigation({ container: view.container, selector: '.previous-page' });
     await flushPromises();
 
-    expect(PedalboardService.getPlugins.mock.calls).toEqual([[1, PAGE_SIZE]]);
+    expect(PedalboardService.getPlugins.mock.calls).toEqual([buildPageCall(1)]);
   });
 
   it('reloads the searched plugins of the page after a delete', async () => {
@@ -320,7 +323,9 @@ describe('MyPlugins', () => {
     clickFirstDeleteButton(view.container);
     await flushPromises();
 
-    expect(PedalboardService.deletePlugin).toHaveBeenCalledWith('gate', 2, PAGE_SIZE);
+    expect(PedalboardService.deletePlugin).toHaveBeenCalledWith({
+      id: 'gate', page: 2, pageSize: PAGE_SIZE
+    });
     expect(readSearchCalls()).toEqual([
       ['name=gate', 1, PAGE_SIZE],
       ['name=gate', 2, PAGE_SIZE],
