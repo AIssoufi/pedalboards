@@ -96,6 +96,11 @@ class PedalboardService {
     return RequestHelper.put({ url, body: formData });
   }
 
+  /**
+   * Creates a plugin.
+   * @param {FormData} data fields of the new plugin, with its image if any
+   * @returns {Promise<Object>} the answer of the service, with the plugin in `data`
+   */
   async createPlugin(data) {
     const url = `${this.url}/api/plugin`;
 
