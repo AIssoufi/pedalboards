@@ -3,6 +3,9 @@ import { NavLink, Link } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faThList } from '@fortawesome/free-solid-svg-icons';
 
+// Constants
+import { AUTHOR_CREDIT, AUTHOR_URL } from './constants';
+
 // Utils
 import { Env } from '../../utils';
 import { getAdminPanelUrl } from './utils';
@@ -29,8 +32,8 @@ const Header = () => (
       </Link>
       <div className="toolbar-brand-container">
         <div className="toolbar-brand">
-          <a className="logo" href="http://aissoufi.github.io">
-            Realised by @aissoufi
+          <a className="logo" href={AUTHOR_URL}>
+            {AUTHOR_CREDIT}
           </a>
         </div>
       </div>
