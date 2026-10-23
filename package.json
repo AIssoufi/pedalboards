@@ -33,7 +33,7 @@
     "2018",
     "MIAGE"
   ],
-  "author": "Issoufi ADAM <issoufi.adam1@gmail.com>",
+  "author": "ADAM Issoufi <issoufi.adam1@gmail.com>",
   "license": "ISC",
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
