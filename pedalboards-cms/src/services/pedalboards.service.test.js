@@ -9,6 +9,12 @@ const FIRST_PAGE_URL = `${SERVICE_URL}/api/plugins?page=1&pagesize=10`;
 
 const MISSING_ID_MESSAGE = 'Le plugin n\'a pas d\'identifiant';
 
+// Id holding the characters that would change the path, the query or the fragment of an address
+const RESERVED_ID = 'gate/v2?mode=fast#top';
+
+// Address of the plugin of that id, the id encoded
+const RESERVED_ID_URL = `${SERVICE_URL}/api/plugin/gate%2Fv2%3Fmode%3Dfast%23top`;
+
 // Address and options of the only request sent, the address as a text
 const readSentRequest = () => {
   const [[url, options]] = global.fetch.mock.calls;
@@ -96,12 +102,20 @@ describe('PedalboardService', () => {
       });
     });
 
-    it('rejects a plugin without an id, and sends nothing', async () => {
+    it('encodes the id in the address of the plugin', async () => {
+      await PedalboardService.getPlugin(RESERVED_ID);
+
+      expect(readSentRequest().url).toBe(RESERVED_ID_URL);
+    });
+
+    it('rejects a missing, non-text or dot-segment id, and sends nothing', async () => {
       const loads = [
         PedalboardService.getPlugin(),
         PedalboardService.getPlugin(''),
         PedalboardService.getPlugin(null),
-        PedalboardService.getPlugin(42)
+        PedalboardService.getPlugin(42),
+        PedalboardService.getPlugin('.'),
+        PedalboardService.getPlugin('..')
       ];
       const errors = await Promise.all(loads.map(load => load.catch(caught => caught)));
 
@@ -122,13 +136,22 @@ describe('PedalboardService', () => {
       });
     });
 
-    it('rejects a plugin without an id, and sends nothing', async () => {
+    it('encodes the id in the address of the plugin', async () => {
+      await PedalboardService.updatePlugin({ id: RESERVED_ID, formData: new FormData() });
+
+      expect(readSentRequest().url).toBe(RESERVED_ID_URL);
+    });
+
+    it('rejects a missing, non-text or dot-segment id, and sends nothing', async () => {
       const updates = [
         PedalboardService.updatePlugin(),
         PedalboardService.updatePlugin(null),
         PedalboardService.updatePlugin({ formData: new FormData() }),
         PedalboardService.updatePlugin({ id: '', formData: new FormData() }),
-        PedalboardService.updatePlugin({ id: null })
+        PedalboardService.updatePlugin({ id: null }),
+        PedalboardService.updatePlugin({ id: 42, formData: new FormData() }),
+        PedalboardService.updatePlugin({ id: '.', formData: new FormData() }),
+        PedalboardService.updatePlugin({ id: '..', formData: new FormData() })
       ];
       const errors = await Promise.all(updates.map(update => update.catch(caught => caught)));
 
@@ -166,13 +189,21 @@ describe('PedalboardService', () => {
       expect(readSentRequest().url).toBe(`${SERVICE_URL}/api/plugin/gate?page=1&pagesize=10`);
     });
 
-    it('rejects a plugin without an id, and sends nothing', async () => {
+    it('encodes the id in the address of the plugin and keeps the page in the query', async () => {
+      await PedalboardService.deletePlugin({ id: RESERVED_ID, page: 2, pageSize: 5 });
+
+      expect(readSentRequest().url).toBe(`${RESERVED_ID_URL}?page=2&pagesize=5`);
+    });
+
+    it('rejects a missing, non-text or dot-segment id, and sends nothing', async () => {
       const deletes = [
         PedalboardService.deletePlugin(),
         PedalboardService.deletePlugin(null),
         PedalboardService.deletePlugin({ page: 2 }),
         PedalboardService.deletePlugin({ id: '' }),
-        PedalboardService.deletePlugin({ id: 42 })
+        PedalboardService.deletePlugin({ id: 42 }),
+        PedalboardService.deletePlugin({ id: '.' }),
+        PedalboardService.deletePlugin({ id: '..', page: 2 })
       ];
       const errors = await Promise.all(deletes.map(sent => sent.catch(caught => caught)));
 
