@@ -3,26 +3,48 @@ import { RequestHelper } from 'helpers';
 
 // Utils
 import { Env } from 'utils';
+import { isNonEmptyText } from 'utils/text';
+
+// Constants
+import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MISSING_PLUGIN_ID_MESSAGE } from './constants';
 
 class PedalboardService {
   constructor() {
     this.url = Env.get('core_service');
   }
 
-  async getPlugins(page = 1, pagesize = 10) {
+  /**
+   * Loads a page of every plugin.
+   * @param {Object|null} [params]
+   * @param {number} [params.page=1] number of the page, from 1
+   * @param {number} [params.pageSize=10] number of plugins in a page
+   * @returns {Promise<Object>} the page, with its plugins in `data`
+   */
+  async getPlugins(params) {
+    const { page = DEFAULT_PAGE, pageSize = DEFAULT_PAGE_SIZE } = params || {};
     const url = new URL(`${this.url}/api/plugins`);
 
     url.searchParams.append('page', page);
-    url.searchParams.append('pagesize', pagesize);
+    url.searchParams.append('pagesize', pageSize);
 
     return RequestHelper.get(url);
   }
 
-  async findPlugins(searchParams, page = 1, pagesize = 10) {
+  /**
+   * Loads a page of the plugins that match a search.
+   * @param {Object|null} [params]
+   * @param {URLSearchParams} [params.searchParams] fields to filter by, as `name=gate`. Without
+   * them, every plugin matches
+   * @param {number} [params.page=1] number of the page, from 1
+   * @param {number} [params.pageSize=10] number of plugins in a page
+   * @returns {Promise<Object>} the page, with its plugins in `data`
+   */
+  async findPlugins(params) {
+    const { searchParams, page = DEFAULT_PAGE, pageSize = DEFAULT_PAGE_SIZE } = params || {};
     const url = new URL(`${this.url}/api/plugins`);
 
     url.searchParams.append('page', page);
-    url.searchParams.append('pagesize', pagesize);
+    url.searchParams.append('pagesize', pageSize);
 
     if (searchParams instanceof URLSearchParams) {
       for (const pair of searchParams.entries()) {
@@ -33,29 +55,61 @@ class PedalboardService {
     return RequestHelper.get(url);
   }
 
+  /**
+   * Loads a plugin.
+   * @param {string} id id of the plugin. Without it, nothing is sent and the promise rejects
+   * @returns {Promise<Object>} the answer of the service, with the plugin in `data`
+   */
   async getPlugin(id) {
+    if (!isNonEmptyText(id)) throw new Error(MISSING_PLUGIN_ID_MESSAGE);
+
     const url = `${this.url}/api/plugin/${id}`;
 
     return RequestHelper.get(url);
   }
 
-  async updatePlugin(id, data) {
+  /**
+   * Replaces the fields of a plugin.
+   * @param {Object|null} [params]
+   * @param {string} [params.id] id of the plugin. Without it, nothing is sent and the promise
+   * rejects
+   * @param {FormData} [params.formData] new fields of the plugin
+   * @returns {Promise<Object>} the answer of the service, with the plugin in `data`
+   */
+  async updatePlugin(params) {
+    const { id, formData } = params || {};
+
+    if (!isNonEmptyText(id)) throw new Error(MISSING_PLUGIN_ID_MESSAGE);
+
     const url = `${this.url}/api/plugin/${id}`;
 
-    return RequestHelper.put(url, data);
+    return RequestHelper.put({ url, body: formData });
   }
 
   async createPlugin(data) {
     const url = `${this.url}/api/plugin`;
 
-    return RequestHelper.post(url, data);
+    return RequestHelper.post({ url, body: data });
   }
 
-  async deletePlugin(id, page = 1, pagesize = 10) {
+  /**
+   * Deletes a plugin.
+   * @param {Object|null} [params]
+   * @param {string} [params.id] id of the plugin. Without it, nothing is sent and the promise
+   * rejects
+   * @param {number} [params.page=1] page of plugins that the service answers with, from 1
+   * @param {number} [params.pageSize=10] number of plugins in that page
+   * @returns {Promise<Object>} the answer of the service
+   */
+  async deletePlugin(params) {
+    const { id, page = DEFAULT_PAGE, pageSize = DEFAULT_PAGE_SIZE } = params || {};
+
+    if (!isNonEmptyText(id)) throw new Error(MISSING_PLUGIN_ID_MESSAGE);
+
     const url = new URL(`${this.url}/api/plugin/${id}`);
 
     url.searchParams.append('page', page);
-    url.searchParams.append('pagesize', pagesize);
+    url.searchParams.append('pagesize', pageSize);
 
     return RequestHelper.remove(url);
   }

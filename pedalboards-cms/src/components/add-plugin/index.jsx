@@ -97,7 +97,7 @@ export default class AddPlugin extends Component {
 
     // The edit leaves the author out, so the plugin keeps its own, and keeps the fields as typed
     if (edit) {
-      PedalboardService.updatePlugin(id, formData).then(this.clearError, this.showError);
+      PedalboardService.updatePlugin({ id, formData }).then(this.clearError, this.showError);
       return;
     }
 

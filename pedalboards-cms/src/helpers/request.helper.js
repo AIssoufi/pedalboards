@@ -38,23 +38,62 @@ const handleNetworkError = () => {
 };
 
 /**
- * Sends a request to the service. The promise rejects with an Error when the request fails or
- * the response is not a 2xx, so that callers show its message.
- * @param {string|URL} url address of the request
- * @param {RequestInit} [options] method and body. No content type is set: the browser gives
- * the one of a FormData body, with its boundary
+ * Sends a request to the service. The promise rejects with an Error when the address is missing,
+ * the request fails or the response is not a 2xx, so that callers show its message.
+ * @param {Object|null} [params]
+ * @param {string|URL} [params.url] address of the request
+ * @param {RequestInit} [params.options] method and body. No content type is set: the browser
+ * gives the one of a FormData body, with its boundary
  * @returns {Promise<Object>} the JSON body of the response
  */
-const request = (url, options) => fetch(url, options)
-  .then(handleResponse, handleNetworkError);
+const request = (params) => {
+  const { url, options } = params || {};
 
-const get = url => request(url);
+  // Without an address, fetch would request the page itself, or `undefined` next to it
+  if (!url) return Promise.reject(new Error(RESPONSE_ERROR_MESSAGE));
 
-const post = (url, body) => request(url, { method: 'POST', body });
+  return fetch(url, options).then(handleResponse, handleNetworkError);
+};
 
-const put = (url, body) => request(url, { method: 'PUT', body });
+/**
+ * Reads a resource of the service.
+ * @param {string|URL} url address of the resource
+ * @returns {Promise<Object>} the JSON body of the response
+ */
+const get = url => request({ url });
 
-const remove = url => request(url, { method: 'DELETE' });
+/**
+ * Creates a resource of the service.
+ * @param {Object|null} [params]
+ * @param {string|URL} [params.url] address of the collection
+ * @param {FormData} [params.body] fields of the resource
+ * @returns {Promise<Object>} the JSON body of the response
+ */
+const post = (params) => {
+  const { url, body } = params || {};
+
+  return request({ url, options: { method: 'POST', body } });
+};
+
+/**
+ * Replaces a resource of the service.
+ * @param {Object|null} [params]
+ * @param {string|URL} [params.url] address of the resource
+ * @param {FormData} [params.body] new fields of the resource
+ * @returns {Promise<Object>} the JSON body of the response
+ */
+const put = (params) => {
+  const { url, body } = params || {};
+
+  return request({ url, options: { method: 'PUT', body } });
+};
+
+/**
+ * Deletes a resource of the service.
+ * @param {string|URL} url address of the resource
+ * @returns {Promise<Object>} the JSON body of the response
+ */
+const remove = url => request({ url, options: { method: 'DELETE' } });
 
 /**
  * Gives the message to show for a failed request.

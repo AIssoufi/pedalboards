@@ -18,7 +18,7 @@ const GATE = { _id: 'gate', name: 'Gate' };
 
 const REVERB = { _id: 'reverb', name: 'Reverb' };
 
-const getPluginsOnThreePages = page => Promise.resolve({
+const getPluginsOnThreePages = ({ page }) => Promise.resolve({
   data: [GATE], count: 25, currentPage: page, numberPages: 3
 });
 
@@ -71,7 +71,7 @@ describe('usePluginList', () => {
     hook = renderPluginList();
     await flushPromises();
 
-    expect(PedalboardService.getPlugins).toHaveBeenCalledWith(1, PAGE_SIZE);
+    expect(PedalboardService.getPlugins).toHaveBeenCalledWith({ page: 1, pageSize: PAGE_SIZE });
     expect(hook.result.current).toMatchObject({ plugins: [GATE], currentPage: 1, pageCount: 3 });
   });
 
@@ -79,7 +79,7 @@ describe('usePluginList', () => {
     hook = renderPluginList({ search: '?name=reverb' });
     await flushPromises();
 
-    const [[searchParams, page, pageSize]] = PedalboardService.findPlugins.mock.calls;
+    const [[{ searchParams, page, pageSize }]] = PedalboardService.findPlugins.mock.calls;
 
     expect(searchParams.get('name')).toBe('reverb');
     expect([page, pageSize]).toEqual([1, PAGE_SIZE]);
@@ -165,7 +165,7 @@ describe('usePluginList', () => {
     hook.rerender({ search: '?name=reverb' });
     await flushPromises();
 
-    expect(PedalboardService.findPlugins.mock.calls[0][1]).toBe(1);
+    expect(PedalboardService.findPlugins.mock.calls[0][0].page).toBe(1);
     expect(hook.result.current).toMatchObject({ plugins: [REVERB], currentPage: 1 });
   });
 
@@ -175,7 +175,7 @@ describe('usePluginList', () => {
     act(() => hook.result.current.goToPage(3));
     await flushPromises();
 
-    expect(PedalboardService.getPlugins).toHaveBeenLastCalledWith(3, PAGE_SIZE);
+    expect(PedalboardService.getPlugins).toHaveBeenLastCalledWith({ page: 3, pageSize: PAGE_SIZE });
     expect(hook.result.current.currentPage).toBe(3);
   });
 
@@ -288,8 +288,10 @@ describe('usePluginList', () => {
     act(() => hook.result.current.deletePlugin('gate'));
     await flushPromises();
 
-    expect(PedalboardService.deletePlugin).toHaveBeenCalledWith('gate', 2, PAGE_SIZE);
-    expect(PedalboardService.getPlugins).toHaveBeenLastCalledWith(2, PAGE_SIZE);
+    expect(PedalboardService.deletePlugin).toHaveBeenCalledWith({
+      id: 'gate', page: 2, pageSize: PAGE_SIZE
+    });
+    expect(PedalboardService.getPlugins).toHaveBeenLastCalledWith({ page: 2, pageSize: PAGE_SIZE });
   });
 
   it('goes to the new last page when a delete empties the last one', async () => {
@@ -297,13 +299,13 @@ describe('usePluginList', () => {
     await flushPromises();
     act(() => hook.result.current.goToPage(3));
     await flushPromises();
-    PedalboardService.getPlugins.mockImplementation(page => Promise.resolve({
+    PedalboardService.getPlugins.mockImplementation(({ page }) => Promise.resolve({
       data: page === 3 ? [] : [REVERB], count: 20, currentPage: page, numberPages: 2
     }));
     act(() => hook.result.current.deletePlugin('gate'));
     await flushPromises();
 
-    expect(PedalboardService.getPlugins).toHaveBeenLastCalledWith(2, PAGE_SIZE);
+    expect(PedalboardService.getPlugins).toHaveBeenLastCalledWith({ page: 2, pageSize: PAGE_SIZE });
     expect(hook.result.current).toMatchObject({
       plugins: [REVERB], currentPage: 2, pageCount: 2
     });
@@ -335,7 +337,10 @@ describe('usePluginList', () => {
 
     const callsAfterDelete = PedalboardService.getPlugins.mock.calls.slice(2);
 
-    expect(callsAfterDelete).toEqual([[3, PAGE_SIZE], [2, PAGE_SIZE]]);
+    expect(callsAfterDelete).toEqual([
+      [{ page: 3, pageSize: PAGE_SIZE }],
+      [{ page: 2, pageSize: PAGE_SIZE }]
+    ]);
   });
 
   it('keeps the plugins and gives the message of a failed delete', async () => {
