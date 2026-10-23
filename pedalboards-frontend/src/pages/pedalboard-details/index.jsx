@@ -19,6 +19,7 @@ import {
 import { PLUGINS_PATHNAME } from '../../utils/plugin-filter/constants';
 
 // Utils
+import { isPluginLabelShown } from '../../utils/plugin-label';
 import { isPluginNotFound } from './utils';
 
 // Style
@@ -90,7 +91,7 @@ const PedalboardDetailsPage = () => {
   const hasContent = isFetching || Boolean(plugin);
   // The details render the label as the title of the page once the plugin is loaded: no plugin
   // is known while it is fetched
-  const isLabelShown = Boolean(plugin?.label);
+  const isLabelShown = isPluginLabelShown(plugin?.label);
 
   useEffect(() => {
     // A route without an id names no plugin, so the page shows its empty state at once

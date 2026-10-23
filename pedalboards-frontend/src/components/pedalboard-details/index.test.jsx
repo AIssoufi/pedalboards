@@ -46,6 +46,12 @@ it('titles the page with the label of the plugin', () => {
   expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('abGate');
 });
 
+it('leaves out the title of a label made only of spaces, which names nothing', () => {
+  renderDetails({ label: '   ' });
+
+  expect(screen.queryByRole('heading', { level: 1 })).toBeNull();
+});
+
 it('displays a description holding markup as literal text', () => {
   renderDetails({
     author: { name: 'Lorem' },
