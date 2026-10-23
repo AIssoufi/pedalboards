@@ -199,7 +199,8 @@ request to `master` and every push to `master`, with one job per app, which cach
   migrations fill. `pnpm run build` bundles the Worker into `dist` without publishing it, and
   `pnpm run check:bundle` fails when that bundle holds a write route or a multipart parser.
 - The `pnpm run check:bundle` of the frontend fails when the scripts of its build hold
-  development-only code, such as the state checks of Redux Toolkit.
+  development-only code, such as the state checks of Redux Toolkit, or when its `_headers` file
+  lacks a security or cache header.
 - `CI=true` runs the Jest of the CMS once instead of in watch mode, and turns the lint warnings of
   its build into errors. The frontend runs Vitest once (`vitest run`) and ignores it.
 - `pnpm run check:dev-server` starts the dev server of the frontend on a free port, checks that the

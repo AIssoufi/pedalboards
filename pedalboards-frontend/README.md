@@ -16,7 +16,7 @@ Run them in this folder, or from the root with `pnpm --filter pedalboards-fronte
 | `pnpm test`             | Runs the tests once, in jsdom; `pnpm vitest` runs them in watch mode     |
 | `pnpm lint`             | Lints the app with ESLint, and fails on any warning                      |
 | `pnpm check:dev-server` | Starts the dev server on a free port and checks that it serves the app   |
-| `pnpm check:bundle`     | Fails when the scripts of `build/` hold development-only code; run `pnpm build` first |
+| `pnpm check:bundle`     | Fails when the scripts of `build/` hold development-only code, or its `_headers` lacks a required header; run `pnpm build` first |
 | `pnpm report:bundle`    | Builds the app and writes `bundle-report.html`, the share of each package and module in its scripts |
 
 - `pnpm dev` fails when port 3001 is taken, rather than moving to 3002, the port of the CMS.
