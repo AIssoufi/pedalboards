@@ -88,6 +88,12 @@ describe('AddPlugin', () => {
     expect(container.querySelector('h1').closest('[lang]')).toBeNull();
   });
 
+  it('leaves the main landmark to the app, which already wraps the page in one', () => {
+    view = render(<AddPlugin />);
+
+    expect(view.container.querySelector('main')).toBeNull();
+  });
+
   it('names each field of the plugin and of the control ports in English', () => {
     view = render(<AddPlugin />);
 

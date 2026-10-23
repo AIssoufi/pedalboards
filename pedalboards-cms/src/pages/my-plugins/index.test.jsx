@@ -122,6 +122,13 @@ describe('MyPlugins', () => {
     expect(readTitles(view.container)).toEqual(['Gate']);
   });
 
+  it('leaves the main landmark to the app, which already wraps the page in one', async () => {
+    view = renderMyPlugins();
+    await flushPromises();
+
+    expect(view.container.querySelector('main')).toBeNull();
+  });
+
   it('names each action after its plugin, and the view after its new tab', async () => {
     view = renderMyPlugins();
     await flushPromises();
