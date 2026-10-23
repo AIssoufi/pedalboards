@@ -24,7 +24,7 @@ export const PLUGIN_COLUMNS = [
 	'controlPorts'
 ];
 
-/** Bundle of the Worker, written by `wrangler deploy --dry-run --outdir dist` */
+/** Bundle of the Worker, written by `pnpm build` */
 export const WORKER_BUNDLE_URL = new URL('../dist/index.js', import.meta.url);
 
 /** Code that only the write routes use: none of it may ship in the deployed Worker */
