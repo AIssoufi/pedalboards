@@ -8,7 +8,13 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # A dependency joins the first group that matches it. ESLint and its recommended config share
+    # one major, so every update of them, majors included, comes in one pull request
     groups:
+      eslint:
+        patterns:
+          - eslint
+          - '@eslint/*'
       npm-minor-and-patch:
         update-types:
           - minor
