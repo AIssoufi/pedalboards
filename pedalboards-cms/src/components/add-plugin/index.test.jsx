@@ -10,6 +10,9 @@ import { flushPromises, render, submitForm } from 'utils/testing';
 // Components
 import AddPlugin from './index';
 
+// Constants
+import { IMAGE_FIELD } from './constants';
+
 const TEXT_FIELDS = ['name', 'label', 'uri', 'version', 'brand', 'categories', 'description'];
 
 const FIELD_NAMES = [
@@ -132,7 +135,7 @@ describe('AddPlugin', () => {
     it('requires an image and shows the create title', () => {
       view = render(<AddPlugin />);
 
-      expect(readField({ container: view.container, name: 'image' }).required).toBe(true);
+      expect(readField({ container: view.container, name: IMAGE_FIELD }).required).toBe(true);
       expect(view.container.querySelector('h1').textContent).toBe('Ajouter un plugin');
     });
 
@@ -184,7 +187,7 @@ describe('AddPlugin', () => {
       expect(container.querySelector('h1').textContent).toBe('Modifier le plugin');
       expect(readField({ container, name: 'name' }).value).toBe('Gate');
       expect(readField({ container, name: 'label' }).value).toBe('Noise gate');
-      expect(readField({ container, name: 'image' }).required).toBe(false);
+      expect(readField({ container, name: IMAGE_FIELD }).required).toBe(false);
       expect(container.querySelector('button[type="submit"]').textContent).toContain('Update');
     });
 
@@ -210,7 +213,7 @@ describe('AddPlugin', () => {
       const formData = readSentForm(PedalboardService.updatePlugin);
 
       expect(formData.has('author')).toBe(false);
-      expect(formData.has('image')).toBe(false);
+      expect(formData.has(IMAGE_FIELD)).toBe(false);
     });
 
     it('keeps the fields of the form once the plugin is saved', async () => {
