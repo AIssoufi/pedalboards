@@ -17,6 +17,12 @@ import {
 // Style
 import './App.css';
 
+/**
+ * Root component of the app: the router, the header shown on every page and the main area with
+ * its routes. `/plugins` lists the plugins, `/plugin/:id` shows the details of one, and any other
+ * path redirects to `/plugins`. Must be rendered inside a react-redux `<Provider>`, since its pages
+ * read the store; it provides the router itself.
+ */
 const App = () => (
   <BrowserRouter>
     <Fragment>
