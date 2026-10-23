@@ -65,6 +65,56 @@ const navigate = async ({ router, url }) => {
   await act(() => router.navigate(url));
 };
 
+// Texts of the top level headings of the page, hidden ones included
+const readPageTitles = () => screen.queryAllByRole('heading', { level: 1 })
+  .map(heading => heading.textContent);
+
+describe('the title of the page', () => {
+  it('names the page generically while the plugin loads', async () => {
+    holdFetch();
+    renderAt('/plugin/2');
+
+    expect(await screen.findByText(LOADER_TEXT)).toBeDefined();
+    expect(readPageTitles()).toEqual(['Plugin']);
+  });
+
+  it('names the page generically when the plugin fails to load', async () => {
+    vi.spyOn(window, 'fetch').mockImplementation(() => Promise.reject(new TypeError('offline')));
+    renderAt('/plugin/2');
+
+    expect(await screen.findByRole('alert')).toBeDefined();
+    expect(readPageTitles()).toEqual(['Plugin']);
+  });
+
+  it('names the page generically when there is no plugin', async () => {
+    mockFetch(() => undefined);
+    renderAt('/plugin/2');
+
+    expect(await screen.findByText(EMPTY_STATE_TEXT)).toBeDefined();
+    expect(readPageTitles()).toEqual(['Plugin']);
+  });
+
+  it.each([
+    ['has no label', {}],
+    ['has an empty label', { label: '' }],
+    ['has a null label', { label: null }]
+  ])('names the page generically when the plugin %s', async (description, labelField) => {
+    mockFetch(() => ({ uri: 'https://plugin/2', ...labelField }));
+    renderAt('/plugin/2');
+
+    expect(await screen.findByRole('link', { name: 'https://plugin/2' })).toBeDefined();
+    expect(readPageTitles()).toEqual(['Plugin']);
+  });
+
+  it('leaves the label of the loaded plugin as the only title', async () => {
+    mockFetch(() => ({ uri: 'https://plugin/2', label: 'abGate' }));
+    renderAt('/plugin/2');
+
+    expect(await screen.findByRole('link', { name: 'https://plugin/2' })).toBeDefined();
+    expect(readPageTitles()).toEqual(['abGate']);
+  });
+});
+
 it('renders without crashing', async () => {
   // The page fetches the plugin: an answer keeps its promise from failing after the test
   mockFetch(() => undefined);
@@ -93,6 +143,8 @@ it('fetches the plugin of a new id and shows the loader until it answers', async
   await navigate({ router, url: '/plugin/3' });
 
   expect(screen.getByText(LOADER_TEXT)).toBeDefined();
+  // The chunk of the details is loaded by now, so this loader is the one of the fetch
+  expect(readPageTitles()).toEqual(['Plugin']);
   answerById['3']();
   expect(await screen.findByRole('link', { name: 'https://plugin/3' })).toBeDefined();
   expect(window.fetch).toHaveBeenCalledTimes(2);
@@ -132,6 +184,7 @@ it.each([
   renderPage();
 
   expect(await screen.findByText(EMPTY_STATE_TEXT)).toBeDefined();
+  expect(readPageTitles()).toEqual(['Plugin']);
   expect(window.fetch).not.toHaveBeenCalled();
 });
 
@@ -185,4 +238,5 @@ it('shows an error message, not a blank app, when the details fail to load', asy
 
   expect((await screen.findByRole('alert')).textContent).toBe(ERROR_TEXT);
   expect(screen.queryByText(LOADER_TEXT)).toBeNull();
+  expect(readPageTitles()).toEqual(['Plugin']);
 });

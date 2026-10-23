@@ -23,15 +23,39 @@ import './style.scss';
 // that chunk loads, and shows the loader in its card meanwhile, as while the plugin is fetched
 const PedalboardDetails = lazy(() => import('../../components/pedalboard-details'));
 
+// Titles the page for screen readers whenever the label of a plugin does not: while it loads,
+// when it fails, when there is no plugin or when the plugin has no label
+const PAGE_TITLE = <h1 className="visually-hidden">Plugin</h1>;
+
 // Shown when the plugin or the chunk of its details fails to load
-const LOAD_ERROR_ALERT = (
-  <p role="alert" lang="fr">Impossible de charger ce plugin, réessayez plus tard.</p>
+const LOAD_ERROR_CONTENT = (
+  <>
+    {PAGE_TITLE}
+    <p role="alert" lang="fr">Impossible de charger ce plugin, réessayez plus tard.</p>
+  </>
+);
+
+// Shown while the chunk of the details loads
+const LOADING_CONTENT = (
+  <>
+    {PAGE_TITLE}
+    <Loader />
+  </>
+);
+
+// Shown when the route names no plugin or the answer holds none
+const EMPTY_CONTENT = (
+  <>
+    {PAGE_TITLE}
+    <p lang="fr">Pas de données disponible</p>
+  </>
 );
 
 /**
  * Page of one plugin, the one of the `id` parameter of its route: shows the loader while the
  * plugin is fetched, then its details, an empty state when the answer holds no plugin, or an
- * error message when the request or the chunk of the details fails.
+ * error message when the request or the chunk of the details fails. The label of the plugin
+ * titles the page; a visually hidden "Plugin" title replaces it in every other case.
  */
 const PedalboardDetailsPage = () => {
   const { id: pluginId } = useParams();
@@ -44,6 +68,9 @@ const PedalboardDetailsPage = () => {
   const plugin = hasAnswer ? fetched.plugin : undefined;
   const hasFailed = hasAnswer && fetched.hasFailed === true;
   const hasContent = isFetching || Boolean(plugin);
+  // The details render the label as the title of the page once the plugin is loaded: no plugin
+  // is known while it is fetched
+  const isLabelShown = Boolean(plugin?.label);
 
   useEffect(() => {
     // A route without an id names no plugin, so the page shows its empty state at once
@@ -67,19 +94,20 @@ const PedalboardDetailsPage = () => {
 
   // The error message, the loader or the details, or the empty state when there is no plugin
   const renderContent = () => {
-    if (hasFailed) return LOAD_ERROR_ALERT;
+    if (hasFailed) return LOAD_ERROR_CONTENT;
     if (hasContent) {
       // A chunk that fails to load, on a lost connection or after a deploy that removed it, shows
       // the error message rather than unmounting the app
       return (
-        <ErrorBoundary fallback={LOAD_ERROR_ALERT}>
-          <Suspense fallback={<Loader />}>
+        <ErrorBoundary fallback={LOAD_ERROR_CONTENT}>
+          <Suspense fallback={LOADING_CONTENT}>
+            {!isLabelShown && PAGE_TITLE}
             <PedalboardDetails isLoading={isFetching} {...plugin} />
           </Suspense>
         </ErrorBoundary>
       );
     }
-    return <p lang="fr">Pas de données disponible</p>;
+    return EMPTY_CONTENT;
   };
 
   return (
