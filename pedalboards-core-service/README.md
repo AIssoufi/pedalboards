@@ -78,4 +78,8 @@ pnpm start:local
 
 `pnpm deploy`, without `run`, is a built-in command of pnpm, not this script.
 
+`pnpm build` and `pnpm run deploy` pass `--env=""` to Wrangler. The empty name targets the
+top-level environment of `wrangler.jsonc`, the production Worker. Without it, Wrangler warns that
+no environment was given, since `env.local` is defined.
+
 Only `pnpm run deploy` needs a Cloudflare account. Workers Builds runs it on each push to `master`.
