@@ -55,7 +55,14 @@ class PedalboardService {
     return RequestHelper.get(url);
   }
 
+  /**
+   * Loads a plugin.
+   * @param {string} id id of the plugin. Without it, nothing is sent and the promise rejects
+   * @returns {Promise<Object>} the answer of the service, with the plugin in `data`
+   */
   async getPlugin(id) {
+    if (!isNonEmptyText(id)) throw new Error(MISSING_PLUGIN_ID_MESSAGE);
+
     const url = `${this.url}/api/plugin/${id}`;
 
     return RequestHelper.get(url);

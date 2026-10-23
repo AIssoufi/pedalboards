@@ -86,6 +86,30 @@ describe('PedalboardService', () => {
     });
   });
 
+  describe('getPlugin', () => {
+    it('loads the plugin from its address', async () => {
+      await PedalboardService.getPlugin('gate');
+
+      expect(readSentRequest()).toEqual({
+        url: `${SERVICE_URL}/api/plugin/gate`,
+        options: undefined
+      });
+    });
+
+    it('rejects a plugin without an id, and sends nothing', async () => {
+      const loads = [
+        PedalboardService.getPlugin(),
+        PedalboardService.getPlugin(''),
+        PedalboardService.getPlugin(null),
+        PedalboardService.getPlugin(42)
+      ];
+      const errors = await Promise.all(loads.map(load => load.catch(caught => caught)));
+
+      expect(errors.map(error => error.message)).toEqual(loads.map(() => MISSING_ID_MESSAGE));
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+  });
+
   describe('updatePlugin', () => {
     it('puts the form to the address of the plugin', async () => {
       const formData = new FormData();
