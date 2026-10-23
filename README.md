@@ -244,3 +244,8 @@ origin ([decision record](docs/decisions/0005-cloudflare-pages-and-d1-worker.md)
 - `.env.production` leaves `VITE_BACKEND` empty too, so the header hides its "Admin Panel"
   link. The CMS and the write routes of the API stay in the repository, and run locally only
   (`pnpm start:core-service:local`).
+- [`pedalboards-frontend/public/_headers`](pedalboards-frontend/public/_headers) sets the
+  headers that Pages sends with the site: `Strict-Transport-Security`, `X-Frame-Options`, a
+  `Permissions-Policy`, a Content Security Policy that only reports its violations in the
+  console for now (`Content-Security-Policy-Report-Only`), and a one-year `immutable` cache on
+  `/assets/*`, whose file names hold a hash of their content. The Worker sends its own headers.
