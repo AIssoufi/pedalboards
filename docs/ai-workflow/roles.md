@@ -22,7 +22,7 @@ app.
 
 One master agent coordinates the repository. It:
 
-- sets the `Priority` of each issue on the project board, from `P0` to `P3`;
+- sets the `Priority` of each issue on the maintainer's private project board, from `P0` to `P3`;
 - writes the new issues, with their context, problem, proposed solution and acceptance criteria;
 - starts a worker for each ticket ready to go, with a short brief;
 - answers the questions of the workers, or relays them to the owner;
