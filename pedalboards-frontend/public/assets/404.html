@@ -1,0 +1,18 @@
+<!doctype html>
+<!--
+  Cloudflare Pages answers a path missing from the build with the nearest 404.html above it, and
+  a 404 status. This one covers /assets/ only, so that a missing chunk is not answered with the
+  app and the one-year cache of _headers. Without a 404.html at the root, every other path keeps
+  answering index.html, which loads the app on deep links such as /plugin/<id>.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Not found | Pedalboards</title>
+  </head>
+  <body>
+    <p>This file does not exist. <a href="/">Back to the plugins</a></p>
+  </body>
+</html>
