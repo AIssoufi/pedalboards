@@ -52,6 +52,14 @@ it.each([
   expect(pluginsLink.classList.contains('active')).toBe(isActive);
 });
 
+it('credits the author with a link to their site', async () => {
+  await renderHeader({ cmsUrl: '' });
+
+  const creditLink = screen.getByRole('link', { name: 'Made by ADAM Issoufi' });
+  expect(creditLink.getAttribute('href')).toBe('https://issoufi.fr/');
+  expect(creditLink.getAttribute('target')).toBeNull();
+});
+
 it('names the menu icon after the page it leads to', async () => {
   await renderHeader({ cmsUrl: '' });
 
