@@ -88,6 +88,16 @@ describe('buildPluginsSearch', () => {
 
     expect(filters.toString()).toBe('brand=MDA');
   });
+
+  it.each([
+    ['null', null],
+    ['a string', 'brand=MDA'],
+    ['an object', { brand: 'MDA' }],
+    ['an array', [['brand', 'MDA']]],
+    ['a number', 3]
+  ])('keeps no filter from %s', (description, filters) => {
+    expect(buildPluginsSearch({ filters, page: 2 })).toBe('?page=2');
+  });
 });
 
 describe('buildPluginFilterLink', () => {

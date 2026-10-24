@@ -43,13 +43,15 @@ const createPluginFilters = ({ field, value } = {}) => {
  * Builds the query string of the plugins page, with every value encoded.
  *
  * @param {Object} [params]
- * @param {URLSearchParams} [params.filters] - Filters to keep in the URL.
+ * @param {URLSearchParams} [params.filters] - Filters to keep in the URL. A value of another
+ * type, such as null, a string or an object, keeps no filter.
  * @param {number} [params.page] - Page to show. The first page, or a value that is not a page
  * number, is omitted.
  * @returns {string} The query string, starting with '?', or '' when there is nothing to keep.
  */
-const buildPluginsSearch = ({ filters = new URLSearchParams(), page = FIRST_PAGE } = {}) => {
-  const searchParams = new URLSearchParams(filters);
+const buildPluginsSearch = ({ filters, page = FIRST_PAGE } = {}) => {
+  const isSearchParams = filters instanceof URLSearchParams;
+  const searchParams = new URLSearchParams(isSearchParams ? filters : undefined);
   const isLaterPage = isPageNumber(page) && page !== FIRST_PAGE;
 
   if (isLaterPage) searchParams.set(PAGE_PARAM, page);
