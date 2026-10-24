@@ -3,7 +3,7 @@ import { FIRST_PAGE } from '../page/constants';
 import { PAGE_PARAM, PLUGIN_FILTER_FIELDS, PLUGINS_PATHNAME } from './constants';
 
 // Utils
-import { isPageNumber } from '../page';
+import { isPageCount, isPageNumber } from '../page';
 
 /**
  * Tells whether a field is one the plugins page filters on.
@@ -43,13 +43,15 @@ const createPluginFilters = ({ field, value } = {}) => {
  * Builds the query string of the plugins page, with every value encoded.
  *
  * @param {Object} [params]
- * @param {URLSearchParams} [params.filters] - Filters to keep in the URL.
+ * @param {URLSearchParams} [params.filters] - Filters to keep in the URL. A value of another
+ * type, such as null, a string or an object, keeps no filter.
  * @param {number} [params.page] - Page to show. The first page, or a value that is not a page
  * number, is omitted.
  * @returns {string} The query string, starting with '?', or '' when there is nothing to keep.
  */
-const buildPluginsSearch = ({ filters = new URLSearchParams(), page = FIRST_PAGE } = {}) => {
-  const searchParams = new URLSearchParams(filters);
+const buildPluginsSearch = ({ filters, page = FIRST_PAGE } = {}) => {
+  const isSearchParams = filters instanceof URLSearchParams;
+  const searchParams = new URLSearchParams(isSearchParams ? filters : undefined);
   const isLaterPage = isPageNumber(page) && page !== FIRST_PAGE;
 
   if (isLaterPage) searchParams.set(PAGE_PARAM, page);
@@ -140,7 +142,32 @@ const getSearchFilter = (filters) => {
  */
 const isValidPage = ({ page, pageCount } = {}) => isPageNumber(page) && page <= pageCount;
 
+/**
+ * Gives the query string of the last page when the page asked for is past it, so that a URL
+ * such as `?page=999`, or a filter that leaves fewer pages, still shows plugins.
+ *
+ * @param {Object} [params]
+ * @param {URLSearchParams} [params.filters] - Filters of the URL, kept in the new query string.
+ * @param {number} [params.page] - Page of the URL, as `parsePluginsSearch` reads it.
+ * @param {number} [params.pageCount] - Number of pages of the results, 0 when there are none.
+ * @returns {string|null} The query string of the last page (the first one for an empty list), or
+ * null when the page can be shown or the page or the count is not a number of pages.
+ * @example
+ * buildLastPageSearch({ filters: new URLSearchParams('brand=MDA'), page: 9, pageCount: 3 });
+ * // '?brand=MDA&page=3'
+ */
+const buildLastPageSearch = ({ filters, page, pageCount } = {}) => {
+  const isComparable = isPageNumber(page) && isPageCount(pageCount);
+  if (!isComparable) return null;
+
+  const lastPage = Math.max(pageCount, FIRST_PAGE);
+  const isPastLastPage = page > lastPage;
+
+  return isPastLastPage ? buildPluginsSearch({ filters, page: lastPage }) : null;
+};
+
 export {
+  buildLastPageSearch,
   buildPluginFilterLink,
   buildPluginsSearch,
   createPluginFilters,

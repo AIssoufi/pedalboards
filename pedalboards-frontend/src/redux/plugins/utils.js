@@ -1,10 +1,5 @@
-/**
- * Tells whether a value can be a number of pages.
- *
- * @param {*} value - Value of the answer of the API.
- * @returns {boolean} True for a whole number from 0.
- */
-const isPageCount = value => Number.isInteger(value) && value >= 0;
+// Utils
+import { isPageCount } from '../../utils/page';
 
 /**
  * Tells whether an entry of the answer can be a plugin.

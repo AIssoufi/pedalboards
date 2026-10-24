@@ -9,4 +9,13 @@ import { FIRST_PAGE } from './constants';
  */
 const isPageNumber = value => Number.isInteger(value) && value >= FIRST_PAGE;
 
-export { isPageNumber };
+/**
+ * Tells whether a value can be a number of pages: a whole number from 0, for a list without
+ * results.
+ *
+ * @param {*} value - Value to check, such as the page count of an answer of the API.
+ * @returns {boolean} True for 0, 1, 2 and so on.
+ */
+const isPageCount = value => Number.isInteger(value) && value >= 0;
+
+export { isPageCount, isPageNumber };
