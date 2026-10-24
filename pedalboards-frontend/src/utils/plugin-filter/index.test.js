@@ -1,5 +1,6 @@
 // Helpers
 import {
+  buildLastPageSearch,
   buildPluginFilterLink,
   buildPluginsSearch,
   createPluginFilters,
@@ -178,6 +179,56 @@ describe('isValidPage', () => {
 
   it('refuses a missing page', () => {
     expect(isValidPage()).toBe(false);
+  });
+});
+
+describe('buildLastPageSearch', () => {
+  const filters = new URLSearchParams('brand=MDA');
+
+  it('sends a page past the count to the last page, with the filters', () => {
+    expect(buildLastPageSearch({ filters, page: 999, pageCount: 5 })).toBe('?brand=MDA&page=5');
+  });
+
+  it('sends the page just past the last one to the last page', () => {
+    expect(buildLastPageSearch({ page: 6, pageCount: 5 })).toBe('?page=5');
+  });
+
+  it.each([
+    [5, 5],
+    [4, 5],
+    [1, 5]
+  ])('keeps page %j of %j pages', (page, pageCount) => {
+    expect(buildLastPageSearch({ filters, page, pageCount })).toBeNull();
+  });
+
+  it.each([
+    [0, ''],
+    [1, '']
+  ])('sends a later page of %j pages to the first page, which has no page parameter', (pageCount, expected) => {
+    expect(buildLastPageSearch({ page: 3, pageCount })).toBe(expected);
+  });
+
+  it('keeps the filters on the first page of an empty list', () => {
+    expect(buildLastPageSearch({ filters, page: 3, pageCount: 0 })).toBe('?brand=MDA');
+  });
+
+  it.each([
+    [1, 0],
+    [1, 1]
+  ])('keeps the first page of %j pages', (page, pageCount) => {
+    expect(buildLastPageSearch({ page, pageCount })).toBeNull();
+  });
+
+  it.each([0, -3, 1.5, NaN, '9', null, undefined])('ignores the page %j', (page) => {
+    expect(buildLastPageSearch({ page, pageCount: 5 })).toBeNull();
+  });
+
+  it.each([-1, 2.5, NaN, '3', null, undefined])('ignores the page count %j', (pageCount) => {
+    expect(buildLastPageSearch({ page: 9, pageCount })).toBeNull();
+  });
+
+  it('ignores missing parameters', () => {
+    expect(buildLastPageSearch()).toBeNull();
   });
 });
 
