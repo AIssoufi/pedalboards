@@ -38,3 +38,11 @@ packageExtensions:
     peerDependencies:
       react: ^15.0.0 || ^16.0.0
       react-dom: ^15.0.0 || ^16.0.0
+
+# Each parent below pins an exact version of its dependency, so the core service keeps the latest
+# patch until the parent's next release. Remove an entry once its parent accepts that version:
+# - miniflare (wrangler, @cloudflare/vitest-plugin) pins undici 7.29.1;
+# - @cloudflare/vitest-plugin pins zod 4.6.5.
+overrides:
+  miniflare>undici: ^7.30.1
+  '@cloudflare/vitest-plugin>zod': ^4.6.7
