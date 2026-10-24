@@ -2,7 +2,7 @@
 import {
   lazy, Suspense, useState, useEffect
 } from 'react';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 
 // Components
 import {
@@ -15,6 +15,12 @@ import {
   PedalboardService
 } from '../../services';
 
+// Constants
+import { PLUGINS_PATHNAME } from '../../utils/plugin-filter/constants';
+
+// Utils
+import { isPluginNotFound } from './utils';
+
 // Style
 import './style.scss';
 
@@ -23,15 +29,26 @@ import './style.scss';
 // that chunk loads, and shows the loader in its card meanwhile, as while the plugin is fetched
 const PedalboardDetails = lazy(() => import('../../components/pedalboard-details'));
 
-// Shown when the plugin or the chunk of its details fails to load
+// Shown when the plugin or the chunk of its details fails to load, unless the id is unknown
 const LOAD_ERROR_ALERT = (
   <p role="alert" lang="fr">Impossible de charger ce plugin, réessayez plus tard.</p>
 );
 
+// Shown when the answer holds no plugin, or the route names none
+const EMPTY_STATE_TEXT = 'Pas de données disponibles';
+
+// Shown when the API knows no plugin of that id, where retrying cannot help
+const NOT_FOUND_ALERT = (
+  <p role="alert" lang="fr">
+    Ce plugin est introuvable. <Link to={PLUGINS_PATHNAME}>Voir la liste des plugins</Link>
+  </p>
+);
+
 /**
  * Page of one plugin, the one of the `id` parameter of its route: shows the loader while the
- * plugin is fetched, then its details, an empty state when the answer holds no plugin, or an
- * error message when the request or the chunk of the details fails.
+ * plugin is fetched, then its details, an empty state when the answer holds no plugin, a
+ * not-found message with a link to the list when the API knows no plugin of that id, or an error
+ * message when the request or the chunk of the details fails otherwise.
  */
 const PedalboardDetailsPage = () => {
   const { id: pluginId } = useParams();
@@ -43,6 +60,7 @@ const PedalboardDetailsPage = () => {
   const isFetching = Boolean(pluginId) && !hasAnswer;
   const plugin = hasAnswer ? fetched.plugin : undefined;
   const hasFailed = hasAnswer && fetched.hasFailed === true;
+  const isNotFound = hasFailed && fetched.isNotFound === true;
   const hasContent = isFetching || Boolean(plugin);
 
   useEffect(() => {
@@ -56,8 +74,8 @@ const PedalboardDetailsPage = () => {
       .then((response) => {
         if (isCurrentId) setFetched({ pluginId, plugin: response?.data });
       })
-      .catch(() => {
-        if (isCurrentId) setFetched({ pluginId, hasFailed: true });
+      .catch((error) => {
+        if (isCurrentId) setFetched({ pluginId, hasFailed: true, isNotFound: isPluginNotFound(error) });
       });
 
     return () => {
@@ -65,8 +83,10 @@ const PedalboardDetailsPage = () => {
     };
   }, [pluginId]);
 
-  // The error message, the loader or the details, or the empty state when there is no plugin
+  // The not-found or the error message, the loader or the details, or the empty state when there
+  // is no plugin
   const renderContent = () => {
+    if (isNotFound) return NOT_FOUND_ALERT;
     if (hasFailed) return LOAD_ERROR_ALERT;
     if (hasContent) {
       // A chunk that fails to load, on a lost connection or after a deploy that removed it, shows
@@ -79,7 +99,7 @@ const PedalboardDetailsPage = () => {
         </ErrorBoundary>
       );
     }
-    return <p lang="fr">Pas de données disponible</p>;
+    return <p lang="fr">{EMPTY_STATE_TEXT}</p>;
   };
 
   return (

@@ -5,7 +5,7 @@ import App from './App';
 import { jsonResponse } from '../test-utils/fetch';
 
 const EMPTY_GRID_TEXT = 'Aucun plugin ne correspond à votre recherche !';
-const EMPTY_DETAILS_TEXT = 'Pas de données disponible';
+const EMPTY_DETAILS_TEXT = 'Pas de données disponibles';
 // Answer of the API for a list without plugins
 const EMPTY_PLUGIN_LIST = { data: [], count: 0, numberPages: 0 };
 const PLUGIN_ID = '5c0d2b8f';
