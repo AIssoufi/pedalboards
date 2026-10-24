@@ -54,6 +54,18 @@ describe('PluginsPage', () => {
     return null;
   };
 
+  // Renders the page at a URL, such as '/plugins?brand=MDA', with the API mocked by the caller
+  const renderAt = url => render(
+    <Provider store={setupStore()}>
+      <MemoryRouter initialEntries={[url]}>
+        <RouterSpy />
+        <Routes>
+          <Route path="/plugins" element={<PluginsPage />} />
+        </Routes>
+      </MemoryRouter>
+    </Provider>
+  );
+
   /**
    * Renders the page at a URL, with an API that answers each list request with the same page.
    *
@@ -61,21 +73,16 @@ describe('PluginsPage', () => {
    * @param {string} params.url - URL the router starts at, such as '/plugins?brand=MDA'.
    * @param {number} [params.countPlugins] - Number of pages of the results.
    * @param {Object[]} [params.plugins] - Plugins of the page shown.
+   * @param {number} [params.status] - HTTP status of the answers, such as 500 for a failure.
    */
-  const renderPage = async ({ url, countPlugins = 1, plugins = [] }) => {
+  const renderPage = async ({
+    url, countPlugins = 1, plugins = [], status
+  }) => {
     vi.spyOn(window, 'fetch').mockImplementation(() => Promise.resolve(jsonResponse({
-      body: { data: plugins, count: plugins.length, numberPages: countPlugins }
+      body: { data: plugins, count: plugins.length, numberPages: countPlugins },
+      status
     })));
-    render(
-      <Provider store={setupStore()}>
-        <MemoryRouter initialEntries={[url]}>
-          <RouterSpy />
-          <Routes>
-            <Route path="/plugins" element={<PluginsPage />} />
-          </Routes>
-        </MemoryRouter>
-      </Provider>
-    );
+    renderAt(url);
     // Lets the answer of the first request reach the store
     await flushAnswers();
   };
@@ -313,5 +320,135 @@ describe('PluginsPage', () => {
     await renderPage({ url: '/plugins?utm_source=x&page=abc' });
 
     expect(lastFetch()).toEqual({ filters: [], page: 1, pageSize: 10 });
+  });
+
+  describe('with a page past the last one', () => {
+    // Makes the API answer the next list requests with this number of pages
+    const answerPageCount = (pageCount) => {
+      window.fetch.mockImplementation(() => Promise.resolve(jsonResponse({
+        body: { data: [PLUGIN], count: 1, numberPages: pageCount }
+      })));
+    };
+
+    it('shows the plugins of the last page', async () => {
+      await renderPage({ url: '/plugins?page=999', countPlugins: 5, plugins: [PLUGIN] });
+      await flushAnswers();
+
+      expect(location.search).toBe('?page=5');
+      expect(lastFetch()).toEqual({ filters: [], page: 5, pageSize: 10 });
+      expect(getPageButton(5).className).toBe('current-page');
+      expect(screen.getByRole('link', { name: 'Echo' })).toBeDefined();
+      expect(screen.queryByText(EMPTY_GRID_TEXT)).toBeNull();
+    });
+
+    it('replaces the page in the history, so going back skips it', async () => {
+      await renderPage({ url: '/plugins?brand=MDA&page=999', countPlugins: 3 });
+      await flushAnswers();
+
+      expect(location.search).toBe('?brand=MDA&page=3');
+      const fetchCountOnLastPage = fetchCount();
+
+      // The URL past the last page was the only entry: there is nothing left to go back to
+      await act(async () => {
+        navigate(-1);
+      });
+      await flushAnswers();
+
+      expect(location.search).toBe('?brand=MDA&page=3');
+      expect(fetchCount()).toBe(fetchCountOnLastPage);
+    });
+
+    it('stays on the last page', async () => {
+      await renderPage({ url: '/plugins?page=5', countPlugins: 5 });
+      await flushAnswers();
+
+      expect(location.search).toBe('?page=5');
+      expect(fetchCount()).toBe(1);
+    });
+
+    it('goes to the last page when a filter leaves fewer pages', async () => {
+      await renderPage({ url: '/plugins?page=4', countPlugins: 5 });
+      answerPageCount(2);
+
+      await act(async () => {
+        navigate('/plugins?brand=MDA&page=4');
+      });
+      await flushAnswers();
+
+      expect(location.search).toBe('?brand=MDA&page=2');
+      expect(lastFetch()).toEqual({ filters: [['brand', 'MDA']], page: 2, pageSize: 10 });
+    });
+
+    it('reads the count of the new search, not the one of the previous answer', async () => {
+      await renderPage({ url: '/plugins?page=2', countPlugins: 5 });
+      answerPageCount(9);
+
+      await act(async () => {
+        navigate('/plugins?brand=MDA&page=7');
+      });
+      await flushAnswers();
+
+      expect(location.search).toBe('?brand=MDA&page=7');
+      expect(fetchCount()).toBe(2);
+    });
+
+    it.each([
+      ['/plugins?page=3', 0],
+      ['/plugins?page=3', 1]
+    ])('goes from %s to the first page of %j pages', async (url, countPlugins) => {
+      await renderPage({ url, countPlugins });
+      await flushAnswers();
+
+      expect(location.search).toBe('');
+      expect(lastFetch().page).toBe(1);
+    });
+
+    it('keeps the empty state on the first page of an empty list', async () => {
+      await renderPage({ url: '/plugins?brand=MDA&page=3', countPlugins: 0 });
+      await flushAnswers();
+
+      expect(location.search).toBe('?brand=MDA');
+      expect(screen.getByText(EMPTY_GRID_TEXT)).toBeDefined();
+    });
+
+    it.each(['0', '-3', 'abc', ''])('stays on the URL of the invalid page %j', async (page) => {
+      await renderPage({ url: `/plugins?page=${page}`, countPlugins: 5 });
+      await flushAnswers();
+
+      expect(location.search).toBe(`?page=${page}`);
+      expect(lastFetch().page).toBe(1);
+      expect(fetchCount()).toBe(1);
+    });
+
+    it('does not move when the request fails', async () => {
+      await renderPage({ url: '/plugins?page=999', status: SERVER_ERROR_STATUS });
+      await flushAnswers();
+
+      expect(location.search).toBe('?page=999');
+      expect(screen.getByText(ERROR_TEXT)).toBeDefined();
+    });
+
+    it('ignores the count of a search left before its answer', async () => {
+      let answerFirstSearch;
+      vi.spyOn(window, 'fetch')
+        .mockImplementationOnce(() => new Promise((resolve) => {
+          answerFirstSearch = resolve;
+        }))
+        .mockImplementation(() => Promise.resolve(jsonResponse({
+          body: { data: [PLUGIN], count: 1, numberPages: 1 }
+        })));
+      renderAt('/plugins?page=999');
+
+      await act(async () => {
+        navigate('/plugins?brand=MDA');
+      });
+      await act(async () => {
+        answerFirstSearch(jsonResponse({ body: { data: [], count: 0, numberPages: 5 } }));
+      });
+      await flushAnswers();
+
+      expect(location.search).toBe('?brand=MDA');
+      expect(screen.getByRole('link', { name: 'Echo' })).toBeDefined();
+    });
   });
 });
