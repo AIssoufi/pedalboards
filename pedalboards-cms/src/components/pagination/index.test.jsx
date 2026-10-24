@@ -54,6 +54,15 @@ describe('Pagination', () => {
     });
   });
 
+  it('names the previous and next pages in French', () => {
+    view = render(<Pagination currentPage={6} elementCount={54} />);
+
+    const buttonTexts = ['.previous-page', '.next-page']
+      .map(selector => view.container.querySelector(selector).textContent);
+
+    expect(buttonTexts).toEqual(['Page précédente', 'Page suivante']);
+  });
+
   it('shows the pages around the current one', () => {
     view = render(<Pagination currentPage={6} elementCount={54} onCurrentPageChange={() => {}} />);
 

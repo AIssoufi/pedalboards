@@ -1,6 +1,9 @@
 // Constants
 import { GENERIC_SCREENSHOT_ALT } from './constants';
 
+// Utils
+import { isNonBlankText } from '../text';
+
 /**
  * Gives the text alternative of the screenshot of a plugin, which names the plugin by its label
  * so that each screenshot, and the link around it, reads differently.
@@ -13,10 +16,9 @@ import { GENERIC_SCREENSHOT_ALT } from './constants';
  * toScreenshotAlt(undefined); // 'Plugin screenshot'
  */
 const toScreenshotAlt = (label) => {
-  const trimmedLabel = typeof label === 'string' ? label.trim() : '';
-  if (!trimmedLabel) return GENERIC_SCREENSHOT_ALT;
+  if (!isNonBlankText(label)) return GENERIC_SCREENSHOT_ALT;
 
-  return `Screenshot of ${trimmedLabel}`;
+  return `Screenshot of ${label.trim()}`;
 };
 
 export { toScreenshotAlt };

@@ -93,7 +93,7 @@ describe('tooltips', () => {
       .map(link => document.getElementById(link.getAttribute('aria-describedby')).textContent);
     expect(descriptions).toEqual([
       'Click to discovermore details about abGate.',
-      'CategorieClick to filter pluginby Dynamics categories.',
+      'CategoryClick to filter pluginby Dynamics categories.',
       'LabelClick to filter pluginby abGate labels.',
       'BrandClick to filter pluginby Antanas brands.'
     ]);

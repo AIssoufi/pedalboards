@@ -12,8 +12,8 @@ export const SEARCH_DEBOUNCE_MS = 900;
  */
 export const SEARCH_FIELD_OPTIONS = [
   { value: 'brand', label: 'brand' },
-  { value: 'categories', label: 'categorie' },
-  { value: 'label', label: 'lebel' }
+  { value: 'categories', label: 'category' },
+  { value: 'label', label: 'label' }
 ];
 
 /** Field the select shows when the URL filters on none of SEARCH_FIELD_OPTIONS. */

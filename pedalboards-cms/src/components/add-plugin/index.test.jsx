@@ -91,6 +91,22 @@ describe('AddPlugin', () => {
     expect(container.querySelector('h1').closest('[lang]')).toBeNull();
   });
 
+  it('leaves the main landmark to the app, which already wraps the page in one', () => {
+    view = render(<AddPlugin />);
+
+    expect(view.container.querySelector('main')).toBeNull();
+  });
+
+  it('keeps the dark text of the buttons on the light background of the screenshot field', () => {
+    view = render(<AddPlugin />);
+
+    const screenshotField = readField({ container: view.container, name: 'image' });
+    // The rows of the form paint every field light grey, where the white text of bg-primary
+    // cannot be read
+    expect(screenshotField.classList.contains('btn')).toBe(true);
+    expect(screenshotField.classList.contains('bg-primary')).toBe(false);
+  });
+
   it('names each field of the plugin and of the control ports in English', () => {
     view = render(<AddPlugin />);
 
@@ -98,6 +114,13 @@ describe('AddPlugin', () => {
 
     expect(fields.map(field => field.getAttribute('aria-label'))).toEqual(FIELD_NAMES);
     expect(fields.map(field => field.closest('[lang]').lang)).toEqual(FIELD_NAMES.map(() => 'en'));
+  });
+
+  it('gives an example of categories in the placeholder of their field', () => {
+    view = render(<AddPlugin />);
+
+    expect(readField({ container: view.container, name: 'categories' }).placeholder)
+      .toBe('Category A, category B, category C, etc.');
   });
 
   it('names its icon buttons after what they do', () => {
