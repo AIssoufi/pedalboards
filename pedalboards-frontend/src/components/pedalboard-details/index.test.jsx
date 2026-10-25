@@ -144,7 +144,9 @@ it.each([
   ['0', 0],
   ['missing', undefined],
   ['null', null],
-  ['NaN', NaN]
+  ['NaN', NaN],
+  ['negative', -1],
+  ['a text', 'abc']
 ])('shows no pedalboard count when it is %s', (description, pedalboardCount) => {
   const container = renderDetails({ pedalboardCount });
 

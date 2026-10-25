@@ -7,7 +7,7 @@ import Loader from '../loader';
 // Utils
 import { buildPluginFilterLink, isPluginFilterValue } from '../../utils/plugin-filter';
 import { toScreenshotAlt } from '../../utils/screenshot-alt';
-import { isControlPort, toCellText } from './utils';
+import { hasPedalboards, isControlPort, toCellText } from './utils';
 
 // Style
 import './style.scss';
@@ -36,7 +36,8 @@ import './style.scss';
  *   leaves its cell empty.
  * @property {string} [label=''] - Label, shown as the title and naming the screenshot for screen
  *   readers. Hidden when empty.
- * @property {number} [pedalboardCount=0] - Number of pedalboards using the plugin. Hidden when 0.
+ * @property {number} [pedalboardCount=0] - Number of pedalboards using the plugin. Hidden
+ *   unless it is a finite number above 0.
  * @property {string} [screenshotUrl=''] - URL of the screenshot. The image is omitted when empty.
  * @property {string} [uri=''] - URI of the plugin, linked in the header. The link is omitted when
  *   empty.
@@ -71,7 +72,7 @@ const PedalboardDetails = ({
           </span>
           {uri && <a href={uri} target="_blank" rel="noopener noreferrer">{uri}</a>}
         </div>
-        {pedalboardCount
+        {hasPedalboards(pedalboardCount)
           ? (
             <div className="count-container">
               <span className="count">

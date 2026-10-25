@@ -22,4 +22,17 @@ const toCellText = (value) => {
   return isText || isFiniteNumber ? value : '';
 };
 
-export { isControlPort, toCellText };
+/**
+ * Tells whether a pedalboard count from the API is worth showing.
+ *
+ * @param {*} pedalboardCount - Number of pedalboards using the plugin.
+ * @returns {boolean} True for a finite number above 0.
+ * @example
+ * hasPedalboards(3); // true
+ * hasPedalboards(-1); // false
+ */
+const hasPedalboards = pedalboardCount => (
+  typeof pedalboardCount === 'number' && Number.isFinite(pedalboardCount) && pedalboardCount > 0
+);
+
+export { hasPedalboards, isControlPort, toCellText };

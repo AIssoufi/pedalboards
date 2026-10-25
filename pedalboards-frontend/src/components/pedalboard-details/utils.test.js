@@ -1,4 +1,4 @@
-import { isControlPort, toCellText } from './utils';
+import { hasPedalboards, isControlPort, toCellText } from './utils';
 
 describe('isControlPort', () => {
   it.each([{}, { name: 'Gain', default: 1 }])('accepts %p', (value) => {
@@ -21,4 +21,14 @@ describe('toCellText', () => {
       expect(toCellText(value)).toBe('');
     }
   );
+});
+
+describe('hasPedalboards', () => {
+  it.each([1, 42, 0.5])('accepts %p', (value) => {
+    expect(hasPedalboards(value)).toBe(true);
+  });
+
+  it.each([0, -1, NaN, Infinity, undefined, null, 'abc', '3'])('refuses %p', (value) => {
+    expect(hasPedalboards(value)).toBe(false);
+  });
 });
