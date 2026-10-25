@@ -74,9 +74,9 @@ const PedalboardDetails = ({
         {pedalboardCount
           ? (
             <div className="count-container">
-              <a className="count" href="#null">
+              <span className="count">
                 <span>{pedalboardCount}</span>
-              </a>
+              </span>
               <span className="pedalboard-count-text">Pedalboards using it</span>
             </div>
           )
