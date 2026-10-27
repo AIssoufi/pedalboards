@@ -157,6 +157,8 @@ Made for issue [#27](https://github.com/AIssoufi/pedalboards/issues/27).
   `pedalboards-core-service`. The production row comes from `pnpm audit --prod --json`.
 - The 21 advisories left all come from `jsdom` 15. pnpm links it to Vitest as an optional peer
   dependency, from the frontend's Create React App toolchain. The Worker never loads it.
+- Update 2026-10-27: the core service now declares `jsdom` ^30.1.3, so these advisories left it
+  ([#128](https://github.com/AIssoufi/pedalboards/issues/128)).
 - The packages are counted with `pnpm ls --depth Infinity --parseable` in the core service folder.
 - The test runs are the wall time of `pnpm test` in the core service folder. The run now starts
   the Workers runtime and applies the migrations before the tests.

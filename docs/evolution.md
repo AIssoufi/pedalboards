@@ -387,3 +387,26 @@ Both sides serve the same build, with the same asset names, measured on 2026-10-
 `/plugins`. The HTML keeps `max-age=0`, so a new deployment shows at once. The violations were
 read with a `ReportingObserver`, which an image loaded from an origin outside the policy
 triggers as expected.
+
+## Since 2026: the core service off the jsdom of the CMS
+
+pnpm links a missing optional peer dependency to a version that another project of the workspace
+installs, so the Vitest and the `@cloudflare/vitest-plugin` of the core service took the `jsdom`
+15.1.1 that `react-scripts` 2 brings into the CMS, with its advisories. The core service now
+declares `jsdom` ^30.1.3 as a dev dependency, the version that the frontend already installs, so
+that peer no longer depends on the other apps. The Worker never loads it: its bundle is the same
+file, byte for byte.
+
+| Figure | Before (`42f77b11`) | After |
+| --- | --- | --- |
+| `jsdom` of the core service's Vitest and `@cloudflare/vitest-plugin` | 15.1.1 | 30.1.3 |
+| Audit paths outside the CMS | 47 | 0 |
+| Core service audit advisories, critical / high / moderate / low | 2 / 8 / 9 / 0 | 0 / 0 / 0 / 0 |
+| Workspace audit advisories, critical / high / moderate / low | 27 / 99 / 68 / 25 | 27 / 99 / 68 / 25 |
+| Worker bundle `dist/index.js` | `343bae23` (SHA-1) | the same |
+
+The paths are the distinct paths of `pnpm audit --json` that do not start at `pedalboards-cms`,
+measured on 2026-10-27 with pnpm 12.14.0: 23 went through `pedalboards-core-service>vitest>jsdom`
+and 24 through `@cloudflare/vitest-plugin>vitest`. The workspace keeps the same advisories, all
+reached through the CMS, until it leaves Create React App
+([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
