@@ -160,7 +160,7 @@ export default class AddPlugin extends Component {
         <header>
           <h1>{edit ? 'Modifier le plugin' : 'Ajouter un plugin'}</h1>
         </header>
-        <main>
+        <div className="content">
           <form
             onSubmit={this.handleFormSubmit}
             encType="multipart/form-data"
@@ -220,7 +220,7 @@ export default class AddPlugin extends Component {
                 type="text"
                 name="categories"
                 lang="en"
-                placeholder="Categorie A, categorie B, categorie C, etc."
+                placeholder="Category A, category B, category C, etc."
                 aria-label="Categories"
                 defaultValue={Array.isArray(categories) ? categories.join(', ') : ''}
                 required
@@ -242,7 +242,7 @@ export default class AddPlugin extends Component {
                 name={IMAGE_FIELD}
                 lang="en"
                 aria-label="Screenshot"
-                className="btn bg-primary"
+                className="btn"
                 required={!edit}
               />
             </div>
@@ -380,7 +380,7 @@ export default class AddPlugin extends Component {
               </table>
             </form>
           </div>
-        </main>
+        </div>
       </section>
     );
   }

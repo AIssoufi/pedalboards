@@ -97,7 +97,7 @@ const PluginsPage = () => {
   return (
     <div className="plugins-page-container">
       <header>
-        <h2>Plugins</h2>
+        <h1>Plugins</h1>
         <p>Here be plugins</p>
         <hr />
       </header>

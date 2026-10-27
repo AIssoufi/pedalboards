@@ -32,7 +32,7 @@ const Pagination = ({
     <div className="navigation">
       <button type="button" className="previous-page" onClick={goToPreviousPage}>
         <FontAwesomeIcon icon={faAngleLeft} />
-        <span>Page pérécedente</span>
+        <span>Page précédente</span>
       </button>
       <div className="page-numbers">
         {leftPageNumbers.map(pageNumber => (

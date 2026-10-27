@@ -44,7 +44,7 @@ const MyPlugins = ({ location = {} }) => {
         </Link>
       </header>
       <RequestError message={errorMessage} />
-      <main>
+      <div className="content">
         {hasPlugins
           ? plugins.map(({ _id, name }) => (
             <div className="plugin" key={_id}>
@@ -81,7 +81,7 @@ const MyPlugins = ({ location = {} }) => {
             </div>))
           : <p>Vous n'avez ajouté aucun plugin</p>
         }
-      </main>
+      </div>
       <footer>
         <Pagination
           currentPage={currentPage}

@@ -19,6 +19,7 @@ import {
 import { PLUGINS_PATHNAME } from '../../utils/plugin-filter/constants';
 
 // Utils
+import { isPluginLabelShown } from '../../utils/plugin-label';
 import { isPluginNotFound } from './utils';
 
 // Style
@@ -29,26 +30,52 @@ import './style.scss';
 // that chunk loads, and shows the loader in its card meanwhile, as while the plugin is fetched
 const PedalboardDetails = lazy(() => import('../../components/pedalboard-details'));
 
+// Titles the page for screen readers whenever the label of a plugin does not: while it loads,
+// when it fails or is unknown, when there is no plugin or when the plugin has no label
+const PAGE_TITLE = <h1 className="visually-hidden">Plugin</h1>;
+
 // Shown when the plugin or the chunk of its details fails to load, unless the id is unknown
-const LOAD_ERROR_ALERT = (
-  <p role="alert" lang="fr">Impossible de charger ce plugin, réessayez plus tard.</p>
+const LOAD_ERROR_CONTENT = (
+  <>
+    {PAGE_TITLE}
+    <p role="alert" lang="fr">Impossible de charger ce plugin, réessayez plus tard.</p>
+  </>
+);
+
+// Shown while the chunk of the details loads
+const LOADING_CONTENT = (
+  <>
+    {PAGE_TITLE}
+    <Loader />
+  </>
 );
 
 // Shown when the answer holds no plugin, or the route names none
 const EMPTY_STATE_TEXT = 'Pas de données disponibles';
 
+const EMPTY_CONTENT = (
+  <>
+    {PAGE_TITLE}
+    <p lang="fr">{EMPTY_STATE_TEXT}</p>
+  </>
+);
+
 // Shown when the API knows no plugin of that id, where retrying cannot help
-const NOT_FOUND_ALERT = (
-  <p role="alert" lang="fr">
-    Ce plugin est introuvable. <Link to={PLUGINS_PATHNAME}>Voir la liste des plugins</Link>
-  </p>
+const NOT_FOUND_CONTENT = (
+  <>
+    {PAGE_TITLE}
+    <p role="alert" lang="fr">
+      Ce plugin est introuvable. <Link to={PLUGINS_PATHNAME}>Voir la liste des plugins</Link>
+    </p>
+  </>
 );
 
 /**
  * Page of one plugin, the one of the `id` parameter of its route: shows the loader while the
  * plugin is fetched, then its details, an empty state when the answer holds no plugin, a
  * not-found message with a link to the list when the API knows no plugin of that id, or an error
- * message when the request or the chunk of the details fails otherwise.
+ * message when the request or the chunk of the details fails otherwise. The label of the plugin
+ * titles the page; a visually hidden "Plugin" title replaces it in every other case.
  */
 const PedalboardDetailsPage = () => {
   const { id: pluginId } = useParams();
@@ -62,6 +89,9 @@ const PedalboardDetailsPage = () => {
   const hasFailed = hasAnswer && fetched.hasFailed === true;
   const isNotFound = hasFailed && fetched.isNotFound === true;
   const hasContent = isFetching || Boolean(plugin);
+  // The details render the label as the title of the page once the plugin is loaded: no plugin
+  // is known while it is fetched
+  const isLabelShown = isPluginLabelShown(plugin?.label);
 
   useEffect(() => {
     // A route without an id names no plugin, so the page shows its empty state at once
@@ -86,20 +116,21 @@ const PedalboardDetailsPage = () => {
   // The not-found or the error message, the loader or the details, or the empty state when there
   // is no plugin
   const renderContent = () => {
-    if (isNotFound) return NOT_FOUND_ALERT;
-    if (hasFailed) return LOAD_ERROR_ALERT;
+    if (isNotFound) return NOT_FOUND_CONTENT;
+    if (hasFailed) return LOAD_ERROR_CONTENT;
     if (hasContent) {
       // A chunk that fails to load, on a lost connection or after a deploy that removed it, shows
       // the error message rather than unmounting the app
       return (
-        <ErrorBoundary fallback={LOAD_ERROR_ALERT}>
-          <Suspense fallback={<Loader />}>
+        <ErrorBoundary fallback={LOAD_ERROR_CONTENT}>
+          <Suspense fallback={LOADING_CONTENT}>
+            {!isLabelShown && PAGE_TITLE}
             <PedalboardDetails isLoading={isFetching} {...plugin} />
           </Suspense>
         </ErrorBoundary>
       );
     }
-    return <p lang="fr">{EMPTY_STATE_TEXT}</p>;
+    return EMPTY_CONTENT;
   };
 
   return (

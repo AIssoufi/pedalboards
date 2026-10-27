@@ -6,6 +6,7 @@ import Loader from '../loader';
 
 // Utils
 import { buildPluginFilterLink, isPluginFilterValue } from '../../utils/plugin-filter';
+import { isPluginLabelShown } from '../../utils/plugin-label';
 import { toScreenshotAlt } from '../../utils/screenshot-alt';
 import { hasPedalboards, isControlPort, toCellText } from './utils';
 
@@ -35,7 +36,7 @@ import './style.scss';
  *   Entries that are not objects are skipped, and a field that is neither a text nor a number
  *   leaves its cell empty.
  * @property {string} [label=''] - Label, shown as the title and naming the screenshot for screen
- *   readers. Hidden when empty.
+ *   readers. The title is hidden when the label is empty or made only of spaces.
  * @property {number} [pedalboardCount=0] - Number of pedalboards using the plugin. Hidden
  *   unless it is a finite number above 0.
  * @property {string} [screenshotUrl=''] - URL of the screenshot. The image is omitted when empty.
@@ -83,7 +84,7 @@ const PedalboardDetails = ({
           )
           : null}
       </header>
-      {label && <h2>{label}</h2>}
+      {isPluginLabelShown(label) && <h1>{label}</h1>}
       <div className="plugin-media-container">
         {screenshotUrl && (
           <img className="plugin-media" src={screenshotUrl} alt={toScreenshotAlt(label)} />
