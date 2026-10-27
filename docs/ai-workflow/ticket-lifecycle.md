@@ -1,8 +1,9 @@
 # Ticket lifecycle
 
-How an issue becomes a merged pull request. The `Status` field of the
-[project board](https://github.com/users/AIssoufi/projects/11) follows each step: `Todo`,
-`In Progress`, `In Review`, `Done`.
+How an issue becomes a merged pull request. The `Status` field of the maintainer's private
+project board follows each step: `Todo`, `In Progress`, `In Review`, `Done`. A reader follows
+the same steps on the public [issues](https://github.com/AIssoufi/pedalboards/issues) and
+[pull requests](https://github.com/AIssoufi/pedalboards/pulls).
 
 ## 1. The issue
 
@@ -35,8 +36,10 @@ second one holding the changes the owner must see, as #30 did with
 
 ## 5. The checks
 
-Each pull request runs two GitHub Actions workflows: `CI` (lint, tests, builds and bundle checks
-of the three apps) and `Commit messages` (commitlint on every commit and on the title).
+Each pull request runs two GitHub Actions workflows. `CI` runs the tests and the build of the
+three apps, the lint of the frontend, the bundle checks of the frontend and the API, and the dev
+server check of the frontend. `Commit messages` tests the commit message tools, then runs
+commitlint on every commit and on the title.
 Cloudflare Pages builds a preview of the branch and posts its URL as a comment. A failure is fixed
 on the branch by the worker.
 
@@ -44,5 +47,5 @@ on the branch by the worker.
 
 The master merges with a merge commit whose body is only `Closes #<n>`, for instance
 `Merge pull request #80 from AIssoufi/PEDAL-72`, or `Refs #<n>` for the first pull request of a
-ticket that takes two, as #76 did. The issue closes, the status moves to `Done`, and Cloudflare
-Pages deploys `master` to the live site.
+ticket that takes two, as #76 did. The issue closes and the status moves to `Done`. Cloudflare
+Pages deploys `master` to the live site, and Workers Builds deploys the API from `master`.

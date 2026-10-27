@@ -1,6 +1,6 @@
 # Journal
 
-The trail of every decision is on GitHub, where anyone can read it.
+The trail of every decision is in the public issues, pull requests and commits of the repository.
 
 ## Where to look
 
@@ -8,7 +8,7 @@ The trail of every decision is on GitHub, where anyone can read it.
 | --- | --- |
 | Why does this change exist? | The issue, with its context, evidence and acceptance criteria |
 | Was the scope changed later? | The comments of the issue ("Added to this ticket", "Added scope") |
-| What is planned next? | The `Priority` and `Status` fields of the [project board](https://github.com/users/AIssoufi/projects/11) |
+| What is planned next? | The [open issues](https://github.com/AIssoufi/pedalboards/issues) and [open pull requests](https://github.com/AIssoufi/pedalboards/pulls) |
 | How was it tested and reviewed? | The `Test plan` and `Review` sections of the pull request body |
 | Did the checks pass? | The `CI` and `Commit messages` runs of the pull request, in the Actions tab |
 | Which ticket brought this line? | `git log` or `git blame`, then the `Refs: PEDAL-<n>` trailer of the commit |
