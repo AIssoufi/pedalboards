@@ -129,3 +129,27 @@ it.each([
   expect(screen.queryByText(LOADER_TEXT)).toBeNull();
   expect(screen.getByText('Gx Overdrive')).toBeDefined();
 });
+
+it.each([1, 42])('shows a pedalboard count of %s as text, not a link', pedalboardCount => {
+  const container = renderDetails({ pedalboardCount });
+
+  const count = container.querySelector('.count');
+  expect(count.tagName).toBe('SPAN');
+  expect(count.textContent).toBe(String(pedalboardCount));
+  expect(container.querySelector('.count-container a')).toBeNull();
+  expect(screen.queryByRole('link')).toBeNull();
+});
+
+it.each([
+  ['0', 0],
+  ['missing', undefined],
+  ['null', null],
+  ['NaN', NaN],
+  ['negative', -1],
+  ['a text', 'abc']
+])('shows no pedalboard count when it is %s', (description, pedalboardCount) => {
+  const container = renderDetails({ pedalboardCount });
+
+  expect(container.querySelector('.count-container')).toBeNull();
+  expect(screen.queryByText('Pedalboards using it')).toBeNull();
+});
