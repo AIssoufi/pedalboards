@@ -1,5 +1,7 @@
 // Dependencies
-import { act, render, screen } from '@testing-library/react';
+import {
+  act, fireEvent, render, screen
+} from '@testing-library/react';
 
 // Stub
 import { createMemoryRouter } from 'react-router';
@@ -12,8 +14,12 @@ import PedalboardDetails from './index';
 import { jsonResponse } from '../../test-utils/fetch';
 
 const LOADER_TEXT = 'Je Fais ça En Deux Deux...';
-const EMPTY_STATE_TEXT = 'Pas de données disponible';
+const EMPTY_STATE_TEXT = 'Pas de données disponibles';
 const ERROR_TEXT = 'Impossible de charger ce plugin, réessayez plus tard.';
+const NOT_FOUND_TEXT = 'Ce plugin est introuvable. Voir la liste des plugins';
+const LIST_LINK_NAME = 'Voir la liste des plugins';
+const LIST_PAGE_TEXT = 'The list of plugins';
+const NOT_FOUND_STATUS = 404;
 const SERVER_ERROR_STATUS = 500;
 
 /**
@@ -52,7 +58,8 @@ const renderAt = (url) => {
   const router = createMemoryRouter(
     [
       { path: '/plugin/:id', element: <PedalboardDetails /> },
-      { path: '/plugin', element: <PedalboardDetails /> }
+      { path: '/plugin', element: <PedalboardDetails /> },
+      { path: '/plugins', element: <p>{LIST_PAGE_TEXT}</p> }
     ],
     { initialEntries: [url] }
   );
@@ -100,8 +107,13 @@ it('fetches the plugin of a new id and shows the loader until it answers', async
 
 it.each([
   ['the network fails', () => Promise.reject(new TypeError('Failed to fetch'))],
-  ['the API answers an error', () => Promise.resolve(jsonResponse({ status: SERVER_ERROR_STATUS }))]
-])('shows an error message when %s', async (description, answer) => {
+  ['the API answers an error', () => Promise.resolve(jsonResponse({ status: SERVER_ERROR_STATUS }))],
+  ['the API answers a status written as a string', () => Promise.resolve({ ok: false, status: '404' })],
+  ['the API answers without a status', () => Promise.resolve({ ok: false })],
+  ['the API answers a body that is not JSON', () => Promise.resolve({
+    ok: true, status: 200, json: () => Promise.reject(new SyntaxError('Unexpected token'))
+  })]
+])('shows the retry message when %s', async (description, answer) => {
   vi.spyOn(window, 'fetch').mockImplementation(answer);
   renderAt('/plugin/2');
 
@@ -109,6 +121,33 @@ it.each([
   expect(screen.getByRole('alert').lang).toBe('fr');
   expect(screen.queryByText(LOADER_TEXT)).toBeNull();
   expect(screen.queryByText(EMPTY_STATE_TEXT)).toBeNull();
+});
+
+it('shows a not-found message with a link to the list when the API knows no such id', async () => {
+  vi.spyOn(window, 'fetch').mockResolvedValue(jsonResponse({ status: NOT_FOUND_STATUS }));
+  const router = renderAt('/plugin/does-not-exist');
+
+  expect((await screen.findByRole('alert')).textContent).toBe(NOT_FOUND_TEXT);
+  expect(screen.getByRole('alert').lang).toBe('fr');
+  expect(screen.queryByText(ERROR_TEXT)).toBeNull();
+  expect(screen.queryByText(LOADER_TEXT)).toBeNull();
+
+  await act(() => fireEvent.click(screen.getByRole('link', { name: LIST_LINK_NAME })));
+
+  expect(router.state.location.pathname).toBe('/plugins');
+  expect(screen.getByText(LIST_PAGE_TEXT)).toBeDefined();
+});
+
+it('shows the plugin of a new id after a not-found answer', async () => {
+  vi.spyOn(window, 'fetch').mockResolvedValueOnce(jsonResponse({ status: NOT_FOUND_STATUS }));
+  mockFetch(url => ({ uri: `https://plugin/${url.split('/').pop()}` }));
+  const router = renderAt('/plugin/2');
+  expect((await screen.findByRole('alert')).textContent).toBe(NOT_FOUND_TEXT);
+
+  await navigate({ router, url: '/plugin/3' });
+
+  expect(await screen.findByRole('link', { name: 'https://plugin/3' })).toBeDefined();
+  expect(screen.queryByRole('alert')).toBeNull();
 });
 
 it('shows the plugin of a new id after an error', async () => {
