@@ -11,8 +11,26 @@ describe('isControlPort', () => {
 });
 
 describe('toCellText', () => {
-  it.each(['Gain', '', 0, -1, 0.5])('keeps %p', (value) => {
+  it.each(['Gain', '', '0.10000000149011612'])('keeps the text %p', (value) => {
     expect(toCellText(value)).toBe(value);
+  });
+
+  it.each([
+    [0.10000000149011612, '0.1'],
+    [0.5, '0.5'],
+    [0.1234, '0.1234'],
+    [0.12345, '0.1235'],
+    [0.99999, '1'],
+    [0.00004, '0'],
+    [4000, '4000'],
+    [-70, '-70'],
+    [-0.25, '-0.25'],
+    [0, '0'],
+    [-0, '0'],
+    [-0.00001, '0'],
+    [Number.MAX_SAFE_INTEGER, '9007199254740991']
+  ])('writes %p as %p', (value, text) => {
+    expect(toCellText(value)).toBe(text);
   });
 
   it.each([undefined, null, NaN, Infinity, true, { en: 'Gain' }, ['Gain']])(
