@@ -252,3 +252,9 @@ origin ([decision record](docs/decisions/0005-cloudflare-pages-and-d1-worker.md)
   `Permissions-Policy`, a Content Security Policy that only reports its violations in the
   console for now (`Content-Security-Policy-Report-Only`), and a one-year `immutable` cache on
   `/assets/*`, whose file names hold a hash of their content. The Worker sends its own headers.
+- Pages answers an unknown path with `index.html`, so deep links such as `/plugin/<id>` load the
+  app, except under `/assets/`:
+  [`pedalboards-frontend/public/assets/404.html`](pedalboards-frontend/public/assets/404.html)
+  answers a missing file there with a 404. A tab opened before a deploy asks for chunks that the
+  new build no longer has: when one fails to load, the app reloads the page once, to get the new
+  build, and shows its error if the chunk fails again within a minute.

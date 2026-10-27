@@ -5,7 +5,8 @@
 	"$schema": "pedalboards-core-service/node_modules/wrangler/config-schema.json",
 	"name": "pedalboards",
 	"compatibility_date": "2026-10-01",
-	// Without a 404.html in it, Pages serves index.html for unknown paths, so deep links such as
-	// /plugin/<id> load the app
+	// Without a 404.html at its root, Pages serves index.html for unknown paths, so deep links such
+	// as /plugin/<id> load the app. The 404.html of assets/ answers a missing chunk with a 404
+	// instead, which the one-year cache of _headers would otherwise keep as HTML
 	"pages_build_output_dir": "pedalboards-frontend/build"
 }
