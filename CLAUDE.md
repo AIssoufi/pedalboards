@@ -62,8 +62,8 @@ Install once from the root: `pnpm install --frozen-lockfile`. Then, as the CI ru
 
 - No em dash in the UI or the README.
 - The owner's name is written `ADAM Issoufi`.
-- The UI mixes French and English: the page declares the main language (`en` in the frontend,
-  `fr` in the CMS), and an element in the other one carries its own `lang`.
+- The UI of both apps is in English: their pages declare `lang="en"`, and no element carries
+  its own `lang`.
 
 ## Git
 
