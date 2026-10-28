@@ -44,6 +44,10 @@
     .control-ports {
       display: flex;
       flex-flow: column nowrap;
+      // The table scrolls in its own box when its columns are wider than the screen
+      form {
+        overflow-x: auto;
+      }
       table {
         width: 100%;
         text-align: center;
