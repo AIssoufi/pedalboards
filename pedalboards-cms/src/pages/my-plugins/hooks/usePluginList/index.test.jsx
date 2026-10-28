@@ -261,7 +261,7 @@ describe('usePluginList', () => {
     act(() => hook.result.current.deletePlugin('gate'));
     hook.unmount();
     hook = undefined;
-    failDelete(new Error('Plugin non trouvé'));
+    failDelete(new Error('plugin not found'));
     await flushPromises();
 
     expect(console.error).not.toHaveBeenCalled();
@@ -344,14 +344,14 @@ describe('usePluginList', () => {
   });
 
   it('keeps the plugins and gives the message of a failed delete', async () => {
-    PedalboardService.deletePlugin.mockRejectedValue(new Error('Plugin non trouvé'));
+    PedalboardService.deletePlugin.mockRejectedValue(new Error('plugin not found'));
     hook = renderPluginList();
     await flushPromises();
     act(() => hook.result.current.deletePlugin('gate'));
     await flushPromises();
 
     expect(hook.result.current).toMatchObject({
-      plugins: [GATE], errorMessage: 'Plugin non trouvé'
+      plugins: [GATE], errorMessage: 'plugin not found'
     });
     expect(PedalboardService.getPlugins).toHaveBeenCalledTimes(1);
   });

@@ -199,13 +199,13 @@ describe('MyPlugins', () => {
   });
 
   it('keeps the list and shows the message of a failed delete', async () => {
-    jest.spyOn(PedalboardService, 'deletePlugin').mockRejectedValue(new Error('Plugin non trouvé'));
+    jest.spyOn(PedalboardService, 'deletePlugin').mockRejectedValue(new Error('plugin not found'));
     view = renderMyPlugins({ location: { search: '' } });
     await flushPromises();
     clickFirstDeleteButton(view.container);
     await flushPromises();
 
-    expect(readErrorText(view.container)).toBe('Plugin non trouvé');
+    expect(readErrorText(view.container)).toBe('plugin not found');
     expect(readTitles(view.container)).toEqual(['Gate', 'Reverb']);
   });
 
