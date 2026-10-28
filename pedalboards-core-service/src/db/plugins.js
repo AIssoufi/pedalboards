@@ -1,6 +1,6 @@
 import { PLUGIN_FILTER_CONDITIONS, PLUGIN_ORDER_BY } from '../constants.js';
 import { DatabaseError } from '../errors.js';
-import { escapeLikePattern } from '../utils/filters.js';
+import { createLikePattern } from '../utils/filters.js';
 
 /**
  * Builds the WHERE clause of a plugin search: a plugin matches when one of the filtered fields
@@ -20,7 +20,7 @@ export const buildPluginWhere = filters => {
 	const conditions = entries.map(([field]) => PLUGIN_FILTER_CONDITIONS[field]);
 	return {
 		clause: `WHERE ${conditions.join(' OR ')}`,
-		params: entries.map(([, text]) => `%${escapeLikePattern(text)}%`)
+		params: entries.map(([, text]) => createLikePattern(text))
 	};
 };
 

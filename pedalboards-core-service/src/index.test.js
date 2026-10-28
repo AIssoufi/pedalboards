@@ -66,6 +66,22 @@ describe('GET /api/plugins', () => {
 		expect(body).toMatchObject({ data: [], count: 0, numberPages: 0 });
 	});
 
+	it.each([
+		{ description: '48 ASCII letters', text: 'a'.repeat(48), expected: 200 },
+		{ description: '49 ASCII letters', text: 'a'.repeat(49), expected: 400 },
+		{ description: '46 letters and an escaped "%"', text: `${'a'.repeat(46)}%`, expected: 200 },
+		{ description: '47 letters and an escaped "%"', text: `${'a'.repeat(47)}%`, expected: 400 },
+		{ description: '46 letters and an escaped "_"', text: `${'a'.repeat(46)}_`, expected: 200 },
+		{ description: '47 letters and an escaped "_"', text: `${'a'.repeat(47)}_`, expected: 400 },
+		{ description: '46 letters and a two-byte "é"', text: `${'a'.repeat(46)}é`, expected: 200 },
+		{ description: '47 letters and a two-byte "é"', text: `${'a'.repeat(47)}é`, expected: 400 }
+	])('answers $expected, never a 503 of D1, to a search of $description', async ({ text, expected }) => {
+		const { status, body } = await callApi({ path: `/plugins?filterby[brand]=${encodeURIComponent(text)}` });
+
+		expect(status).toBe(expected);
+		expect(body.msg).toBe(expected === 200 ? MESSAGES.pluginsFound : MESSAGES.invalidInput);
+	});
+
 	it('answers 400 with a short message to a field that cannot be searched', async () => {
 		const { status, body } = await callApi({ path: '/plugins?filterby[description]=x' });
 
@@ -86,6 +102,15 @@ describe('GET /api/plugins/count', () => {
 		const expected = plugins.filter(plugin => plugin.name.toLowerCase().includes('gx'));
 
 		expect(body.data).toBe(expected.length);
+	});
+
+	it.each([
+		[200, 48],
+		[400, 49]
+	])('answers %i to a name of %i letters', async (expected, length) => {
+		const { status } = await callApi({ path: `/plugins/count?name=${'a'.repeat(length)}` });
+
+		expect(status).toBe(expected);
 	});
 
 	it('answers 400 to a repeated name', async () => {

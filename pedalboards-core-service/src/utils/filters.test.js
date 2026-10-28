@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { MAX_SEARCH_TEXT_LENGTH } from '../constants.js';
+import { MAX_SEARCH_PATTERN_BYTES } from '../constants.js';
 import { InvalidInputError } from '../errors.js';
-import { escapeLikePattern, parseFilters, parseSearchText } from './filters.js';
+import { createLikePattern, escapeLikePattern, parseFilters, parseSearchText } from './filters.js';
+
+/** Longest text of one-byte characters: the pattern adds a `%` on each side */
+const LONGEST_ASCII_TEXT_LENGTH = MAX_SEARCH_PATTERN_BYTES - 2;
 
 describe('escapeLikePattern', () => {
 	it('escapes the LIKE wildcards and the escape character', () => {
@@ -25,13 +28,42 @@ describe('parseSearchText', () => {
 		expect(parseSearchText(undefined)).toBe('');
 	});
 
+	it('reads an empty text', () => {
+		expect(parseSearchText('')).toBe('');
+	});
+
 	it('refuses a repeated parameter', () => {
 		expect(() => parseSearchText(['a', 'b'])).toThrow(InvalidInputError);
 	});
 
-	it('refuses a text longer than the limit', () => {
-		expect(parseSearchText('a'.repeat(MAX_SEARCH_TEXT_LENGTH))).toHaveLength(MAX_SEARCH_TEXT_LENGTH);
-		expect(() => parseSearchText('a'.repeat(MAX_SEARCH_TEXT_LENGTH + 1))).toThrow(InvalidInputError);
+	it.each([
+		['ASCII letters', 'a'.repeat(LONGEST_ASCII_TEXT_LENGTH)],
+		['an escaped "%"', `${'a'.repeat(LONGEST_ASCII_TEXT_LENGTH - 2)}%`],
+		['an escaped "\\"', `${'a'.repeat(LONGEST_ASCII_TEXT_LENGTH - 2)}\\`],
+		['a two-byte "é"', `${'a'.repeat(LONGEST_ASCII_TEXT_LENGTH - 2)}é`],
+		['a four-byte emoji', `${'a'.repeat(LONGEST_ASCII_TEXT_LENGTH - 4)}🎸`]
+	])('reads a text of %s whose LIKE pattern reaches the byte limit', (description, text) => {
+		expect(new TextEncoder().encode(createLikePattern(text))).toHaveLength(MAX_SEARCH_PATTERN_BYTES);
+		expect(parseSearchText(text)).toBe(text);
+		expect(() => parseSearchText(`a${text}`)).toThrow(InvalidInputError);
+	});
+
+	it('refuses a text far over the limit', () => {
+		expect(() => parseSearchText('é'.repeat(MAX_SEARCH_PATTERN_BYTES))).toThrow(InvalidInputError);
+	});
+
+	it.each([null, 42, {}])('refuses the value %p', value => {
+		expect(() => parseSearchText(value)).toThrow(InvalidInputError);
+	});
+});
+
+describe('createLikePattern', () => {
+	it('puts the escaped text between two "%"', () => {
+		expect(createLikePattern('100%_')).toBe('%100\\%\\_%');
+	});
+
+	it('gives a pattern that matches anything for an empty text', () => {
+		expect(createLikePattern('')).toBe('%%');
 	});
 });
 

@@ -41,47 +41,6 @@ describe('createPluginFilters', () => {
   it('gives no filter without params', () => {
     expect(entriesOf(createPluginFilters())).toEqual([]);
   });
-
-  it('keeps a value of the longest length the API accepts', () => {
-    const value = 'a'.repeat(MAX_SEARCH_TEXT_LENGTH);
-
-    expect(entriesOf(createPluginFilters({ field: 'brand', value }))).toEqual([['brand', value]]);
-  });
-
-  it('cuts a longer value to the longest length the API accepts', () => {
-    const value = `${'a'.repeat(MAX_SEARCH_TEXT_LENGTH)}b`;
-
-    expect(entriesOf(createPluginFilters({ field: 'brand', value })))
-      .toEqual([['brand', 'a'.repeat(MAX_SEARCH_TEXT_LENGTH)]]);
-  });
-
-  it('cuts the value after dropping its surrounding spaces', () => {
-    const text = 'a'.repeat(MAX_SEARCH_TEXT_LENGTH);
-
-    expect(entriesOf(createPluginFilters({ field: 'brand', value: `   ${text}   ` })))
-      .toEqual([['brand', text]]);
-  });
-
-  it('drops the spaces that the cut leaves at the end of the value', () => {
-    const text = 'a'.repeat(MAX_SEARCH_TEXT_LENGTH - 1);
-
-    expect(entriesOf(createPluginFilters({ field: 'brand', value: `${text} b` })))
-      .toEqual([['brand', text]]);
-  });
-
-  it('counts an emoji as two characters, as the API does', () => {
-    const value = '🎸'.repeat(MAX_SEARCH_TEXT_LENGTH / 2);
-
-    expect(entriesOf(createPluginFilters({ field: 'brand', value }))).toEqual([['brand', value]]);
-  });
-
-  it('never cuts an emoji in half', () => {
-    const value = `a${'🎸'.repeat(MAX_SEARCH_TEXT_LENGTH / 2)}`;
-    const [[, filterValue]] = entriesOf(createPluginFilters({ field: 'brand', value }));
-
-    expect(filterValue).toBe(`a${'🎸'.repeat(MAX_SEARCH_TEXT_LENGTH / 2 - 1)}`);
-    expect(filterValue).toHaveLength(MAX_SEARCH_TEXT_LENGTH - 1);
-  });
 });
 
 describe('isPluginFilterValue', () => {
@@ -192,22 +151,6 @@ describe('parsePluginsSearch', () => {
 
   it('reads the first page when the page is missing', () => {
     expect(parsePluginsSearch('?brand=MDA').page).toBe(1);
-  });
-
-  it.each([
-    ['the longest one the API accepts', MAX_SEARCH_TEXT_LENGTH, MAX_SEARCH_TEXT_LENGTH],
-    ['one character too long', MAX_SEARCH_TEXT_LENGTH + 1, MAX_SEARCH_TEXT_LENGTH],
-    ['far too long', MAX_SEARCH_TEXT_LENGTH * 10, MAX_SEARCH_TEXT_LENGTH]
-  ])('reads a filter value %s, of the length the API accepts', (description, length, expected) => {
-    const { filters } = parsePluginsSearch(`?brand=${'a'.repeat(length)}&page=2`);
-
-    expect(filters.get('brand')).toHaveLength(expected);
-  });
-
-  it('cuts an encoded value once decoded, as the API reads it', () => {
-    const { filters } = parsePluginsSearch(`?brand=${'%C3%A9'.repeat(MAX_SEARCH_TEXT_LENGTH + 1)}`);
-
-    expect(filters.get('brand')).toBe('é'.repeat(MAX_SEARCH_TEXT_LENGTH));
   });
 
   it.each([
@@ -359,5 +302,54 @@ describe('with the name field', () => {
 
   it('creates no filter for an empty name', () => {
     expect(entriesOf(createPluginFilters({ field: 'name', value: '' }))).toEqual([]);
+  });
+});
+
+describe('the filter value at the byte limit of the API', () => {
+  const longestText = 'a'.repeat(MAX_SEARCH_TEXT_LENGTH);
+
+  it('keeps a value of the longest length the API accepts', () => {
+    expect(entriesOf(createPluginFilters({ field: 'brand', value: longestText })))
+      .toEqual([['brand', longestText]]);
+  });
+
+  it('cuts a longer value to the longest one the API accepts', () => {
+    expect(entriesOf(createPluginFilters({ field: 'brand', value: `${longestText}b` })))
+      .toEqual([['brand', longestText]]);
+  });
+
+  it('cuts the value after dropping its surrounding spaces', () => {
+    expect(entriesOf(createPluginFilters({ field: 'brand', value: `   ${longestText}   ` })))
+      .toEqual([['brand', longestText]]);
+  });
+
+  it('drops the spaces that the cut leaves at the end of the value', () => {
+    const text = 'a'.repeat(MAX_SEARCH_TEXT_LENGTH - 1);
+
+    expect(entriesOf(createPluginFilters({ field: 'brand', value: `${text} b` })))
+      .toEqual([['brand', text]]);
+  });
+
+  it('counts the escape that the API adds before a "%"', () => {
+    const value = `${'a'.repeat(MAX_SEARCH_TEXT_LENGTH - 1)}%`;
+
+    expect(entriesOf(createPluginFilters({ field: 'brand', value })))
+      .toEqual([['brand', 'a'.repeat(MAX_SEARCH_TEXT_LENGTH - 1)]]);
+  });
+
+  it.each([
+    ['the longest one the API accepts', MAX_SEARCH_TEXT_LENGTH, MAX_SEARCH_TEXT_LENGTH],
+    ['one character too long', MAX_SEARCH_TEXT_LENGTH + 1, MAX_SEARCH_TEXT_LENGTH],
+    ['far too long', MAX_SEARCH_TEXT_LENGTH * 10, MAX_SEARCH_TEXT_LENGTH]
+  ])('reads a URL value %s, of the length the API accepts', (description, length, expected) => {
+    const { filters } = parsePluginsSearch(`?brand=${'a'.repeat(length)}&page=2`);
+
+    expect(filters.get('brand')).toHaveLength(expected);
+  });
+
+  it('cuts an encoded value once decoded, counting the two bytes of each "é"', () => {
+    const { filters } = parsePluginsSearch(`?brand=${'%C3%A9'.repeat(MAX_SEARCH_TEXT_LENGTH)}`);
+
+    expect(filters.get('brand')).toBe('é'.repeat(MAX_SEARCH_TEXT_LENGTH / 2));
   });
 });
