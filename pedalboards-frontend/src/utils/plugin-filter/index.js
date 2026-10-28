@@ -98,7 +98,10 @@ const parsePage = (value) => {
  *
  * @param {string} [search] - Query string of the location, such as '?brand=MDA&page=2'.
  * @returns {{ filters: URLSearchParams, page: number }} The filters on known fields with a
- * value, and the page, the first one when it is missing or invalid.
+ * value, one per field: the first value that is not blank, since the API refuses a field
+ * repeated in its query; and the page, the first one when it is missing or invalid.
+ * @example
+ * parsePluginsSearch('?brand=&brand=MDA&brand=CAPS').filters.toString(); // 'brand=MDA'
  */
 const parsePluginsSearch = (search) => {
   const searchParams = new URLSearchParams(typeof search === 'string' ? search : '');
@@ -106,7 +109,9 @@ const parsePluginsSearch = (search) => {
 
   searchParams.forEach((value, field) => {
     createPluginFilters({ field, value }).forEach((filterValue, filterField) => {
-      filters.append(filterField, filterValue);
+      const isFieldFiltered = filters.has(filterField);
+
+      if (!isFieldFiltered) filters.append(filterField, filterValue);
     });
   });
 
