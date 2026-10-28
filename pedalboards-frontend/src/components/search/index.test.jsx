@@ -5,6 +5,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import Search from './index';
 
 // Constants
+import { MAX_SEARCH_TEXT_LENGTH } from '../../constants/search';
 import { SEARCH_DEBOUNCE_MS } from './constants';
 
 /**
@@ -108,6 +109,12 @@ it('gives each search its own select id', () => {
   expect(firstSelect.id).not.toBe(secondSelect.id);
 });
 
+it('limits the text to the length the API accepts', () => {
+  render(<Search />);
+
+  expect(screen.getByRole('textbox').maxLength).toBe(MAX_SEARCH_TEXT_LENGTH);
+});
+
 it('submits without onSubmit', () => {
   render(<Search />);
 
@@ -150,6 +157,13 @@ describe('with the filter of the URL', () => {
 
     expect(getField().value).toBe('brand');
     expect(getText().value).toBe('');
+  });
+
+  it('shows a value of the longest length the API accepts', () => {
+    const value = 'a'.repeat(MAX_SEARCH_TEXT_LENGTH);
+    render(<Search value={value} field="brand" />);
+
+    expect(getText().value).toBe(value);
   });
 
   it('shows the text of an unknown field in the brand', () => {
