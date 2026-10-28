@@ -66,7 +66,7 @@ describe('RequestHelper', () => {
   it('rejects the first status out of the 2xx range', async () => {
     respondWith({ status: 300, body: {} });
 
-    await expect(get(URL)).rejects.toThrow('La requête a échoué (300)');
+    await expect(get(URL)).rejects.toThrow('The request failed (300)');
   });
 
   it('rejects a non-2xx response without a message with its status', async () => {
@@ -76,14 +76,14 @@ describe('RequestHelper', () => {
     }));
 
     await expect(put({ url: URL, body: new FormData() }))
-      .rejects.toThrow('La requête a échoué (502)');
+      .rejects.toThrow('The request failed (502)');
   });
 
   it('ignores a message of the service that is not a text', async () => {
     respondWith({ status: 400, body: { msg: { code: 1 } } });
 
     await expect(post({ url: URL, body: new FormData() }))
-      .rejects.toThrow('La requête a échoué (400)');
+      .rejects.toThrow('The request failed (400)');
   });
 
   it('rejects a request that never reaches the service', async () => {
@@ -91,7 +91,7 @@ describe('RequestHelper', () => {
 
     const error = await get(URL).catch(caught => caught);
 
-    expect(error.message).toBe('Le service des plugins ne répond pas');
+    expect(error.message).toBe('The plugin service is not responding');
     expect(error.status).toBeUndefined();
   });
 
@@ -161,7 +161,7 @@ describe('RequestHelper', () => {
     ];
     const errors = await Promise.all(requests.map(sent => sent.catch(caught => caught)));
 
-    expect(errors.map(error => error.message)).toEqual(requests.map(() => 'La requête a échoué'));
+    expect(errors.map(error => error.message)).toEqual(requests.map(() => 'The request failed'));
     expect(global.fetch).not.toHaveBeenCalled();
   });
 });
@@ -172,12 +172,12 @@ describe('readErrorMessage', () => {
   });
 
   it('gives a generic message for an error without one', () => {
-    expect(readErrorMessage(new Error(''))).toBe('La requête a échoué');
-    expect(readErrorMessage({ message: 404 })).toBe('La requête a échoué');
+    expect(readErrorMessage(new Error(''))).toBe('The request failed');
+    expect(readErrorMessage({ message: 404 })).toBe('The request failed');
   });
 
   it('gives a generic message without an error', () => {
-    expect(readErrorMessage(undefined)).toBe('La requête a échoué');
-    expect(readErrorMessage(null)).toBe('La requête a échoué');
+    expect(readErrorMessage(undefined)).toBe('The request failed');
+    expect(readErrorMessage(null)).toBe('The request failed');
   });
 });

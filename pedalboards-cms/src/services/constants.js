@@ -5,7 +5,7 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 10;
 
 /** Message of a load or a change asked for a plugin without an id, shown to the user */
-const MISSING_PLUGIN_ID_MESSAGE = 'Le plugin n\'a pas d\'identifiant';
+const MISSING_PLUGIN_ID_MESSAGE = 'The plugin has no id';
 
 /**
  * Ids that `encodeURIComponent` leaves as they are and that the URL parser then removes as path

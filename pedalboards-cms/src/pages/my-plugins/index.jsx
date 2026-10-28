@@ -14,7 +14,9 @@ import { toPluginActionLabel } from './utils';
 import usePluginList from './hooks/usePluginList';
 
 // Constants
-import { DELETE_ACTION, EDIT_ACTION, VIEW_ACTION } from './constants';
+import {
+  ADD_PLUGIN_TEXT, DELETE_ACTION, EDIT_ACTION, EMPTY_STATE_TEXT, PAGE_TITLE, VIEW_ACTION
+} from './constants';
 
 // Style
 import './style.scss';
@@ -35,12 +37,12 @@ const MyPlugins = ({ location = {} }) => {
   return (
     <section className="my-plugin-container">
       <header>
-        <h1>Mes plugins</h1>
+        <h1>{PAGE_TITLE}</h1>
         <Link
           to="/plugin/add"
           className="btn bg-primary"
         >
-          Ajouter un  plugin
+          {ADD_PLUGIN_TEXT}
         </Link>
       </header>
       <RequestError message={errorMessage} />
@@ -79,7 +81,7 @@ const MyPlugins = ({ location = {} }) => {
                 </button>
               </div>
             </div>))
-          : <p>Vous n'avez ajouté aucun plugin</p>
+          : <p>{EMPTY_STATE_TEXT}</p>
         }
       </div>
       <footer>

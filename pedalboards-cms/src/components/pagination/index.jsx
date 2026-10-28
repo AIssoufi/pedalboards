@@ -5,7 +5,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 // Constants
-import { FIRST_PAGE, IGNORE_PAGE_CHANGE } from './constants';
+import {
+  FIRST_PAGE, IGNORE_PAGE_CHANGE, NEXT_PAGE_TEXT, PREVIOUS_PAGE_TEXT
+} from './constants';
 
 // Utils
 import { getLeftPageNumbers, getRightPageNumbers } from './utils';
@@ -32,7 +34,7 @@ const Pagination = ({
     <div className="navigation">
       <button type="button" className="previous-page" onClick={goToPreviousPage}>
         <FontAwesomeIcon icon={faAngleLeft} />
-        <span>Page précédente</span>
+        <span>{PREVIOUS_PAGE_TEXT}</span>
       </button>
       <div className="page-numbers">
         {leftPageNumbers.map(pageNumber => (
@@ -56,7 +58,7 @@ const Pagination = ({
         ))}
       </div>
       <button type="button" className="next-page" onClick={goToNextPage}>
-        <span>Page suivante</span>
+        <span>{NEXT_PAGE_TEXT}</span>
         <FontAwesomeIcon icon={faAngleRight} />
       </button>
     </div>

@@ -41,7 +41,7 @@ const getTwoPluginsOnTwoPages = getPluginsOnPages({ count: 2, numberPages: 2 });
 
 const getPluginsOnThreePages = getPluginsOnPages({ count: 25, numberPages: 3 });
 
-const EMPTY_STATE_TEXT = 'Vous n\'avez ajouté aucun plugin';
+const EMPTY_STATE_TEXT = 'You have not added any plugins';
 
 const renderMyPlugins = props => render(
   <MemoryRouter>
@@ -132,6 +132,17 @@ describe('MyPlugins', () => {
     expect(view.container.querySelector('main')).toBeNull();
   });
 
+  it('shows its title and a link to the form that adds a plugin', async () => {
+    view = renderMyPlugins();
+    await flushPromises();
+
+    const addLink = view.container.querySelector('header a');
+
+    expect(view.container.querySelector('h1').textContent).toBe('My plugins');
+    expect(addLink.textContent).toBe('Add a plugin');
+    expect(addLink.getAttribute('href')).toBe('/plugin/add');
+  });
+
   it('names each action after its plugin, and the view after its new tab', async () => {
     view = renderMyPlugins();
     await flushPromises();
@@ -139,7 +150,7 @@ describe('MyPlugins', () => {
     const actions = view.container.querySelectorAll('.plugin:first-child .controls > *');
 
     expect(Array.from(actions, action => action.getAttribute('aria-label')))
-      .toEqual(['Voir Gate (nouvel onglet)', 'Éditer Gate', 'Supprimer Gate']);
+      .toEqual(['View Gate (new tab)', 'Edit Gate', 'Delete Gate']);
   });
 
   it('lists every plugin without a search', async () => {
@@ -178,12 +189,12 @@ describe('MyPlugins', () => {
 
   it('shows the message of a failed search', async () => {
     PedalboardService.findPlugins.mockRejectedValue(
-      new Error('Le service des plugins ne répond pas')
+      new Error('The plugin service is not responding')
     );
     view = renderMyPlugins({ location: { search: '?name=gate' } });
     await flushPromises();
 
-    expect(readErrorText(view.container)).toBe('Le service des plugins ne répond pas');
+    expect(readErrorText(view.container)).toBe('The plugin service is not responding');
     expect(view.container.textContent).toContain(EMPTY_STATE_TEXT);
   });
 
@@ -272,7 +283,7 @@ describe('MyPlugins', () => {
     view = renderMyPlugins({ location: { search: '?name=reverb' } });
     rerenderMyPlugins({ view, props: { location: { search: '?name=gate' } } });
     await flushPromises();
-    failPreviousSearch(new Error('La requête a échoué (500)'));
+    failPreviousSearch(new Error('The request failed (500)'));
     await flushPromises();
 
     expect(readErrorText(view.container)).toBeNull();
@@ -345,11 +356,11 @@ describe('MyPlugins', () => {
     jest.spyOn(PedalboardService, 'deletePlugin').mockResolvedValue(ALL_PLUGINS);
     view = renderMyPlugins({ location: { search: '?name=gate' } });
     await flushPromises();
-    PedalboardService.findPlugins.mockRejectedValue(new Error('La requête a échoué (500)'));
+    PedalboardService.findPlugins.mockRejectedValue(new Error('The request failed (500)'));
     clickFirstDeleteButton(view.container);
     await flushPromises();
 
-    expect(readErrorText(view.container)).toBe('La requête a échoué (500)');
+    expect(readErrorText(view.container)).toBe('The request failed (500)');
   });
 
   it('shows no message once the plugins are loaded', async () => {

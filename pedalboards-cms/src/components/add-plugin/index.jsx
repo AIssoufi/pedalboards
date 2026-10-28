@@ -19,7 +19,7 @@ import { PedalboardService } from 'services';
 import { RequestHelper } from 'helpers';
 
 // Constants
-import { IMAGE_FIELD } from './constants';
+import { ADD_TITLE, EDIT_TITLE, IMAGE_FIELD } from './constants';
 
 // Utils
 import {
@@ -158,7 +158,7 @@ export default class AddPlugin extends Component {
     return (
       <section className="add-plugin">
         <header>
-          <h1>{edit ? 'Modifier le plugin' : 'Ajouter un plugin'}</h1>
+          <h1>{edit ? EDIT_TITLE : ADD_TITLE}</h1>
         </header>
         <div className="content">
           <form
@@ -170,7 +170,6 @@ export default class AddPlugin extends Component {
               <input
                 type="text"
                 name="name"
-                lang="en"
                 placeholder="Name"
                 aria-label="Name"
                 defaultValue={name}
@@ -179,7 +178,6 @@ export default class AddPlugin extends Component {
               <input
                 type="text"
                 name="label"
-                lang="en"
                 placeholder="Label"
                 aria-label="Label"
                 defaultValue={label}
@@ -190,7 +188,6 @@ export default class AddPlugin extends Component {
               <input
                 type="text"
                 name="uri"
-                lang="en"
                 placeholder="URI"
                 aria-label="URI"
                 defaultValue={uri}
@@ -199,7 +196,6 @@ export default class AddPlugin extends Component {
               <input
                 type="text"
                 name="version"
-                lang="en"
                 placeholder="Version"
                 aria-label="Version"
                 defaultValue={version}
@@ -210,7 +206,6 @@ export default class AddPlugin extends Component {
               <input
                 type="text"
                 name="brand"
-                lang="en"
                 placeholder="Brand"
                 aria-label="Brand"
                 defaultValue={brand}
@@ -219,7 +214,6 @@ export default class AddPlugin extends Component {
               <input
                 type="text"
                 name="categories"
-                lang="en"
                 placeholder="Category A, category B, category C, etc."
                 aria-label="Categories"
                 defaultValue={Array.isArray(categories) ? categories.join(', ') : ''}
@@ -228,7 +222,6 @@ export default class AddPlugin extends Component {
             </div>
             <div className="row">
               <textarea
-                lang="en"
                 placeholder="Description"
                 aria-label="Description"
                 name="description"
@@ -240,7 +233,6 @@ export default class AddPlugin extends Component {
               <input
                 type="file"
                 name={IMAGE_FIELD}
-                lang="en"
                 aria-label="Screenshot"
                 className="btn"
                 required={!edit}
@@ -255,7 +247,6 @@ export default class AddPlugin extends Component {
                 <button
                   type="submit"
                   className="btn bg-primary"
-                  lang="en"
                 >
                   <FontAwesomeIcon icon={faPlus} />
                   {' '}
@@ -265,7 +256,7 @@ export default class AddPlugin extends Component {
               </Tooltip>
             </div>
           </form>
-          <div className="control-ports" lang="en">
+          <div className="control-ports">
             <header>
               <h2>Control ports</h2>
             </header>

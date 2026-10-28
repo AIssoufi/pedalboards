@@ -16,13 +16,16 @@ describe('Header', () => {
     view = undefined;
   });
 
-  it('marks its English links inside the French page', () => {
+  it('leaves its texts in the language of the page', () => {
     view = render(<MemoryRouter><Header /></MemoryRouter>);
 
-    const { container } = view;
+    expect(view.container.querySelector('[lang]')).toBeNull();
+  });
 
-    expect(container.querySelector('nav').lang).toBe('en');
-    expect(container.querySelector('button').closest('[lang]')).toBeNull();
+  it('shows the sign-out button', () => {
+    view = render(<MemoryRouter><Header /></MemoryRouter>);
+
+    expect(view.container.querySelector('button').textContent).toBe('Sign out');
   });
 
   it('links to the list of plugins and to the form that adds one', () => {
@@ -31,11 +34,5 @@ describe('Header', () => {
     const linkTexts = [...view.container.querySelectorAll('nav a')].map(link => link.textContent);
 
     expect(linkTexts).toEqual(['My plugins', 'Add plugin']);
-  });
-
-  it('marks the English text alternative of the avatar inside the French page', () => {
-    view = render(<MemoryRouter><Header /></MemoryRouter>);
-
-    expect(view.container.querySelector('img').closest('[lang]').lang).toBe('en');
   });
 });

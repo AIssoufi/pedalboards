@@ -49,7 +49,7 @@ describe('EditPlugin', () => {
     const { container } = view;
 
     expect(PedalboardService.getPlugin).toHaveBeenCalledWith('gate');
-    expect(container.querySelector('h1').textContent).toBe('Modifier le plugin');
+    expect(container.querySelector('h1').textContent).toBe('Edit the plugin');
     expect(readField({ container, name: 'name' }).value).toBe('Gate');
     expect(readField({ container, name: 'description' }).value).toBe('Cuts the noise');
   });
@@ -192,6 +192,6 @@ describe('EditPlugin', () => {
     await flushPromises();
 
     expect(PedalboardService.getPlugin).not.toHaveBeenCalled();
-    expect(view.container.querySelector('h1').textContent).toBe('Modifier le plugin');
+    expect(view.container.querySelector('h1').textContent).toBe('Edit the plugin');
   });
 });

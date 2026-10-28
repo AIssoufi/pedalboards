@@ -100,8 +100,8 @@ const remove = url => request({ url, options: { method: 'DELETE' } });
  * @param {Error} [error] error of the request
  * @returns {string} its message, or a generic one when it has none
  * @example
- * readErrorMessage(new Error('Plugin non trouvé')); // 'Plugin non trouvé'
- * readErrorMessage(undefined); // 'La requête a échoué'
+ * readErrorMessage(new Error('Plugin not found')); // 'Plugin not found'
+ * readErrorMessage(undefined); // 'The request failed'
  */
 const readErrorMessage = (error) => {
   const hasMessage = Boolean(error) && isNonEmptyText(error.message);
