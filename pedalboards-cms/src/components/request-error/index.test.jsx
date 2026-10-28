@@ -17,11 +17,11 @@ describe('RequestError', () => {
   });
 
   it('shows the message as an alert', () => {
-    view = render(<RequestError message="Plugin non trouvé" />);
+    view = render(<RequestError message="plugin not found" />);
 
     const alert = view.container.querySelector('[role="alert"]');
 
-    expect(alert.textContent).toBe('Plugin non trouvé');
+    expect(alert.textContent).toBe('plugin not found');
     expect(alert.className).toBe('request-error');
   });
 

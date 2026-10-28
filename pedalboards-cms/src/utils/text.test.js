@@ -4,7 +4,7 @@ import { isNonEmptyText } from './text';
 describe('isNonEmptyText', () => {
   it('accepts a text of one character or more', () => {
     expect(isNonEmptyText('a')).toBe(true);
-    expect(isNonEmptyText('Plugin non trouvé')).toBe(true);
+    expect(isNonEmptyText('plugin not found')).toBe(true);
   });
 
   it('accepts a text made of spaces', () => {
@@ -23,7 +23,7 @@ describe('isNonEmptyText', () => {
   it('refuses a value that is not a text', () => {
     expect(isNonEmptyText(404)).toBe(false);
     expect(isNonEmptyText(NaN)).toBe(false);
-    expect(isNonEmptyText(['Plugin non trouvé'])).toBe(false);
-    expect(isNonEmptyText({ msg: 'Plugin non trouvé' })).toBe(false);
+    expect(isNonEmptyText(['plugin not found'])).toBe(false);
+    expect(isNonEmptyText({ msg: 'plugin not found' })).toBe(false);
   });
 });

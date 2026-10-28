@@ -113,13 +113,13 @@ describe('EditPlugin', () => {
   });
 
   it('shows the message of a plugin that cannot be loaded', async () => {
-    PedalboardService.getPlugin.mockRejectedValue(new Error('Plugin non trouvé'));
+    PedalboardService.getPlugin.mockRejectedValue(new Error('plugin not found'));
     view = render(<EditPlugin match={ROUTE_MATCH} />);
     await flushPromises();
 
     const { container } = view;
 
-    expect(container.querySelector('[role="alert"]').textContent).toBe('Plugin non trouvé');
+    expect(container.querySelector('[role="alert"]').textContent).toBe('plugin not found');
     expect(readField({ container, name: 'name' }).value).toBe('');
   });
 
@@ -137,18 +137,18 @@ describe('EditPlugin', () => {
   it('shows no previous plugin when the plugin of a new route id fails', async () => {
     view = render(<EditPlugin match={ROUTE_MATCH} />);
     await flushPromises();
-    PedalboardService.getPlugin.mockRejectedValue(new Error('Plugin non trouvé'));
+    PedalboardService.getPlugin.mockRejectedValue(new Error('plugin not found'));
     view.rerender(<EditPlugin match={{ params: { id: 'reverb' } }} />);
     await flushPromises();
 
     const { container } = view;
 
-    expect(container.querySelector('[role="alert"]').textContent).toBe('Plugin non trouvé');
+    expect(container.querySelector('[role="alert"]').textContent).toBe('plugin not found');
     expect(readField({ container, name: 'name' }).value).toBe('');
   });
 
   it('clears the message of a failed plugin while a new route id loads', async () => {
-    PedalboardService.getPlugin.mockRejectedValueOnce(new Error('Plugin non trouvé'));
+    PedalboardService.getPlugin.mockRejectedValueOnce(new Error('plugin not found'));
     view = render(<EditPlugin match={ROUTE_MATCH} />);
     await flushPromises();
     PedalboardService.getPlugin.mockReturnValueOnce(new Promise(() => {}));
