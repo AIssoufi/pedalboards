@@ -296,9 +296,9 @@ describe('PluginsPage', () => {
       });
       await flushAnswers();
 
-      expect(location.search).toBe('?brand=MDA');
+      expect(location.search).toBe('?name=MDA');
       expect(fetchCount()).toBe(2);
-      expect(lastFetch().filters).toEqual([['brand', 'MDA']]);
+      expect(lastFetch().filters).toEqual([['name', 'MDA']]);
     });
 
     it('adds one history entry when the search is typed, then submitted', async () => {
@@ -312,7 +312,7 @@ describe('PluginsPage', () => {
         vi.advanceTimersByTime(SEARCH_DEBOUNCE_WAIT_MS);
       });
 
-      expect(location.search).toBe('?brand=Gx');
+      expect(location.search).toBe('?name=Gx');
       await flushAnswers();
       // A second entry for the same search would keep the search after one step back
       act(() => {
