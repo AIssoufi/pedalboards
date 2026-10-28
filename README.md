@@ -222,6 +222,8 @@ Dependabot opens its pull requests each week ([config](.github/dependabot.yml)):
 - one per ecosystem (npm, GitHub Actions) for the minor and patch updates, and one per major update;
 - one for `eslint` and the `@eslint/*` packages, majors included, since the engine and its
   recommended config move together;
+- one for the `@fortawesome/*` packages, majors included, since the core, the icons and the React
+  component share their version;
 - none for the Create React App 2 tooling of the CMS until
   [#45](https://github.com/AIssoufi/pedalboards/issues/45), security updates included.
 
