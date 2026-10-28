@@ -43,4 +43,30 @@
       font-size: 2em;
     }
   }
+
+  @media (max-width: $phone-max-width) {
+    .page-numbers {
+      margin: 40px 8px;
+      white-space: nowrap;
+    }
+
+    // A touch target of 44px around each arrow
+    .previous-page, .next-page {
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+    }
+
+    // Only the arrows show: the labels stay in the page as the accessible names of the buttons
+    .previous-page span, .next-page span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: 0;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
 }
