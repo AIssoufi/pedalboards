@@ -1,0 +1,7 @@
+// Stacks the request error above the plugin form, across the width of the form
+.edit-plugin {
+  display: flex;
+  flex-flow: column nowrap;
+  max-width: 1100px;
+  width: 100%;
+}

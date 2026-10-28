@@ -14,6 +14,9 @@ import { RequestHelper } from 'helpers';
 // Constants
 import { NO_PLUGIN } from './constants';
 
+// Style
+import './style.scss';
+
 /**
  * Page that edits the plugin of the route id: it loads the plugin, then fills the plugin form
  * with it. A new route id empties the form and the error, then loads its plugin, and an answer
@@ -52,11 +55,11 @@ const EditPlugin = ({ match = {} }) => {
   }, [id]);
 
   return (
-    <>
+    <div className="edit-plugin">
       <RequestError message={errorMessage} />
       {/* The key mounts a new form once the plugin is loaded: its fields read their values once */}
       <AddPlugin key={plugin._id} {...plugin} edit id={id} />
-    </>
+    </div>
   );
 };
 
