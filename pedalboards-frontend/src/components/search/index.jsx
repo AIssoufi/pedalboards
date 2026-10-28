@@ -10,6 +10,7 @@ import Tooltip from '../tooltip';
 import useDebouncedCallback from './hooks/useDebouncedCallback';
 
 // Constants
+import { MAX_SEARCH_TEXT_LENGTH } from '../../constants/search';
 import {
   SEARCH_BUTTON_NAME, SEARCH_DEBOUNCE_MS, SEARCH_FIELD_OPTIONS, SEARCH_TEXT_NAME
 } from './constants';
@@ -98,6 +99,7 @@ const Search = ({ value, field, onSubmit }) => {
           name="value"
           placeholder={SEARCH_TEXT_NAME}
           aria-label={SEARCH_TEXT_NAME}
+          maxLength={MAX_SEARCH_TEXT_LENGTH}
           value={text}
           onChange={handleTextChange}
         />

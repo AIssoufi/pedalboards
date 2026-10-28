@@ -1,7 +1,10 @@
 // Constants
 import { PLUGINS_PATHNAME } from '../../constants/routes';
+import { MAX_SEARCH_TEXT_LENGTH } from '../../constants/search';
 import { FIRST_PAGE } from '../page/constants';
-import { PAGE_PARAM, PLUGIN_FILTER_FIELDS } from './constants';
+import {
+  HIGH_SURROGATE_MAX, HIGH_SURROGATE_MIN, PAGE_PARAM, PLUGIN_FILTER_FIELDS
+} from './constants';
 
 // Utils
 import { isPageCount, isPageNumber } from '../page';
@@ -24,11 +27,38 @@ const isPluginFilterField = field => PLUGIN_FILTER_FIELDS.includes(field);
 const isPluginFilterValue = value => isNonBlankText(value);
 
 /**
+ * Tells whether a UTF-16 code unit is the first half of a character written with two, such as
+ * an emoji.
+ *
+ * @param {number} codeUnit - Code unit, as `String.prototype.charCodeAt` gives it.
+ * @returns {boolean} True for a high surrogate.
+ */
+const isHighSurrogate = codeUnit => (
+  codeUnit >= HIGH_SURROGATE_MIN && codeUnit <= HIGH_SURROGATE_MAX
+);
+
+/**
+ * Shortens a searched text to the longest one the API accepts, counted as `String.length`
+ * counts it, without cutting a character written with two code units in half.
+ *
+ * @param {string} text - Searched text.
+ * @returns {string} The text, or its first `MAX_SEARCH_TEXT_LENGTH` code units at most.
+ */
+const capSearchText = (text) => {
+  const cappedText = text.slice(0, MAX_SEARCH_TEXT_LENGTH);
+  const endsWithHalfCharacter = isHighSurrogate(cappedText.charCodeAt(cappedText.length - 1));
+
+  return endsWithHalfCharacter ? cappedText.slice(0, -1) : cappedText;
+};
+
+/**
  * Builds the filters of the plugins page from one field and its value.
  *
  * @param {Object} [params]
  * @param {*} params.field - Field to filter on, such as 'brand'.
- * @param {*} params.value - Value searched in that field. Surrounding spaces are dropped.
+ * @param {*} params.value - Value searched in that field. Surrounding spaces are dropped, then
+ * the value is cut to `MAX_SEARCH_TEXT_LENGTH`, the longest text the API accepts, and the spaces
+ * left at the end of the cut are dropped too.
  * @returns {URLSearchParams} The filter, or no filter when the field is unknown or the value
  * is not a string or is blank.
  */
@@ -36,7 +66,7 @@ const createPluginFilters = ({ field, value } = {}) => {
   const filters = new URLSearchParams();
   const isUsableFilter = isPluginFilterField(field) && isPluginFilterValue(value);
 
-  if (isUsableFilter) filters.append(field, value.trim());
+  if (isUsableFilter) filters.append(field, capSearchText(value.trim()).trimEnd());
 
   return filters;
 };
