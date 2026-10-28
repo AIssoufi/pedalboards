@@ -14,6 +14,9 @@ import {
   Header
 } from '.';
 
+// Constants
+import { ANY_OTHER_ROUTE, PLUGIN_DETAILS_ROUTE, PLUGINS_PATHNAME } from '../constants/routes';
+
 // Style
 import './App.css';
 
@@ -29,9 +32,9 @@ const App = () => (
       <Header />
       <main className="main-container">
         <Routes>
-          <Route path="/plugins" element={<Plugins />} />
-          <Route path="/plugin/:id" element={<PedalboardDetails />} />
-          <Route path="*" element={<Navigate to="/plugins" replace />} />
+          <Route path={PLUGINS_PATHNAME} element={<Plugins />} />
+          <Route path={PLUGIN_DETAILS_ROUTE} element={<PedalboardDetails />} />
+          <Route path={ANY_OTHER_ROUTE} element={<Navigate to={PLUGINS_PATHNAME} replace />} />
         </Routes>
       </main>
     </Fragment>

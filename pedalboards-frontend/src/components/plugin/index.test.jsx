@@ -127,8 +127,21 @@ describe('tooltips', () => {
   });
 });
 
-it('shows the screenshot without a link to the details when the plugin has no id', () => {
-  renderPlugin({ screenshotUrl: 'http://example.com/screenshot' });
+it.each([
+  ['a plain id', 'auto-wah', '/plugin/auto-wah'],
+  ['an id that needs encoding', 'a/b c', '/plugin/a%2Fb%20c']
+])('links the screenshot to the details of a plugin with %s', (_case, id, href) => {
+  renderPlugin({ _id: id, screenshotUrl: 'http://example.com/screenshot' });
+
+  expect(screen.getByRole('link').getAttribute('href')).toBe(href);
+});
+
+it.each([
+  ['no id', undefined],
+  ['a blank id', '   '],
+  ['an id that is not a text', 42]
+])('shows the screenshot without a link to the details when the plugin has %s', (_case, id) => {
+  renderPlugin({ _id: id, screenshotUrl: 'http://example.com/screenshot' });
 
   expect(screen.getByRole('img').getAttribute('src')).toBe('http://example.com/screenshot');
   expect(screen.queryByRole('link')).toBeNull();
