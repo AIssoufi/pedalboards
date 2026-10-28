@@ -1,7 +1,7 @@
 // Dependencies
 import { useId, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 
 // Components
 import Tooltip from '../tooltip';
@@ -108,7 +108,7 @@ const Search = ({ value, field, onSubmit }) => {
           placement="top"
         >
           <button type="submit" aria-label={SEARCH_BUTTON_NAME}>
-            <FontAwesomeIcon icon={faSearch} />
+            <FontAwesomeIcon icon={faMagnifyingGlass} widthAuto />
           </button>
         </Tooltip>
       </div>

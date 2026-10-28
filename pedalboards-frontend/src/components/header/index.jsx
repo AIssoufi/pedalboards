@@ -1,7 +1,7 @@
 // Components
 import { NavLink, Link } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faThList } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faTableList } from '@fortawesome/free-solid-svg-icons';
 
 // Constants
 import { HOME_PATHNAME, PLUGINS_PATHNAME } from '../../constants/routes';
@@ -41,7 +41,7 @@ const Header = () => (
       <div className="toolbar-option-container">
         {/* NavLink adds the active class while the URL is under /plugins */}
         <NavLink className="toolbar-option" to={PLUGINS_PATHNAME}>
-          <FontAwesomeIcon icon={faThList} />
+          <FontAwesomeIcon icon={faTableList} widthAuto />
           <span>Plugins</span>
         </NavLink>
         {HAS_ADMIN_PANEL && (
@@ -51,7 +51,7 @@ const Header = () => (
             rel="noopener noreferrer"
             target="_blank"
           >
-            <FontAwesomeIcon icon={faUser} />
+            <FontAwesomeIcon icon={faUser} widthAuto />
             <span>Admin Panel</span>
           </a>
         )}

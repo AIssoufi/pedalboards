@@ -82,6 +82,14 @@ describe('Pagination', () => {
     });
   });
 
+  it('keeps the arrows as wide as their glyph, not the fixed width of Font Awesome 7', () => {
+    renderPagination({ currentPage: 2, elementCount: 3 });
+
+    const arrows = [...container.querySelectorAll('svg')];
+    expect(arrows).toHaveLength(2);
+    arrows.forEach(arrow => expect(arrow.classList.contains('fa-width-auto')).toBe(true));
+  });
+
   it('renders nothing without props', () => {
     renderPagination();
 
