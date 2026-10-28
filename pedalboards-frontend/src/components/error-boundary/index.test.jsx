@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react';
 // Components
 import ErrorBoundary from './index';
 
-const FALLBACK_TEXT = 'Impossible de charger ce plugin, réessayez plus tard.';
+const FALLBACK_TEXT = 'Could not load this plugin, try again later.';
 
 // Throws while it renders, as a lazy component whose chunk fails to load
 const Failing = () => {

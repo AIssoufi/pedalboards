@@ -20,7 +20,7 @@ import { Component } from 'react';
  * @extends {Component<ErrorBoundaryProps>}
  *
  * @example
- * <ErrorBoundary fallback={<p role="alert">Impossible de charger ce plugin.</p>}>
+ * <ErrorBoundary fallback={<p role="alert">Could not load this plugin.</p>}>
  *   <LazyDetails />
  * </ErrorBoundary>
  */

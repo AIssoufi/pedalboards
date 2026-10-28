@@ -4,10 +4,10 @@ import { render, screen } from '@testing-library/react';
 // Components
 import Loader from './index';
 
-const LOADER_TEXT = 'Je Fais ça En Deux Deux...';
+const LOADER_TEXT = 'Loading...';
 
-it('shows its text in French inside the English page', () => {
+it('shows its waiting text in the language of the page', () => {
   render(<Loader />);
 
-  expect(screen.getByText(LOADER_TEXT).lang).toBe('fr');
+  expect(screen.getByText(LOADER_TEXT).closest('[lang]')).toBeNull();
 });

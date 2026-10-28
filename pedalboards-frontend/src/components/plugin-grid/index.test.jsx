@@ -5,8 +5,8 @@ import { MemoryRouter } from 'react-router';
 // Components
 import PluginGrid from './index';
 
-const EMPTY_STATE_TEXT = 'Aucun plugin ne correspond à votre recherche !';
-const LOADER_TEXT = 'Je Fais ça En Deux Deux...';
+const EMPTY_STATE_TEXT = 'No plugin matches your search!';
+const LOADER_TEXT = 'Loading...';
 const PLUGINS = [
   { _id: 'abgate', name: 'abGate', brand: 'abGate' },
   { _id: 'auto-wah', name: 'Wah', brand: 'MDA' }
@@ -23,7 +23,6 @@ it('renders its empty state without props', () => {
   renderGrid();
 
   expect(screen.getByText(EMPTY_STATE_TEXT)).toBeDefined();
-  expect(screen.getByText(EMPTY_STATE_TEXT).lang).toBe('fr');
 });
 
 it('renders its empty state with an empty list', () => {
@@ -66,7 +65,6 @@ it('shows the loader in place of the cards while loading', () => {
   renderGrid({ plugins: PLUGINS, isLoading: true });
 
   expect(screen.getByText(LOADER_TEXT)).toBeDefined();
-  expect(screen.getByText(LOADER_TEXT).lang).toBe('fr');
   expect(screen.queryAllByRole('link')).toHaveLength(0);
 });
 

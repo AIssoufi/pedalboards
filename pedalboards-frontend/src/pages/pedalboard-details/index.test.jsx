@@ -13,11 +13,11 @@ import PedalboardDetails from './index';
 // Test utils
 import { jsonResponse } from '../../test-utils/fetch';
 
-const LOADER_TEXT = 'Je Fais ça En Deux Deux...';
-const EMPTY_STATE_TEXT = 'Pas de données disponibles';
-const ERROR_TEXT = 'Impossible de charger ce plugin, réessayez plus tard.';
-const NOT_FOUND_TEXT = 'Ce plugin est introuvable. Voir la liste des plugins';
-const LIST_LINK_NAME = 'Voir la liste des plugins';
+const LOADER_TEXT = 'Loading...';
+const EMPTY_STATE_TEXT = 'No data available';
+const ERROR_TEXT = 'Could not load this plugin, try again later.';
+const NOT_FOUND_TEXT = 'This plugin does not exist. See the list of plugins';
+const LIST_LINK_NAME = 'See the list of plugins';
 const LIST_PAGE_TEXT = 'The list of plugins';
 const NOT_FOUND_STATUS = 404;
 const SERVER_ERROR_STATUS = 500;
@@ -130,7 +130,6 @@ it('renders without crashing', async () => {
 
   // An answer without a plugin leaves the page with its empty state
   expect(await screen.findByText(EMPTY_STATE_TEXT)).toBeDefined();
-  expect(screen.getByText(EMPTY_STATE_TEXT).lang).toBe('fr');
 });
 
 it('shows the loader, then the plugin of the id of its route', async () => {
@@ -171,7 +170,6 @@ it.each([
   renderAt('/plugin/2');
 
   expect((await screen.findByRole('alert')).textContent).toBe(ERROR_TEXT);
-  expect(screen.getByRole('alert').lang).toBe('fr');
   expect(screen.queryByText(LOADER_TEXT)).toBeNull();
   expect(screen.queryByText(EMPTY_STATE_TEXT)).toBeNull();
 });
@@ -181,7 +179,6 @@ it('shows a not-found message with a link to the list when the API knows no such
   const router = renderAt('/plugin/does-not-exist');
 
   expect((await screen.findByRole('alert')).textContent).toBe(NOT_FOUND_TEXT);
-  expect(screen.getByRole('alert').lang).toBe('fr');
   expect(screen.queryByText(ERROR_TEXT)).toBeNull();
   expect(screen.queryByText(LOADER_TEXT)).toBeNull();
   expect(readPageTitles()).toEqual(['Plugin']);

@@ -38,7 +38,7 @@ const PAGE_TITLE = <h1 className="visually-hidden">Plugin</h1>;
 const LOAD_ERROR_CONTENT = (
   <>
     {PAGE_TITLE}
-    <p role="alert" lang="fr">Impossible de charger ce plugin, réessayez plus tard.</p>
+    <p role="alert">Could not load this plugin, try again later.</p>
   </>
 );
 
@@ -51,12 +51,12 @@ const LOADING_CONTENT = (
 );
 
 // Shown when the answer holds no plugin, or the route names none
-const EMPTY_STATE_TEXT = 'Pas de données disponibles';
+const EMPTY_STATE_TEXT = 'No data available';
 
 const EMPTY_CONTENT = (
   <>
     {PAGE_TITLE}
-    <p lang="fr">{EMPTY_STATE_TEXT}</p>
+    <p>{EMPTY_STATE_TEXT}</p>
   </>
 );
 
@@ -64,8 +64,8 @@ const EMPTY_CONTENT = (
 const NOT_FOUND_CONTENT = (
   <>
     {PAGE_TITLE}
-    <p role="alert" lang="fr">
-      Ce plugin est introuvable. <Link to={PLUGINS_PATHNAME}>Voir la liste des plugins</Link>
+    <p role="alert">
+      This plugin does not exist. <Link to={PLUGINS_PATHNAME}>See the list of plugins</Link>
     </p>
   </>
 );
