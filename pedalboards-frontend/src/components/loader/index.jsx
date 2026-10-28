@@ -14,7 +14,7 @@ const LOADER_TEXT = 'Loading...';
 const Loader = () => (
   <div className="loader-container">
     <div>
-      <FontAwesomeIcon icon={faSpinner} spin size="6x" />
+      <FontAwesomeIcon icon={faSpinner} spin size="6x" widthAuto />
       <p>{LOADER_TEXT}</p>
     </div>
   </div>

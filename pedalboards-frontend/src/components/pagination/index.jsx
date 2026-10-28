@@ -46,7 +46,7 @@ const Pagination = ({
   return (
     <div className="navigation">
       <button type="button" className="previous-page" onClick={goToPreviousPage}>
-        <FontAwesomeIcon icon={faAngleLeft} />
+        <FontAwesomeIcon icon={faAngleLeft} widthAuto />
         <span>PREVIOUS</span>
       </button>
       <div className="page-numbers">
@@ -71,7 +71,7 @@ const Pagination = ({
       </div>
       <button type="button" className="next-page" onClick={goToNextPage}>
         <span>NEXT</span>
-        <FontAwesomeIcon icon={faAngleRight} />
+        <FontAwesomeIcon icon={faAngleRight} widthAuto />
       </button>
     </div>
   );
