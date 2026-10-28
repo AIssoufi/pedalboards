@@ -1,4 +1,6 @@
-import { hasPedalboards, isControlPort, toCellText } from './utils';
+import {
+  hasPedalboards, isControlPort, toCellText, toScreenshotStyle
+} from './utils';
 
 describe('isControlPort', () => {
   it.each([{}, { name: 'Gain', default: 1 }])('accepts %p', (value) => {
@@ -48,5 +50,30 @@ describe('hasPedalboards', () => {
 
   it.each([0, -1, NaN, Infinity, undefined, null, 'abc', '3'])('refuses %p', (value) => {
     expect(hasPedalboards(value)).toBe(false);
+  });
+});
+
+describe('toScreenshotStyle', () => {
+  it.each([[261, 430], [1, 1], [800, 200]])('holds the height of a %p by %p screenshot', (imageWidth, imageHeight) => {
+    expect(toScreenshotStyle({ imageWidth, imageHeight })).toEqual({
+      '--screenshot-height': `${imageHeight}px`
+    });
+  });
+
+  it.each([
+    undefined, null, 0, -1, 261.5, NaN, Infinity, '430', '', true, {}, []
+  ])('gives no style for a height of %p', (imageHeight) => {
+    expect(toScreenshotStyle({ imageWidth: 261, imageHeight })).toBeUndefined();
+  });
+
+  it.each([
+    undefined, null, 0, -1, 261.5, NaN, Infinity, '261', '', true, {}, []
+  ])('gives no style for a width of %p', (imageWidth) => {
+    expect(toScreenshotStyle({ imageWidth, imageHeight: 430 })).toBeUndefined();
+  });
+
+  it('gives no style without a size', () => {
+    expect(toScreenshotStyle({})).toBeUndefined();
+    expect(toScreenshotStyle()).toBeUndefined();
   });
 });

@@ -1,5 +1,8 @@
 // Constants
-import { CELL_NUMBER_FORMAT, NEGATIVE_ZERO_TEXT } from './constants';
+import { CELL_NUMBER_FORMAT, NEGATIVE_ZERO_TEXT, SCREENSHOT_HEIGHT_PROPERTY } from './constants';
+
+// Utils
+import { toImageDimension } from '../../utils/image-dimension';
 
 /**
  * Tells whether an entry of the control ports from the API can fill a row of the table.
@@ -57,4 +60,34 @@ const hasPedalboards = pedalboardCount => (
   typeof pedalboardCount === 'number' && Number.isFinite(pedalboardCount) && pedalboardCount > 0
 );
 
-export { hasPedalboards, isControlPort, toCellText };
+/**
+ * Size of the screenshot from the API, in pixels.
+ *
+ * @typedef {Object} ToScreenshotStyleParams
+ * @property {*} [imageWidth] - Width of the screenshot.
+ * @property {*} [imageHeight] - Height of the screenshot.
+ */
+
+/**
+ * Gives the style that reserves the box of the screenshot before it loads: its height from the
+ * API, which the style sheet caps like the loaded image, while its width follows from the ratio
+ * of the `width` and `height` attributes.
+ *
+ * @param {ToScreenshotStyleParams} [params] - Size of the screenshot.
+ * @returns {Object|undefined} The style holding the height, or undefined unless both sizes are
+ *   whole numbers of pixels above 0, so that the image keeps its own size once loaded.
+ * @example
+ * toScreenshotStyle({ imageWidth: 261, imageHeight: 430 }); // { '--screenshot-height': '430px' }
+ * toScreenshotStyle({ imageWidth: 261 }); // undefined
+ */
+const toScreenshotStyle = ({ imageWidth, imageHeight } = {}) => {
+  const width = toImageDimension(imageWidth);
+  const height = toImageDimension(imageHeight);
+  const isSizeKnown = width !== undefined && height !== undefined;
+
+  return isSizeKnown ? { [SCREENSHOT_HEIGHT_PROPERTY]: `${height}px` } : undefined;
+};
+
+export {
+  hasPedalboards, isControlPort, toCellText, toScreenshotStyle
+};

@@ -207,3 +207,41 @@ it.each([
   expect(container.querySelector('.count-container')).toBeNull();
   expect(screen.queryByText('Pedalboards using it')).toBeNull();
 });
+
+it('reserves the box of the screenshot from its size', () => {
+  renderDetails({
+    label: 'abGate', screenshotUrl: 'http://example.com/screenshot', imageWidth: 261, imageHeight: 430
+  });
+
+  const screenshot = screen.getByRole('img', { name: 'Screenshot of abGate' });
+  expect(screenshot.getAttribute('width')).toBe('261');
+  expect(screenshot.getAttribute('height')).toBe('430');
+  expect(screenshot.style.getPropertyValue('--screenshot-height')).toBe('430px');
+});
+
+it.each([
+  ['missing', undefined, undefined],
+  ['null, as the API sends it for a plugin without a size', null, null],
+  ['zero', 0, 0],
+  ['negative', -261, -430],
+  ['texts', '261', '430'],
+  ['not a number', NaN, NaN]
+])('lets the screenshot take its own size when its size is %s', (description, imageWidth, imageHeight) => {
+  renderDetails({
+    label: 'abGate', screenshotUrl: 'http://example.com/screenshot', imageWidth, imageHeight
+  });
+
+  const screenshot = screen.getByRole('img', { name: 'Screenshot of abGate' });
+  expect(screenshot.hasAttribute('width')).toBe(false);
+  expect(screenshot.hasAttribute('height')).toBe(false);
+  expect(screenshot.hasAttribute('style')).toBe(false);
+});
+
+it('leaves the height to the screenshot when only its width is known', () => {
+  renderDetails({ label: 'abGate', screenshotUrl: 'http://example.com/screenshot', imageWidth: 261 });
+
+  const screenshot = screen.getByRole('img', { name: 'Screenshot of abGate' });
+  expect(screenshot.getAttribute('width')).toBe('261');
+  expect(screenshot.hasAttribute('height')).toBe(false);
+  expect(screenshot.hasAttribute('style')).toBe(false);
+});
