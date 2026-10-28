@@ -1,6 +1,9 @@
 // Services
 import PedalboardService from './pedalboards.service';
 
+// Constants
+import { MAX_SEARCH_TEXT_BYTES } from 'utils/search-text/constants';
+
 // Address of the core service in `.env.test`
 const SERVICE_URL = 'http://localhost:8080';
 
@@ -76,6 +79,22 @@ describe('PedalboardService', () => {
         ['filterby[name]', 'gate'],
         ['filterby[categories]', 'Dynamics']
       ]);
+    });
+
+    it('caps each searched text at the limit of the API', async () => {
+      const atLimit = 'a'.repeat(MAX_SEARCH_TEXT_BYTES);
+      // Each `%` costs two bytes with its escape: one more than half the limit is over it
+      const percentCount = MAX_SEARCH_TEXT_BYTES / 2 + 1;
+      const searchParams = new URLSearchParams(
+        `name=${atLimit}a&brand=${'%25'.repeat(percentCount)}`
+      );
+
+      await PedalboardService.findPlugins({ searchParams, page: 1 });
+
+      const url = new URL(readSentRequest().url);
+
+      expect(url.searchParams.get('filterby[name]')).toBe(atLimit);
+      expect(url.searchParams.get('filterby[brand]')).toBe('%'.repeat(percentCount - 1));
     });
 
     it('loads the first page of 10 plugins, unfiltered, without params or with null', async () => {
