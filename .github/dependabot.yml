@@ -15,6 +15,10 @@ updates:
         patterns:
           - eslint
           - '@eslint/*'
+      # The core, the icons and the React component of Font Awesome must share their version
+      fontawesome:
+        patterns:
+          - '@fortawesome/*'
       npm-minor-and-patch:
         update-types:
           - minor
