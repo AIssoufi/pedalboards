@@ -11,10 +11,11 @@ export const SEARCH_DEBOUNCE_MS = 900;
  * Fields of a plugin that the select of the form searches in, with the text of their option.
  */
 export const SEARCH_FIELD_OPTIONS = [
+  { value: 'name', label: 'name' },
   { value: 'brand', label: 'brand' },
   { value: 'categories', label: 'category' },
   { value: 'label', label: 'label' }
 ];
 
 /** Field the select shows when the URL filters on none of SEARCH_FIELD_OPTIONS. */
-export const DEFAULT_SEARCH_FIELD = 'brand';
+export const DEFAULT_SEARCH_FIELD = 'name';

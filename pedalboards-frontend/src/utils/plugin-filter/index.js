@@ -14,7 +14,7 @@ import { isNonBlankText } from '../text';
  * Tells whether a field is one the plugins page filters on.
  *
  * @param {*} field - Name of the field, read from a URL or a form.
- * @returns {boolean} True for brand, categories and label.
+ * @returns {boolean} True for name, brand, categories and label.
  */
 const isPluginFilterField = field => PLUGIN_FILTER_FIELDS.includes(field);
 

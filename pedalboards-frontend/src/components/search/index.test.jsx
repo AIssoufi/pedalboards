@@ -26,7 +26,7 @@ it('names each field to search in', () => {
   render(<Search />);
 
   const optionTexts = screen.getAllByRole('option').map(option => option.textContent);
-  expect(optionTexts).toEqual(['brand', 'category', 'label']);
+  expect(optionTexts).toEqual(['name', 'brand', 'category', 'label']);
 });
 
 it('calls onSubmit with the text and the field to search in', () => {
@@ -56,7 +56,7 @@ it('calls onSubmit with the form once the typing in the text field pauses', () =
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
     const [formData] = onSubmit.mock.calls[0];
-    expect(Object.fromEntries(formData)).toEqual({ value: 'MDA', label: 'brand' });
+    expect(Object.fromEntries(formData)).toEqual({ value: 'MDA', label: 'name' });
   } finally {
     vi.useRealTimers();
   }
@@ -149,13 +149,20 @@ describe('with the filter of the URL', () => {
     expect(getField().value).toBe('label');
   });
 
+  it('shows a filter on the name of the plugins', () => {
+    render(<Search value="chorus" field="name" />);
+
+    expect(getText().value).toBe('chorus');
+    expect(getField().value).toBe('name');
+  });
+
   it.each([
     ['without a filter', {}],
     ['for values that are not texts', { field: 2, value: { x: 1 } }]
-  ])('shows an empty text in the brand %s', (description, props) => {
+  ])('shows an empty text in the name %s', (description, props) => {
     render(<Search {...props} />);
 
-    expect(getField().value).toBe('brand');
+    expect(getField().value).toBe('name');
     expect(getText().value).toBe('');
   });
 
@@ -166,10 +173,10 @@ describe('with the filter of the URL', () => {
     expect(getText().value).toBe(value);
   });
 
-  it('shows the text of an unknown field in the brand', () => {
-    render(<Search field="name" value="Gx" />);
+  it('shows the text of an unknown field in the name', () => {
+    render(<Search field="title" value="Gx" />);
 
-    expect(getField().value).toBe('brand');
+    expect(getField().value).toBe('name');
     expect(getText().value).toBe('Gx');
   });
 
@@ -188,7 +195,7 @@ describe('with the filter of the URL', () => {
     rerender(<Search />);
 
     expect(getText().value).toBe('');
-    expect(getField().value).toBe('brand');
+    expect(getField().value).toBe('name');
   });
 
   it('keeps the text as typed when the URL searches the same value', () => {

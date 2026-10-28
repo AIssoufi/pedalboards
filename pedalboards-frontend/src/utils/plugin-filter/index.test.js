@@ -27,7 +27,7 @@ describe('createPluginFilters', () => {
   });
 
   it.each([
-    ['an unknown field', { field: 'name', value: 'MDA' }],
+    ['an unknown field', { field: 'title', value: 'MDA' }],
     ['a missing field', { value: 'MDA' }],
     ['an empty value', { field: 'brand', value: '' }],
     ['a blank value', { field: 'brand', value: '   ' }],
@@ -176,7 +176,7 @@ describe('buildPluginFilterLink', () => {
   it.each([
     ['an empty value', { field: 'brand', value: '' }],
     ['a missing value', { field: 'brand' }],
-    ['an unknown field', { field: 'name', value: 'MDA' }]
+    ['an unknown field', { field: 'title', value: 'MDA' }]
   ])('links to the unfiltered plugins page for %s', (description, params) => {
     expect(buildPluginFilterLink(params)).toEqual({ pathname: '/plugins', search: '' });
   });
@@ -332,5 +332,32 @@ describe('getSearchFilter', () => {
     ['an object', { brand: 'MDA' }]
   ])('gives an empty object for %s', (description, filters) => {
     expect(getSearchFilter(filters)).toEqual({});
+  });
+});
+
+describe('with the name field', () => {
+  it('round-trips a filter on a plugin name through the URL', () => {
+    const { search } = buildPluginFilterLink({ field: 'name', value: 'chorus' });
+
+    expect(search).toBe('?name=chorus');
+    expect(getSearchFilter(parsePluginsSearch(search).filters))
+      .toEqual({ field: 'name', value: 'chorus' });
+  });
+
+  it('keeps a name that matches no plugin, which the API answers', () => {
+    expect(entriesOf(createPluginFilters({ field: 'name', value: 'no such plugin' })))
+      .toEqual([['name', 'no such plugin']]);
+  });
+
+  it.each([
+    ['an empty name', '?name='],
+    ['a blank name', '?name=%20%20'],
+    ['a missing name', '?name']
+  ])('reads no filter for %s', (description, search) => {
+    expect(entriesOf(parsePluginsSearch(search).filters)).toEqual([]);
+  });
+
+  it('creates no filter for an empty name', () => {
+    expect(entriesOf(createPluginFilters({ field: 'name', value: '' }))).toEqual([]);
   });
 });

@@ -1,18 +1,18 @@
 import { isTextOfValue, toSearchField, toSearchText } from './utils';
 
 describe('toSearchField', () => {
-  it.each(['brand', 'categories', 'label'])('keeps the field %s', (field) => {
+  it.each(['name', 'brand', 'categories', 'label'])('keeps the field %s', (field) => {
     expect(toSearchField(field)).toBe(field);
   });
 
   it.each([
     ['no field', undefined],
     ['null', null],
-    ['an unknown field', 'name'],
+    ['an unknown field', 'title'],
     ['a field in another case', 'Label'],
     ['a number', 1]
-  ])('gives brand for %s', (description, field) => {
-    expect(toSearchField(field)).toBe('brand');
+  ])('gives name for %s', (description, field) => {
+    expect(toSearchField(field)).toBe('name');
   });
 });
 
