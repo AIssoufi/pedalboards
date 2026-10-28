@@ -37,4 +37,30 @@
       border-right: 5px solid #ff2200;
     }
   }
+
+  @media (max-width: $phone-max-width) {
+    flex-flow: row wrap;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 0 0;
+    img {
+      width: 40px;
+    }
+    p {
+      margin: 0 10px;
+    }
+
+    nav {
+      margin-top: 10px;
+      flex-flow: row nowrap;
+      .nav-item {
+        flex: 1 1 0;
+        padding: 0.75em;
+      }
+      .active {
+        border-right: none;
+        border-bottom: 5px solid #ff2200;
+      }
+    }
+  }
 }

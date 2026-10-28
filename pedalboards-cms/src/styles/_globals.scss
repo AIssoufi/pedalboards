@@ -1,1 +1,4 @@
 @import 'styles/_colors.scss';
+
+// Widest screen laid out for phones: the sidebar moves above the content, forms take one column
+$phone-max-width: 480px;

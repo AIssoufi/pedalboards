@@ -13,4 +13,15 @@
     padding: 15px 10px;
     overflow-x: auto;
   }
+
+  @media (max-width: $phone-max-width) {
+    flex-flow: column nowrap;
+    height: auto;
+    min-height: 100vh;
+
+    .main-container {
+      box-sizing: border-box;
+      flex: 1 0 auto;
+    }
+  }
 }
