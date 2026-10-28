@@ -14,13 +14,22 @@ export const UNKNOWN_PAGE_COUNT = 0;
 export const NO_PLUGINS = [];
 
 /** End of the accessible name of a link that opens in a new tab */
-export const NEW_TAB_NOTE = '(nouvel onglet)';
+export const NEW_TAB_NOTE = '(new tab)';
+
+/** Title of the page */
+export const PAGE_TITLE = 'My plugins';
+
+/** Visible text of the link to the form that adds a plugin */
+export const ADD_PLUGIN_TEXT = 'Add a plugin';
+
+/** Shown in place of the list when it holds no plugin */
+export const EMPTY_STATE_TEXT = 'You have not added any plugins';
 
 /** Visible text of the view action, which also starts its accessible name */
-export const VIEW_ACTION = 'Voir';
+export const VIEW_ACTION = 'View';
 
 /** Visible text of the edit action, which also starts its accessible name */
-export const EDIT_ACTION = 'Éditer';
+export const EDIT_ACTION = 'Edit';
 
 /** Visible text of the delete action, which also starts its accessible name */
-export const DELETE_ACTION = 'Supprimer';
+export const DELETE_ACTION = 'Delete';

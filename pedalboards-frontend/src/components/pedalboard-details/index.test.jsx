@@ -7,7 +7,7 @@ import { MemoryRouter } from 'react-router';
 // Components
 import PedalboardDetails from './index';
 
-const LOADER_TEXT = 'Je Fais ça En Deux Deux...';
+const LOADER_TEXT = 'Loading...';
 
 /**
  * Renders the details of a plugin in a router.

@@ -13,6 +13,8 @@ const NO_PLUGINS = [];
 // 1200 of the main container: their screenshots load at once, the others once they near the
 // viewport
 const FIRST_ROW_CARD_COUNT = 5;
+// Shown in place of the grid when no plugin matches the search
+const EMPTY_STATE_TEXT = 'No plugin matches your search!';
 
 /**
  * Props of {@link PluginGrid}.
@@ -44,7 +46,7 @@ const PluginGrid = ({ plugins = NO_PLUGINS, isLoading = false }) => {
             <Plugin key={p._id} {...p} isScreenshotLazy={index >= FIRST_ROW_CARD_COUNT} />
           )
         )
-          : <p lang="fr">Aucun plugin ne correspond à votre recherche !</p>
+          : <p>{EMPTY_STATE_TEXT}</p>
       }
     </div>
   );

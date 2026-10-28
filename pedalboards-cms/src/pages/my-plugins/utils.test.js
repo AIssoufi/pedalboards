@@ -78,12 +78,12 @@ describe('isPageInRange', () => {
 
 describe('toPluginActionLabel', () => {
   it('names the plugin that the action acts on', () => {
-    expect(toPluginActionLabel({ action: 'Éditer', pluginName: 'Gate' })).toBe('Éditer Gate');
+    expect(toPluginActionLabel({ action: 'Edit', pluginName: 'Gate' })).toBe('Edit Gate');
   });
 
   it('trims the spaces around the name of the plugin', () => {
-    expect(toPluginActionLabel({ action: 'Supprimer', pluginName: ' Gate  ' }))
-      .toBe('Supprimer Gate');
+    expect(toPluginActionLabel({ action: 'Delete', pluginName: ' Gate  ' }))
+      .toBe('Delete Gate');
   });
 
   it.each([
@@ -93,17 +93,17 @@ describe('toPluginActionLabel', () => {
     ['null', null],
     ['a number', 42]
   ])('keeps the action alone for %s', (label, pluginName) => {
-    expect(toPluginActionLabel({ action: 'Éditer', pluginName })).toBe('Éditer');
+    expect(toPluginActionLabel({ action: 'Edit', pluginName })).toBe('Edit');
   });
 
   it('says that the action opens a new tab', () => {
-    expect(toPluginActionLabel({ action: 'Voir', pluginName: 'Gate', opensInNewTab: true }))
-      .toBe('Voir Gate (nouvel onglet)');
+    expect(toPluginActionLabel({ action: 'View', pluginName: 'Gate', opensInNewTab: true }))
+      .toBe('View Gate (new tab)');
   });
 
   it('says that the action opens a new tab for a plugin without a name', () => {
-    expect(toPluginActionLabel({ action: 'Voir', opensInNewTab: true }))
-      .toBe('Voir (nouvel onglet)');
+    expect(toPluginActionLabel({ action: 'View', opensInNewTab: true }))
+      .toBe('View (new tab)');
   });
 
   it.each([
@@ -111,9 +111,9 @@ describe('toPluginActionLabel', () => {
     ['the name alone for an empty action', { action: '', pluginName: 'Gate' }, 'Gate'],
     ['the name alone for a null action', { action: null, pluginName: 'Gate' }, 'Gate'],
     ['the new tab note alone without an action or a name', { opensInNewTab: true },
-      '(nouvel onglet)'],
+      '(new tab)'],
     ['the name and the new tab note without an action',
-      { pluginName: 'Gate', opensInNewTab: true }, 'Gate (nouvel onglet)']
+      { pluginName: 'Gate', opensInNewTab: true }, 'Gate (new tab)']
   ])('gives %s, without spaces around', (label, params, expected) => {
     expect(toPluginActionLabel(params)).toBe(expected);
   });

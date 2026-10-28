@@ -26,6 +26,8 @@ import './style.scss';
 
 // Number of plugins on each page
 const PAGE_SIZE = 10;
+// Shown in place of the grid when the plugins fail to load
+const LOAD_ERROR_TEXT = 'Could not load the plugins, try again later.';
 
 // A failed or dropped request already shows its state through the store
 const ignoreFailure = () => {};
@@ -112,7 +114,7 @@ const PluginsPage = () => {
         onCurrentPageChange={setCurrentPageHandler}
       />
       {hasFailed
-        ? <p role="alert" lang="fr">Impossible de charger les plugins, réessayez plus tard.</p>
+        ? <p role="alert">{LOAD_ERROR_TEXT}</p>
         : <PluginGrid isLoading={isLoading} plugins={plugins} />}
       <Pagination
         currentPage={currentPage}

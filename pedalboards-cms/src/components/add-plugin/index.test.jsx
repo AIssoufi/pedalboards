@@ -76,19 +76,10 @@ describe('AddPlugin', () => {
     expect(readPropTypeWarnings()).toEqual([]);
   });
 
-  it('marks its English fields, button and control ports inside the French page', () => {
+  it('leaves its texts in the language of the page', () => {
     view = render(<AddPlugin />);
 
-    const { container } = view;
-    const englishElements = [
-      ...container.querySelectorAll('input[placeholder], textarea'),
-      container.querySelector('button[type="submit"]'),
-      container.querySelector('.control-ports')
-    ];
-
-    expect(englishElements.map(element => element.closest('[lang]').lang))
-      .toEqual(englishElements.map(() => 'en'));
-    expect(container.querySelector('h1').closest('[lang]')).toBeNull();
+    expect(view.container.querySelector('[lang]')).toBeNull();
   });
 
   it('leaves the main landmark to the app, which already wraps the page in one', () => {
@@ -107,13 +98,12 @@ describe('AddPlugin', () => {
     expect(screenshotField.classList.contains('bg-primary')).toBe(false);
   });
 
-  it('names each field of the plugin and of the control ports in English', () => {
+  it('names each field of the plugin and of the control ports', () => {
     view = render(<AddPlugin />);
 
     const fields = [...view.container.querySelectorAll('input, textarea')];
 
     expect(fields.map(field => field.getAttribute('aria-label'))).toEqual(FIELD_NAMES);
-    expect(fields.map(field => field.closest('[lang]').lang)).toEqual(FIELD_NAMES.map(() => 'en'));
   });
 
   it('gives an example of categories in the placeholder of their field', () => {
@@ -159,7 +149,7 @@ describe('AddPlugin', () => {
       view = render(<AddPlugin />);
 
       expect(readField({ container: view.container, name: IMAGE_FIELD }).required).toBe(true);
-      expect(view.container.querySelector('h1').textContent).toBe('Ajouter un plugin');
+      expect(view.container.querySelector('h1').textContent).toBe('Add a plugin');
     });
 
     it('creates the plugin with its sample control ports and an empty author', async () => {
@@ -197,7 +187,7 @@ describe('AddPlugin', () => {
       submitForm(readMainForm(view.container));
       await flushPromises();
 
-      expect(readErrorText(view.container)).toBe('La requête a échoué');
+      expect(readErrorText(view.container)).toBe('The request failed');
     });
   });
 
@@ -207,7 +197,7 @@ describe('AddPlugin', () => {
 
       const { container } = view;
 
-      expect(container.querySelector('h1').textContent).toBe('Modifier le plugin');
+      expect(container.querySelector('h1').textContent).toBe('Edit the plugin');
       expect(readField({ container, name: 'name' }).value).toBe('Gate');
       expect(readField({ container, name: 'label' }).value).toBe('Noise gate');
       expect(readField({ container, name: IMAGE_FIELD }).required).toBe(false);

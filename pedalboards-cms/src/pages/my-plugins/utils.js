@@ -54,8 +54,8 @@ export const isPageInRange = ({ page, pageCount } = {}) => {
 };
 
 /**
- * Gives the accessible name of an action on a plugin of the list, so that each "Voir", "Éditer" or
- * "Supprimer" tells which plugin it acts on. It starts with the visible text of the action.
+ * Gives the accessible name of an action on a plugin of the list, so that each "View", "Edit" or
+ * "Delete" tells which plugin it acts on. It starts with the visible text of the action.
  * @param {Object} [params]
  * @param {string} [params.action=''] visible text of the action
  * @param {*} [params.pluginName] name of the plugin
@@ -66,10 +66,10 @@ export const isPageInRange = ({ page, pageCount } = {}) => {
  *   missing parts are left out with their space
  *
  * @example
- * toPluginActionLabel({ action: 'Éditer', pluginName: 'Gate' }); // 'Éditer Gate'
- * toPluginActionLabel({ action: 'Éditer' }); // 'Éditer'
- * toPluginActionLabel({ action: 'Voir', pluginName: 'Gate', opensInNewTab: true });
- * // 'Voir Gate (nouvel onglet)'
+ * toPluginActionLabel({ action: 'Edit', pluginName: 'Gate' }); // 'Edit Gate'
+ * toPluginActionLabel({ action: 'Edit' }); // 'Edit'
+ * toPluginActionLabel({ action: 'View', pluginName: 'Gate', opensInNewTab: true });
+ * // 'View Gate (new tab)'
  */
 export const toPluginActionLabel = ({ action = '', pluginName, opensInNewTab = false } = {}) => {
   const trimmedName = typeof pluginName === 'string' ? pluginName.trim() : '';

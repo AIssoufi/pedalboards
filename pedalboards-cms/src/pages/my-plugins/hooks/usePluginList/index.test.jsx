@@ -227,7 +227,7 @@ describe('usePluginList', () => {
     hook = renderPluginList();
     hook.unmount();
     hook = undefined;
-    failPlugins(new Error('La requête a échoué (500)'));
+    failPlugins(new Error('The request failed (500)'));
     await flushPromises();
 
     expect(console.error).not.toHaveBeenCalled();
@@ -268,11 +268,11 @@ describe('usePluginList', () => {
   });
 
   it('gives the message of a failed request, then clears it once a page loads', async () => {
-    PedalboardService.getPlugins.mockRejectedValueOnce(new Error('La requête a échoué (500)'));
+    PedalboardService.getPlugins.mockRejectedValueOnce(new Error('The request failed (500)'));
     hook = renderPluginList();
     await flushPromises();
 
-    expect(hook.result.current.errorMessage).toBe('La requête a échoué (500)');
+    expect(hook.result.current.errorMessage).toBe('The request failed (500)');
 
     hook.rerender({ search: '?name=reverb' });
     await flushPromises();

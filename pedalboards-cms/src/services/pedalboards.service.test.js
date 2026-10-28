@@ -7,7 +7,7 @@ const SERVICE_URL = 'http://localhost:8080';
 // Address of the first page of 10 plugins, unfiltered
 const FIRST_PAGE_URL = `${SERVICE_URL}/api/plugins?page=1&pagesize=10`;
 
-const MISSING_ID_MESSAGE = 'Le plugin n\'a pas d\'identifiant';
+const MISSING_ID_MESSAGE = 'The plugin has no id';
 
 // Id holding the characters that would change the path, the query or the fragment of an address
 const RESERVED_ID = 'gate/v2?mode=fast#top';

@@ -18,9 +18,9 @@ import { jsonResponse } from '../../test-utils/fetch';
 // Components
 import PluginsPage from './index';
 
-const EMPTY_GRID_TEXT = 'Aucun plugin ne correspond à votre recherche !';
-const ERROR_TEXT = 'Impossible de charger les plugins, réessayez plus tard.';
-const LOADER_TEXT = 'Je Fais ça En Deux Deux...';
+const EMPTY_GRID_TEXT = 'No plugin matches your search!';
+const ERROR_TEXT = 'Could not load the plugins, try again later.';
+const LOADER_TEXT = 'Loading...';
 const SERVER_ERROR_STATUS = 500;
 
 const PLUGIN = {
@@ -239,7 +239,6 @@ describe('PluginsPage', () => {
     await flushAnswers();
 
     expect((await screen.findByRole('alert')).textContent).toBe(ERROR_TEXT);
-    expect(screen.getByRole('alert').lang).toBe('fr');
     expect(screen.queryByText(EMPTY_GRID_TEXT)).toBeNull();
     expect(screen.queryByText(LOADER_TEXT)).toBeNull();
   });
