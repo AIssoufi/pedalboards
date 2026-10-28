@@ -3,6 +3,7 @@ import { RequestHelper } from 'helpers';
 
 // Utils
 import { Env } from 'utils';
+import { capSearchText } from 'utils/search-text';
 import { isUsablePluginId } from './utils';
 
 // Constants
@@ -57,7 +58,8 @@ class PedalboardService {
 
     if (searchParams instanceof URLSearchParams) {
       for (const pair of searchParams.entries()) {
-        url.searchParams.append(`filterby[${pair[0]}]`, pair[1]);
+        // The API refuses a text whose LIKE pattern is longer than D1 takes: send its longest start
+        url.searchParams.append(`filterby[${pair[0]}]`, capSearchText(pair[1]));
       }
     }
 
