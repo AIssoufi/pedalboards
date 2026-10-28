@@ -410,3 +410,32 @@ measured on 2026-10-27 with pnpm 12.14.0: 23 went through `pedalboards-core-serv
 and 24 through `@cloudflare/vitest-plugin>vitest`. The workspace keeps the same advisories, all
 reached through the CMS, until it leaves Create React App
 ([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
+
+## Since 2026: the frontend on Font Awesome 7
+
+The frontend moves `@fortawesome/fontawesome-svg-core` and `@fortawesome/free-solid-svg-icons`
+from 1.2 and 5 to 7.3.1, and `@fortawesome/react-fontawesome` from 0.2.6 to 3.5.0, which supports
+React 18 and 19 and no longer depends on `prop-types`. The header and the search import the
+names of Font Awesome 6, `faTableList` and `faMagnifyingGlass`. Font Awesome 7 gives every
+icon the fixed width of 1.25 em, which widened the pagination arrows from 16 to 40 pixels and
+wrapped the admin link of the header: each icon sets `widthAuto` to keep the width of its symbol,
+as before. The CSS of the icons comes from `@fortawesome/fontawesome-svg-core/styles.css` in the
+stylesheet of the page instead of a `<style>` element added at load time, so the Content Security
+Policy no longer allows `'unsafe-inline'` in `style-src`. Dependabot proposes the `@fortawesome`
+packages in one pull request. The CMS keeps Font Awesome 5 until it leaves Create React App
+([#45](https://github.com/AIssoufi/pedalboards/issues/45)), since `react-fontawesome` 3 needs
+React 18.
+
+Measured on 2026-10-28 with `measure-migration.mjs`, base and branch in turn, each build from
+empty output and build caches. The JavaScript grows with the core of Font Awesome: its
+`index.js` is 161,689 bytes in 7.3.1 against 77,628 in 1.2.19, before minification. The CSS
+grows by the stylesheet of the icons, which the JavaScript added at load time before.
+
+| Figure | Before (`65b8fd98`) | After |
+| --- | --- | --- |
+| Frontend JS, raw / gzipped | 342,448 / 110,714 B | 401,337 / 123,056 B |
+| Frontend CSS, raw / gzipped | 8,321 / 2,420 B | 34,170 / 5,810 B |
+| Frontend tests, all passing | 701 | 702 |
+| Frontend build, median of 3 | 0.7 s | 0.6 s |
+| Workspace audit advisories, critical / high / moderate / low | 27 / 99 / 69 / 25 | 27 / 99 / 69 / 25 |
+| `<style>` elements in the page of `/plugins` | 1 | 0 |
