@@ -112,6 +112,17 @@ describe('EditPlugin', () => {
     expect(nameField.value).toBe('');
   });
 
+  it('stacks the error banner above the form, in one container', async () => {
+    PedalboardService.getPlugin.mockRejectedValue(new Error('plugin not found'));
+    view = render(<EditPlugin match={ROUTE_MATCH} />);
+    await flushPromises();
+
+    const [banner, form] = view.container.querySelector('.edit-plugin').children;
+
+    expect(banner.getAttribute('role')).toBe('alert');
+    expect(form.classList.contains('add-plugin')).toBe(true);
+  });
+
   it('shows the message of a plugin that cannot be loaded', async () => {
     PedalboardService.getPlugin.mockRejectedValue(new Error('plugin not found'));
     view = render(<EditPlugin match={ROUTE_MATCH} />);
