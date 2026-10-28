@@ -49,4 +49,22 @@
   footer {
     margin-top: auto;
   }
+
+  @media (max-width: $phone-max-width) {
+    .content {
+      .plugin {
+        flex-flow: row wrap;
+        padding: 10px;
+
+        .title {
+          flex: 1 1 100%;
+          margin-bottom: 10px;
+        }
+
+        .controls .btn:first-child {
+          margin-left: 0;
+        }
+      }
+    }
+  }
 }
