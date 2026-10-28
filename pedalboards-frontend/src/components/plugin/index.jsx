@@ -3,7 +3,9 @@ import { Link } from 'react-router';
 
 // Utils
 import { buildPluginFilterLink, isPluginFilterValue } from '../../utils/plugin-filter';
+import { buildPluginPathname } from '../../utils/plugin-pathname';
 import { toScreenshotAlt } from '../../utils/screenshot-alt';
+import { isNonBlankText } from '../../utils/text';
 import { toImageDimension } from './utils';
 
 // Components
@@ -18,7 +20,7 @@ import './style.scss';
  *
  * @typedef {Object} PluginProps
  * @property {string} [_id=''] - Identifier of the plugin, ending the link to its details. No link
- *   when empty.
+ *   when blank.
  * @property {{ avatarUrl?: string, name?: string }} [author] - Author of the plugin, not shown on
  *   the card.
  * @property {string} [brand=''] - Brand, linking to the plugins of that brand. Hidden when empty.
@@ -47,6 +49,8 @@ const Plugin = ({
   categories = [], brand = '', label = ''
 }) => {
   const categoryList = Array.isArray(categories) ? categories.filter(isPluginFilterValue) : [];
+  // A blank id names no plugin page, so the screenshot links nowhere
+  const hasDetailsLink = isNonBlankText(_id);
   const screenshot = screenshotUrl && (
     <img
       src={screenshotUrl}
@@ -59,7 +63,7 @@ const Plugin = ({
 
   return (
     <div className="plugin">
-      {_id ? (
+      {hasDetailsLink ? (
         <Tooltip
           content={(
             <i>
@@ -70,7 +74,7 @@ const Plugin = ({
           )}
           placement="bottom"
         >
-          <Link to={`/plugin/${_id}`}>
+          <Link to={buildPluginPathname(_id)}>
             {screenshot}
           </Link>
         </Tooltip>

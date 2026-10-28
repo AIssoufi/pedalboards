@@ -1,6 +1,7 @@
 // Constants
+import { PLUGINS_PATHNAME } from '../../constants/routes';
 import { FIRST_PAGE } from '../page/constants';
-import { PAGE_PARAM, PLUGIN_FILTER_FIELDS, PLUGINS_PATHNAME } from './constants';
+import { PAGE_PARAM, PLUGIN_FILTER_FIELDS } from './constants';
 
 // Utils
 import { isPageCount, isPageNumber } from '../page';

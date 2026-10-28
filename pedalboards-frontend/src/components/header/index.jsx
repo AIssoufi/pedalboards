@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faThList } from '@fortawesome/free-solid-svg-icons';
 
 // Constants
+import { HOME_PATHNAME, PLUGINS_PATHNAME } from '../../constants/routes';
 import { AUTHOR_CREDIT, AUTHOR_URL } from './constants';
 
 // Utils
@@ -25,7 +26,7 @@ const HAS_ADMIN_PANEL = ADMIN_PANEL_URL !== null;
 const Header = () => (
   <nav className="toolbar whiteframe">
     <div className="toolbar-content">
-      <Link to="/" className="mobile-menu-button" aria-label="Home">
+      <Link to={HOME_PATHNAME} className="mobile-menu-button" aria-label="Home">
         <span className="icon-bar" />
         <span className="icon-bar" />
         <span className="icon-bar" />
@@ -39,7 +40,7 @@ const Header = () => (
       </div>
       <div className="toolbar-option-container">
         {/* NavLink adds the active class while the URL is under /plugins */}
-        <NavLink className="toolbar-option" to="/plugins">
+        <NavLink className="toolbar-option" to={PLUGINS_PATHNAME}>
           <FontAwesomeIcon icon={faThList} />
           <span>Plugins</span>
         </NavLink>

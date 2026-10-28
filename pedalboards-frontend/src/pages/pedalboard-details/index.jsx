@@ -16,7 +16,7 @@ import {
 } from '../../services';
 
 // Constants
-import { PLUGINS_PATHNAME } from '../../utils/plugin-filter/constants';
+import { PLUGINS_PATHNAME } from '../../constants/routes';
 
 // Utils
 import { isPluginLabelShown } from '../../utils/plugin-label';
