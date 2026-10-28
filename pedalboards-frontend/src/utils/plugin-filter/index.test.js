@@ -182,6 +182,41 @@ describe('parsePluginsSearch', () => {
   });
 });
 
+describe('a field repeated in the URL, which the API refuses', () => {
+  it('keeps the first value of the field', () => {
+    const { filters, page } = parsePluginsSearch('?brand=a&brand=b&page=2');
+
+    expect(entriesOf(filters)).toEqual([['brand', 'a']]);
+    expect(page).toBe(2);
+  });
+
+  it.each([
+    ['an empty first value', '?brand=&brand=b&brand=c'],
+    ['a blank first value', '?brand=%20&brand=b'],
+    ['a first value without "="', '?brand&brand=b']
+  ])('keeps the first value that is not blank after %s', (description, search) => {
+    expect(entriesOf(parsePluginsSearch(search).filters)).toEqual([['brand', 'b']]);
+  });
+
+  it('keeps no filter when every value is blank', () => {
+    expect(entriesOf(parsePluginsSearch('?brand=&brand=%20').filters)).toEqual([]);
+  });
+
+  it('keeps the first value of each field, in the order of the URL', () => {
+    const { filters } = parsePluginsSearch('?label=x&brand=a&label=y&brand=b');
+
+    expect(entriesOf(filters)).toEqual([['label', 'x'], ['brand', 'a']]);
+  });
+
+  it('keeps a single value of the field as it is', () => {
+    expect(entriesOf(parsePluginsSearch('?brand=a').filters)).toEqual([['brand', 'a']]);
+  });
+
+  it('keeps the first of two equal values once', () => {
+    expect(entriesOf(parsePluginsSearch('?brand=a&brand=a').filters)).toEqual([['brand', 'a']]);
+  });
+});
+
 describe('isValidPage', () => {
   it.each([
     [1, 3, true],
@@ -351,5 +386,11 @@ describe('the filter value at the byte limit of the API', () => {
     const { filters } = parsePluginsSearch(`?brand=${'%C3%A9'.repeat(MAX_SEARCH_TEXT_LENGTH)}`);
 
     expect(filters.get('brand')).toBe('é'.repeat(MAX_SEARCH_TEXT_LENGTH / 2));
+  });
+
+  it('cuts the first value of a repeated field and drops the others', () => {
+    const { filters } = parsePluginsSearch(`?brand=${'a'.repeat(MAX_SEARCH_TEXT_LENGTH + 1)}&brand=b`);
+
+    expect(filters.getAll('brand')).toEqual(['a'.repeat(MAX_SEARCH_TEXT_LENGTH)]);
   });
 });
