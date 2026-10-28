@@ -1,6 +1,6 @@
 import {
 	FILTER_PARAMETER_PATTERN,
-	MAX_SEARCH_TEXT_LENGTH,
+	MAX_SEARCH_PATTERN_BYTES,
 	PLUGIN_FILTER_CONDITIONS
 } from '../constants.js';
 import { InvalidInputError } from '../errors.js';
@@ -17,17 +17,39 @@ import { InvalidInputError } from '../errors.js';
 export const escapeLikePattern = text => text.replace(/[\\%_]/g, '\\$&');
 
 /**
+ * Builds the LIKE pattern that finds a text anywhere in a field.
+ *
+ * @param {string} text - Searched text.
+ * @returns {string} The escaped text between two `%`.
+ * @example
+ * createLikePattern('100%'); // '%100\%%'
+ */
+export const createLikePattern = text => `%${escapeLikePattern(text)}%`;
+
+/** Encoder that counts the UTF-8 bytes of a LIKE pattern, as D1 measures it */
+const utf8Encoder = new TextEncoder();
+
+/**
+ * Tells whether D1 accepts the LIKE pattern of a searched text.
+ *
+ * @param {string} text - Searched text.
+ * @returns {boolean} True when its pattern holds MAX_SEARCH_PATTERN_BYTES UTF-8 bytes at most.
+ */
+const isSearchablePattern = text => utf8Encoder.encode(createLikePattern(text)).length <= MAX_SEARCH_PATTERN_BYTES;
+
+/**
  * Reads a searched text from a query parameter.
  *
  * @param {unknown} value - Value of the parameter: a string, an array when repeated, or undefined.
  * @returns {string} The text, empty when the parameter is missing.
- * @throws {InvalidInputError} When the parameter is repeated or too long.
+ * @throws {InvalidInputError} When the parameter is repeated, or too long for the LIKE pattern
+ * that D1 accepts.
  */
 export const parseSearchText = value => {
 	if (value === undefined) {
 		return '';
 	}
-	const isValidText = typeof value === 'string' && value.length <= MAX_SEARCH_TEXT_LENGTH;
+	const isValidText = typeof value === 'string' && isSearchablePattern(value);
 	if (!isValidText) {
 		throw new InvalidInputError('Invalid searched text');
 	}

@@ -13,8 +13,12 @@ export const DEFAULT_PAGE_SIZE = 10;
 /** Largest page size, so that one request never reads the whole table */
 export const MAX_PAGE_SIZE = 100;
 
-/** Longest searched text, far below the length that SQLite allows for a LIKE pattern */
-export const MAX_SEARCH_TEXT_LENGTH = 100;
+/**
+ * Longest LIKE pattern of a search, in UTF-8 bytes, its surrounding `%` and its escapes included:
+ * D1 answers a longer one with an error, measured on the production database in October 2026.
+ * So a text of 48 ASCII letters is the longest one, and a `%` or an `é` costs two bytes.
+ */
+export const MAX_SEARCH_PATTERN_BYTES = 50;
 
 /** Digits only: no sign, no decimal point, no exponent and no space */
 export const POSITIVE_INTEGER_PATTERN = /^[0-9]+$/;

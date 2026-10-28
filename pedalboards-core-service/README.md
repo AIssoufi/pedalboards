@@ -18,6 +18,9 @@ deployed Worker serves the read routes only, on `pedalboards.issoufi.fr/api/*`
 - The filters (`filterby[<field>]`) search `brand`, `categories`, `label` and `name` only, and
   another field answers `400`. A plugin matches when one of the filtered fields holds its text,
   taken literally (`%` and `_` included), whatever the case of ASCII letters.
+- A searched text answers `400` when its LIKE pattern exceeds the 50 UTF-8 bytes that D1 takes:
+  the text, a `%` on each side and a `\` before each `%`, `_` and `\`. So 48 ASCII letters is
+  the longest text, and an `é` costs two bytes.
 - Errors are short JSON messages, never a stack: `400` for bad input, `503` when the database
   fails, `500` otherwise, and a JSON `404` for an unknown route.
 
