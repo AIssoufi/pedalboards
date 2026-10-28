@@ -3,7 +3,7 @@
  * @param {*} value value to check, from any source
  * @returns {boolean} true for a non-empty string, false for anything else
  * @example
- * isNonEmptyText('Plugin non trouvé'); // true
+ * isNonEmptyText('plugin not found'); // true
  * isNonEmptyText(''); // false
  * isNonEmptyText(404); // false
  */

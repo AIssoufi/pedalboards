@@ -87,21 +87,21 @@ export const CORS_HEADERS = {
 export const WRITE_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS';
 
 /**
- * Messages of the API responses. Those of the former Express service keep their wording, which
- * clients may read, and the new ones are in English.
+ * Messages of the API responses, in English. The CMS shows the message of an error response as it
+ * comes, and no client matches on their wording: match on the status instead.
  */
 export const MESSAGES = {
 	pluginsCount: 'plugins count',
-	pluginsFound: 'plugins recherchés avec succès',
-	pluginFound: 'Details du plugin envoyés',
-	pluginNotFound: 'Plugin non trouvé',
-	pluginCreated: 'Ajout réussi',
-	pluginUpdated: 'Modification réussie',
-	pluginDeleted: 'Suppression réussie',
+	pluginsFound: 'plugins found',
+	pluginFound: 'plugin details',
+	pluginNotFound: 'plugin not found',
+	pluginCreated: 'plugin created',
+	pluginUpdated: 'plugin updated',
+	pluginDeleted: 'plugin deleted',
 	pluginExists: 'a plugin with this name already exists',
 	imageNotFound: 'image not found',
 	invalidInput: 'invalid parameters',
-	databaseError: 'erreur de connexion à la base de données',
+	databaseError: 'database connection error',
 	routeNotFound: 'unknown route',
 	internalError: 'internal server error'
 };

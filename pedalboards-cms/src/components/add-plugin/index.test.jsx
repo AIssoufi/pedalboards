@@ -258,12 +258,12 @@ describe('AddPlugin', () => {
     });
 
     it('shows the message of a failed update', async () => {
-      PedalboardService.updatePlugin.mockRejectedValue(new Error('Plugin non trouvé'));
+      PedalboardService.updatePlugin.mockRejectedValue(new Error('plugin not found'));
       view = render(<AddPlugin edit {...GATE} />);
       submitForm(readMainForm(view.container));
       await flushPromises();
 
-      expect(readErrorText(view.container)).toBe('Plugin non trouvé');
+      expect(readErrorText(view.container)).toBe('plugin not found');
     });
 
     it('clears the message once a new save succeeds', async () => {

@@ -36,10 +36,10 @@ describe('RequestHelper', () => {
   });
 
   it('gives the body of a successful response', async () => {
-    respondWith({ status: 200, body: { msg: 'Details du plugin envoyés', data: { _id: 'gate' } } });
+    respondWith({ status: 200, body: { msg: 'plugin details', data: { _id: 'gate' } } });
 
     await expect(get(URL)).resolves.toEqual({
-      msg: 'Details du plugin envoyés',
+      msg: 'plugin details',
       data: { _id: 'gate' }
     });
   });
@@ -54,12 +54,12 @@ describe('RequestHelper', () => {
   });
 
   it('rejects a non-2xx response with the message of the service and its status', async () => {
-    respondWith({ status: 404, body: { msg: 'Plugin non trouvé' } });
+    respondWith({ status: 404, body: { msg: 'plugin not found' } });
 
     const error = await get(URL).catch(caught => caught);
 
     expect(error).toBeInstanceOf(Error);
-    expect(error.message).toBe('Plugin non trouvé');
+    expect(error.message).toBe('plugin not found');
     expect(error.status).toBe(404);
   });
 
@@ -168,7 +168,7 @@ describe('RequestHelper', () => {
 
 describe('readErrorMessage', () => {
   it('gives the message of the error', () => {
-    expect(readErrorMessage(new Error('Plugin non trouvé'))).toBe('Plugin non trouvé');
+    expect(readErrorMessage(new Error('plugin not found'))).toBe('plugin not found');
   });
 
   it('gives a generic message for an error without one', () => {
