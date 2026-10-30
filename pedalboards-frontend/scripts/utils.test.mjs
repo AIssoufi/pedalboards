@@ -1,3 +1,4 @@
+import { REQUIRED_HEADERS } from './constants.mjs';
 import { findMarkers, findMissingHeaders, parseHeadersRules } from './utils.mjs';
 
 const MARKERS = ['redux-logger', 'prev state'];
@@ -163,6 +164,26 @@ describe('findMissingHeaders', () => {
     const required = [null, { pattern: '/*' }, { pattern: '/*', headers: ['', '  ', 42, null] }];
 
     expect(findMissingHeaders({ rules, required })).toEqual([]);
+  });
+
+  it('requires the enforcing Content Security Policy, which the report-only one does not replace', () => {
+    const headersOf = name => `/*
+  Strict-Transport-Security: max-age=31536000
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=()
+  ${name}: default-src 'self'
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+`;
+    const findMissing = name => findMissingHeaders({
+      rules: parseHeadersRules(headersOf(name)),
+      required: REQUIRED_HEADERS
+    });
+
+    expect(findMissing('Content-Security-Policy-Report-Only'))
+      .toEqual([{ pattern: '/*', header: 'Content-Security-Policy' }]);
+    expect(findMissing('Content-Security-Policy')).toEqual([]);
   });
 
   it('skips requirements without a pattern, even with rules that are null or have none', () => {

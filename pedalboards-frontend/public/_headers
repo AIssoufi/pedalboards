@@ -2,8 +2,8 @@
 # The API is a Worker on /api/*, which sends its own headers. Syntax:
 # https://developers.cloudflare.com/pages/configuration/headers/
 #
-# The Content Security Policy only reports for now: the browser logs each violation in the console
-# and blocks nothing. It allows the API on the site origin, which the preview deployments on
+# The Content Security Policy blocks what it does not allow, and the browser logs each violation in
+# the console. It allows the API on the site origin, which the preview deployments on
 # *.pages.dev call across origins, and the plugin screenshots of the MOD Devices API. The styles
 # come from the site only: Font Awesome adds no <style> element, since src/index.jsx imports its
 # CSS and turns autoAddCss off. React sets the style attributes of the tooltip through the DOM,
@@ -12,7 +12,7 @@
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Frame-Options: DENY
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://pedalboards.issoufi.fr https://api.moddevices.com; connect-src 'self' https://pedalboards.issoufi.fr; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://pedalboards.issoufi.fr https://api.moddevices.com; connect-src 'self' https://pedalboards.issoufi.fr; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
 
 # Vite names each file of assets/ after a hash of its content, so a file never changes: browsers
 # keep it for a year without asking the server again
