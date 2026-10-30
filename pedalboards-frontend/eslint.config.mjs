@@ -24,7 +24,7 @@ const REACT_PRESETS = [
 // The recommended presets of ESLint and of its React, hooks, accessibility and import plugins, in
 // place of airbnb, which has no flat config (docs/decisions/0008-eslint-flat-config.md)
 export default [
-  { ignores: ['build/'] },
+  { ignores: ['build/', '.wrangler/'] },
   js.configs.recommended,
   importX.flatConfigs.recommended,
   ...REACT_PRESETS.map(preset => ({ ...preset, files: APP_FILES })),
