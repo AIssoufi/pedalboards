@@ -1,4 +1,4 @@
-@import '../../styles/_globals.scss';
+@use '../../styles/globals';
 
 .search-container {
   display: flex;
@@ -30,14 +30,14 @@
       border: none;
       padding: 5px 10px;
       font-size: 1.5rem;
-      color: $title-primary-color;
+      color: globals.$title-primary-color;
     }
     button {
       width: 40px;
       height: 40px;
       padding: 10px;
-      color: $bg-text-primary-color;
-      background-color: $bg-primary-color;
+      color: globals.$bg-text-primary-color;
+      background-color: globals.$bg-primary-color;
       border: none;
       cursor: pointer;
     }

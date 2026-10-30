@@ -1,4 +1,4 @@
-@import '../../styles/_globals.scss';
+@use '../../styles/globals';
 
 // Above the fixed header
 $tooltip-z-index: 9999;
@@ -22,8 +22,8 @@ $tooltip-easing: cubic-bezier(.165, .84, .44, 1);
   max-width: $tooltip-max-width;
   padding: .4rem .8rem;
   border-radius: 4px;
-  background-color: $tooltip-bg-color;
-  color: $bg-text-primary-color;
+  background-color: globals.$tooltip-bg-color;
+  color: globals.$bg-text-primary-color;
   font-size: .95rem;
   text-align: center;
   -webkit-font-smoothing: antialiased;

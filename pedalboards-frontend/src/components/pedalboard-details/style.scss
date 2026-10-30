@@ -1,4 +1,4 @@
-@import '../../styles/_globals.scss';
+@use '../../styles/globals';
 
 // Widest viewport where the control-port table tightens its cells to keep every column in view
 $control-ports-narrow-viewport: 480px;
@@ -19,7 +19,7 @@ $control-ports-narrow-cell-padding: 6px;
       }
       a {
         font-size: 0.9em;
-        color: $text-primary-color;
+        color: globals.$text-primary-color;
         text-decoration: none;
         overflow-wrap: anywhere;
       }
@@ -35,14 +35,14 @@ $control-ports-narrow-cell-padding: 6px;
         text-align: center;
         line-height: 40px;
         margin: 3px;
-        background-color: $bg-primary-color;
-        color: $bg-text-primary-color;
+        background-color: globals.$bg-primary-color;
+        color: globals.$bg-text-primary-color;
         font-weight: bold;
         font-size: 1.5em;
         span {
           text-align: center;
           line-height: 40px;
-          color: $bg-text-primary-color;
+          color: globals.$bg-text-primary-color;
           font-weight: bold;
           font-size: 1.5em;
         }
@@ -55,7 +55,7 @@ $control-ports-narrow-cell-padding: 6px;
     font-weight: bold;
     font-size: 1.5em;
     margin: 0.83em 0;
-    color: $bg-primary-color;
+    color: globals.$bg-primary-color;
   }
 
   .plugin-media-container {
@@ -75,8 +75,8 @@ $control-ports-narrow-cell-padding: 6px;
     justify-content: center;
       .plugin-category {
         padding: 5px;
-        background-color: $bg-primary-color;
-        color: $bg-text-primary-color;
+        background-color: globals.$bg-primary-color;
+        color: globals.$bg-text-primary-color;
         text-decoration: none;
         font-size: .8em;
         display: inline-block;
