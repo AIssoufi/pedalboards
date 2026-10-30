@@ -23,7 +23,9 @@ export const REQUIRED_HEADERS = [
       'Strict-Transport-Security',
       'X-Frame-Options',
       'Permissions-Policy',
-      'Content-Security-Policy-Report-Only'
+      // The enforcing policy: Content-Security-Policy-Report-Only, which blocks nothing, does not
+      // count
+      'Content-Security-Policy'
     ]
   },
   // The long cache of the files that Vite names after a hash of their content

@@ -200,7 +200,7 @@ request to `master` and every push to `master`, with one job per app, which cach
   `pnpm run check:bundle` fails when that bundle holds a write route or a multipart parser.
 - The `pnpm run check:bundle` of the frontend fails when the scripts of its build hold
   development-only code, such as the state checks of Redux Toolkit, or when its `_headers` file
-  lacks a security or cache header.
+  lacks a security or cache header: a report-only Content Security Policy does not count.
 - `CI=true` runs the Jest of the CMS once instead of in watch mode, and turns the lint warnings of
   its build into errors. The frontend runs Vitest once (`vitest run`) and ignores it.
 - `pnpm run check:dev-server` starts the dev server of the frontend on a free port, checks that the
@@ -251,9 +251,9 @@ origin ([decision record](docs/decisions/0005-cloudflare-pages-and-d1-worker.md)
   (`pnpm start:core-service:local`).
 - [`pedalboards-frontend/public/_headers`](pedalboards-frontend/public/_headers) sets the
   headers that Pages sends with the site: `Strict-Transport-Security`, `X-Frame-Options`, a
-  `Permissions-Policy`, a Content Security Policy that only reports its violations in the
-  console for now (`Content-Security-Policy-Report-Only`), and a one-year `immutable` cache on
-  `/assets/*`, whose file names hold a hash of their content. The Worker sends its own headers.
+  `Permissions-Policy`, a `Content-Security-Policy` that blocks what it does not allow and logs
+  each violation in the console, and a one-year `immutable` cache on `/assets/*`, whose file
+  names hold a hash of their content. The Worker sends its own headers.
 - Pages answers an unknown path with `index.html`, so deep links such as `/plugin/<id>` load the
   app, except under `/assets/`:
   [`pedalboards-frontend/public/assets/404.html`](pedalboards-frontend/public/assets/404.html)
