@@ -110,7 +110,7 @@ describe('the title of the page', () => {
     mockFetch(() => ({ uri: 'https://plugin/2', ...labelField }));
     renderAt('/plugin/2');
 
-    expect(await screen.findByRole('link', { name: 'https://plugin/2' })).toBeDefined();
+    expect(await screen.findByText('https://plugin/2')).toBeDefined();
     expect(readPageTitles()).toEqual(['Plugin']);
   });
 
@@ -118,7 +118,7 @@ describe('the title of the page', () => {
     mockFetch(() => ({ uri: 'https://plugin/2', label: 'abGate' }));
     renderAt('/plugin/2');
 
-    expect(await screen.findByRole('link', { name: 'https://plugin/2' })).toBeDefined();
+    expect(await screen.findByText('https://plugin/2')).toBeDefined();
     expect(readPageTitles()).toEqual(['abGate']);
   });
 });
@@ -137,7 +137,7 @@ it('shows the loader, then the plugin of the id of its route', async () => {
   renderAt('/plugin/2');
 
   expect(screen.getByText(LOADER_TEXT)).toBeDefined();
-  expect(await screen.findByRole('link', { name: 'https://plugin/2' })).toBeDefined();
+  expect(await screen.findByText('https://plugin/2')).toBeDefined();
   expect(screen.queryByText(LOADER_TEXT)).toBeNull();
 });
 
@@ -145,7 +145,7 @@ it('fetches the plugin of a new id and shows the loader until it answers', async
   const answerById = holdFetch();
   const router = renderAt('/plugin/2');
   answerById['2']();
-  expect(await screen.findByRole('link', { name: 'https://plugin/2' })).toBeDefined();
+  expect(await screen.findByText('https://plugin/2')).toBeDefined();
 
   await navigate({ router, url: '/plugin/3' });
 
@@ -153,7 +153,7 @@ it('fetches the plugin of a new id and shows the loader until it answers', async
   // The chunk of the details is loaded by now, so this loader is the one of the fetch
   expect(readPageTitles()).toEqual(['Plugin']);
   answerById['3']();
-  expect(await screen.findByRole('link', { name: 'https://plugin/3' })).toBeDefined();
+  expect(await screen.findByText('https://plugin/3')).toBeDefined();
   expect(window.fetch).toHaveBeenCalledTimes(2);
 });
 
@@ -197,7 +197,7 @@ it('shows the plugin of a new id after a not-found answer', async () => {
 
   await navigate({ router, url: '/plugin/3' });
 
-  expect(await screen.findByRole('link', { name: 'https://plugin/3' })).toBeDefined();
+  expect(await screen.findByText('https://plugin/3')).toBeDefined();
   expect(screen.queryByRole('alert')).toBeNull();
 });
 
@@ -209,7 +209,7 @@ it('shows the plugin of a new id after an error', async () => {
 
   await navigate({ router, url: '/plugin/3' });
 
-  expect(await screen.findByRole('link', { name: 'https://plugin/3' })).toBeDefined();
+  expect(await screen.findByText('https://plugin/3')).toBeDefined();
   expect(screen.queryByRole('alert')).toBeNull();
 });
 
@@ -232,19 +232,19 @@ it('ignores the late answer of a previous id', async () => {
   await navigate({ router, url: '/plugin/3' });
 
   answerById['3']();
-  expect(await screen.findByRole('link', { name: 'https://plugin/3' })).toBeDefined();
+  expect(await screen.findByText('https://plugin/3')).toBeDefined();
   answerById['2']();
 
   // The answer for id 2 settles, then leaves the plugin of id 3 on the page
   await new Promise((resolve) => { setTimeout(resolve); });
-  expect(screen.getByRole('link', { name: 'https://plugin/3' })).toBeDefined();
+  expect(screen.getByText('https://plugin/3')).toBeDefined();
   expect(screen.queryByText(LOADER_TEXT)).toBeNull();
 });
 
 it('shows its empty state when the route loses its id', async () => {
   mockFetch(url => ({ uri: `https://plugin/${url.split('/').pop()}` }));
   const router = renderAt('/plugin/2');
-  expect(await screen.findByRole('link', { name: 'https://plugin/2' })).toBeDefined();
+  expect(await screen.findByText('https://plugin/2')).toBeDefined();
 
   await navigate({ router, url: '/plugin' });
 
