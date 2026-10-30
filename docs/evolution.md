@@ -439,3 +439,23 @@ grows by the stylesheet of the icons, which the JavaScript added at load time be
 | Frontend build, median of 3 | 0.7 s | 0.6 s |
 | Workspace audit advisories, critical / high / moderate / low | 27 / 99 / 69 / 25 | 27 / 99 / 69 / 25 |
 | `<style>` elements in the page of `/plugins` | 1 | 0 |
+
+## Since 2026: the frontend styles on Sass modules
+
+The frontend loads its styles with `@use` and `@forward` in place of `@import`, which Dart Sass
+deprecated and removes in version 3. `sass-migrator` 2.6.1 proposed the namespaces, then a review
+by hand kept one entry point: `styles/_globals.scss` forwards `_colors.scss`, and each style file
+that reads a color loads it under the `globals` namespace. `index.scss` reads no variable, so it
+loads nothing. The tool stays Dart Sass, so this step has no decision record. The CMS keeps
+`@import` until it leaves Create React App
+([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
+
+Measured on 2026-10-31 with `CI=true pnpm run build`, base and branch in turn. Each of the 10
+stylesheets that loaded `_globals.scss` printed two warnings, one for its own `@import` and one for
+that of `_globals.scss`, and these warnings hid any new one. The built CSS does not change.
+
+| Figure | Before (`a6cc7c10`) | After |
+| --- | --- | --- |
+| Sass deprecation warnings of the frontend build | 20 | 0 |
+| `@import` rules in `pedalboards-frontend/src` | 11 | 0 |
+| Built CSS, SHA-1 of `index` / `pedalboard-details` | `33aea44e` / `742cbac2` | the same |
