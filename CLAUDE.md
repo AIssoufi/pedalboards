@@ -1,6 +1,6 @@
 # Pedalboards
 
-A store of audio plugins: a pnpm workspace of three apps on Node.js 24 (`.nvmrc`). The
+A store of audio plugins: a pnpm workspace of three apps on Node.js 26 (`.nvmrc`). The
 [README](README.md) explains how to run them; this file lists what agents must follow.
 
 ## Layout
@@ -32,7 +32,7 @@ Install once from the root: `pnpm install --frozen-lockfile`. Then, as the CI ru
 
 ## Known gaps
 
-- The CMS has no lint, and its dev server does not start on Node.js 24, until it leaves
+- The CMS has no lint, and its dev server does not start on Node.js 26, until it leaves
   Create React App ([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
 
 ## Code
