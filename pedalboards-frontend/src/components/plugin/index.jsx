@@ -27,8 +27,8 @@ import './style.scss';
  * @property {Array<string>} [categories=[]] - Categories, each linking to the plugins of that
  *   category.
  * @property {number} [imageHeight] - Height of the screenshot in pixels, see `imageWidth`.
- * @property {number} [imageWidth] - Width of the screenshot in pixels, which with its height
- *   reserves its space in the card before it loads. Ignored unless a whole number above 0.
+ * @property {number} [imageWidth] - Width of the screenshot in pixels, declared on the image; the
+ *   card shows every screenshot in one box, in `style.scss`. Ignored unless a whole number above 0.
  * @property {boolean} [isScreenshotLazy=false] - Loads the screenshot only once the card nears the
  *   viewport, for the cards below the first row.
  * @property {string} [label=''] - Label, linking to the plugins of that label, and naming the

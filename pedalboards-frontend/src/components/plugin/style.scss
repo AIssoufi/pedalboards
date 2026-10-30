@@ -1,5 +1,8 @@
 @import '../../styles/_globals.scss';
 
+// Height of the box of every screenshot, about that of a 357x430 one scaled to the card
+$screenshot-height: 240px;
+
 .plugin {
   // With the padding and the margins, the $plugin-card-column-width of plugin-grid/style.scss
   width: 200px;
@@ -12,8 +15,11 @@
   box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.1);
   
   img {
+    display: block;
     width: 100%;
-    height: auto;
+    height: $screenshot-height;
+    // Shows the whole pedal: cropping would cut its knobs
+    object-fit: contain;
   }
   hr {
     width: 80%;
