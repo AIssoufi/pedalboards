@@ -1,5 +1,5 @@
 // Utils
-import { isNonEmptyText } from './text';
+import { isNonEmptyText } from '.';
 
 describe('isNonEmptyText', () => {
   it('accepts a text of one character or more', () => {
