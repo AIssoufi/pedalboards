@@ -1,5 +1,15 @@
+// Room of a card: its width, its padding and its margins, in plugin/style.scss
+$plugin-card-column-width: 240px;
+
 .plugin-container {
-  display: flex;
-  flex-flow: row wrap;
+  display: grid;
+  // Empty columns keep their place, so a short row starts at the first column, with the gap of a
+  // full row
+  grid-template-columns: repeat(auto-fill, $plugin-card-column-width);
   justify-content: space-around;
+
+  // The empty state takes the whole row, not the first column
+  p {
+    grid-column: 1 / -1;
+  }
 }

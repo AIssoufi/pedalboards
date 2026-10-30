@@ -1,6 +1,7 @@
 @import '../../styles/_globals.scss';
 
 .plugin {
+  // With the padding and the margins, the $plugin-card-column-width of plugin-grid/style.scss
   width: 200px;
   background-color: $bg-text-primary-color;
   padding: 10px;
