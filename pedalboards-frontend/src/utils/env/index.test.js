@@ -1,4 +1,4 @@
-import { get } from './env';
+import { get } from './index';
 
 afterEach(() => {
   vi.unstubAllEnvs();

@@ -43,6 +43,6 @@ settings, so `.env.production` holds the values of every Pages deployment.
 | `VITE_BACKEND`      | Address of the CMS, empty to hide the "Admin Panel" link | `http://localhost:3002` |
 
 - The code reads them with `Env.get('core_service')` and `Env.get('backend')`
-  ([`src/utils/env.js`](src/utils/env.js)).
+  ([`src/utils/env/index.js`](src/utils/env/index.js)).
 - Vite writes every `VITE_` variable into the bundle that visitors download: never give one a
   secret.

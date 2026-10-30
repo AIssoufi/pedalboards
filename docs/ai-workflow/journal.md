@@ -31,7 +31,7 @@ git log --grep='Refs: PEDAL-47'
 
 A problem that a worker finds outside its ticket becomes an issue that names where it was found.
 [#79](https://github.com/AIssoufi/pedalboards/issues/79) starts with "Found while writing the root
-`CLAUDE.md` (#72)", and the root `CLAUDE.md` lists it among the known gaps.
+`CLAUDE.md` (#72)", and the root `CLAUDE.md` listed it among the known gaps until it was closed.
 
 ## The log of agent actions
 

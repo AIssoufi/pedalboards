@@ -34,9 +34,6 @@ Install once from the root: `pnpm install --frozen-lockfile`. Then, as the CI ru
 
 - The CMS has no lint, and its dev server does not start on Node.js 24, until it leaves
   Create React App ([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
-- The `env.js` helpers of the frontend and the CMS, and the `text.js` and `testing.jsx` of the
-  CMS, are flat files in `src/utils`, not folders
-  ([#79](https://github.com/AIssoufi/pedalboards/issues/79)).
 
 ## Code
 
