@@ -1,4 +1,4 @@
-import { toImageDimension } from './utils';
+import { toImageDimension } from './index';
 
 describe('toImageDimension', () => {
   it.each([1, 261, 430])('keeps %p', (value) => {

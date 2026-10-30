@@ -2,11 +2,11 @@
 import { Link } from 'react-router';
 
 // Utils
+import { toImageDimension } from '../../utils/image-dimension';
 import { buildPluginFilterLink, isPluginFilterValue } from '../../utils/plugin-filter';
 import { buildPluginPathname } from '../../utils/plugin-pathname';
 import { toScreenshotAlt } from '../../utils/screenshot-alt';
 import { isNonBlankText } from '../../utils/text';
-import { toImageDimension } from './utils';
 
 // Components
 import Tooltip from '../tooltip';
