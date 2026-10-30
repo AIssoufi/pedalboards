@@ -10,6 +10,8 @@
     background-color: $bg-text-primary-color;
     max-width: 770px;
     width: 100%;
+    // Lets the card shrink to the viewport instead of growing to its widest content
+    min-width: 0;
     min-height: 265px;
     padding: 15px;
     box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.1);

@@ -103,7 +103,8 @@ const PedalboardDetails = ({
         ))}
       </div>
       <p className="pedalboard-description">{description}</p>
-      <div className="plugin-control-ports">
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrolling region */}
+      <div className="plugin-control-ports" role="region" aria-label="Control ports" tabIndex={0}>
         <table>
           <thead>
             <tr>

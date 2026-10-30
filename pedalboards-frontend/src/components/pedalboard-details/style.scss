@@ -1,5 +1,10 @@
 @import '../../styles/_globals.scss';
 
+// Widest viewport where the control-port table tightens its cells to keep every column in view
+$control-ports-narrow-viewport: 480px;
+$control-ports-narrow-font-size: 0.875em;
+$control-ports-narrow-cell-padding: 6px;
+
 .pedalboard-details {
   header {
     display: flex;
@@ -7,6 +12,7 @@
     .author {
       display: flex;
       flex-flow: column nowrap;
+      min-width: 0;
       .author-name {
         font-weight: bold;
         color: #444;
@@ -15,6 +21,7 @@
         font-size: 0.9em;
         color: $text-primary-color;
         text-decoration: none;
+        overflow-wrap: anywhere;
       }
     }
     .count-container {
@@ -106,11 +113,35 @@
           vertical-align: middle;
           text-align: left;
       }
+
+      // A long control name wraps rather than scrolling the table
+      tbody > tr > td:first-child {
+        overflow-wrap: anywhere;
+      }
+
+      @media (max-width: $control-ports-narrow-viewport) {
+        font-size: $control-ports-narrow-font-size;
+
+        thead > tr > th,
+        tbody > tr > td {
+          padding: $control-ports-narrow-cell-padding;
+        }
+      }
     }
   }
 
   .plugin-misc-info-container {
     display: flex;
     justify-content: space-between;
+    gap: 15px;
+
+    .plugin-uri {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .plugin-version {
+      flex-shrink: 0;
+    }
   }
 }

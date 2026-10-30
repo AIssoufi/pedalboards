@@ -109,6 +109,20 @@ it('skips the categories and control ports that cannot be shown', () => {
   expect(rows).toEqual([['Gain', '1', '', ''], ['', '', '', ''], ['', '', '0', '10']]);
 });
 
+it.each([
+  ['some control ports', [{ name: 'Gain', default: 1, min: 0, max: 10 }]],
+  ['no control ports', []],
+  ['control ports that are missing', null],
+  ['control ports that are not a list', 'Delay'],
+  ['bad control-port entries', [null, 'Gain']]
+])('lets the keyboard reach the scrolling table with %s', (description, controlPorts) => {
+  renderDetails({ controlPorts });
+
+  const region = screen.getByRole('region', { name: 'Control ports' });
+  expect(region.tabIndex).toBe(0);
+  expect(region.querySelector('table')).not.toBeNull();
+});
+
 it('encodes the categories of the filter links', () => {
   const container = renderDetails({ categories: ['A&B', 'C++'] });
 
