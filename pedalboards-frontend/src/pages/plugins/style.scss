@@ -1,4 +1,4 @@
-@import '../../styles/_globals.scss';
+@use '../../styles/globals';
 
 .plugins-page-container {
   text-align: center;
@@ -6,7 +6,7 @@
     margin-bottom: 60px;
 
     h1 {
-      color: $bg-primary-color;
+      color: globals.$bg-primary-color;
       text-transform: uppercase;
       font-size: 2rem;
       margin: 0;
@@ -22,7 +22,7 @@
       width: 100px;
       border: none;
       margin-top: 30px;
-      border-top: 1px solid $bg-primary-color;
+      border-top: 1px solid globals.$bg-primary-color;
     }
   }
 }

@@ -1,4 +1,4 @@
-@import '../../styles/_globals.scss';
+@use '../../styles/globals';
 
 .pedalboard-details-wrapper {
   display: flex;
@@ -7,7 +7,7 @@
   padding: 40px 0;
 
   .details-container {
-    background-color: $bg-text-primary-color;
+    background-color: globals.$bg-text-primary-color;
     max-width: 770px;
     width: 100%;
     // Lets the card shrink to the viewport instead of growing to its widest content

@@ -1,4 +1,4 @@
-@import '../../styles/_globals.scss';
+@use '../../styles/globals';
 
 .whiteframe {
   box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.1);
@@ -10,7 +10,7 @@
   left: 0;
   width: 100%;
   height: 60px;
-  background-color: $bg-text-primary-color;
+  background-color: globals.$bg-text-primary-color;
   z-index: 1;
   transition: height 0.2s;
 }
@@ -44,7 +44,7 @@
   }
 
   .logo {
-    color: $bg-primary-color
+    color: globals.$bg-primary-color
   }
 }
 
@@ -93,7 +93,7 @@
       color: #444;
       text-decoration: none;
       &.active {
-        color: $bg-primary-color;
+        color: globals.$bg-primary-color;
     }
   }
 
@@ -105,7 +105,7 @@
     height: 3px;
     width: 19px;
     margin-top: 3px;
-    background-color: $text-primary-color;
+    background-color: globals.$text-primary-color;
     border-radius: 1px;
   }
 }
@@ -124,7 +124,7 @@
   max-height: calc(100% - 60px);
   overflow-y: auto;
   display: none;
-  background-color: $bg-text-primary-color;
+  background-color: globals.$bg-text-primary-color;
   z-index: 1;
 
   .menu-container {
@@ -145,7 +145,7 @@
 
       a {
         text-decoration: none;
-        color: $text-primary-color;
+        color: globals.$text-primary-color;
         width: 100%;
         margin: 0 -50px;
         padding: 0 50px;
@@ -157,7 +157,7 @@
 
         .menu-item {
           font-weight: normal;
-          background-color: $bg-text-primary-color;
+          background-color: globals.$bg-text-primary-color;
         }
       }
     }

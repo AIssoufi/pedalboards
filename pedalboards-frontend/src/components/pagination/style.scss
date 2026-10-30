@@ -1,4 +1,4 @@
-@import '../../styles/_globals.scss';
+@use '../../styles/globals';
 
 .navigation {
   display: flex;
@@ -7,13 +7,13 @@
     margin: 40px 20px;
     button {
       margin: 0 3px;
-      color: $bg-primary-color;
-      background-color: $bg-text-primary-color;
-      border: 1px solid $bg-primary-color;
+      color: globals.$bg-primary-color;
+      background-color: globals.$bg-text-primary-color;
+      border: 1px solid globals.$bg-primary-color;
       border-radius: 5px;
       &:hover{
-        color: $bg-text-primary-color;
-        background-color: $bg-primary-color;
+        color: globals.$bg-text-primary-color;
+        background-color: globals.$bg-primary-color;
         cursor: pointer;
       }
     }
@@ -21,9 +21,9 @@
       margin: 0 3px;
     }
     .current-page {
-      color: $bg-text-primary-color;
-      background-color: $bg-primary-color;
-      border-color: $bg-primary-color;
+      color: globals.$bg-text-primary-color;
+      background-color: globals.$bg-primary-color;
+      border-color: globals.$bg-primary-color;
       font-weight: bold;
       font-size: 1.5em;
     }
@@ -38,7 +38,7 @@
     background: none;
     border: none;
     &:hover{
-      color: $bg-primary-color;
+      color: globals.$bg-primary-color;
       cursor: pointer;
     }
     span {
