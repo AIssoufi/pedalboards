@@ -457,4 +457,24 @@ describe('PluginsPage', () => {
       expect(screen.getByRole('link', { name: 'Echo' })).toBeDefined();
     });
   });
+
+  describe('its titles', () => {
+    it.each([
+      ['with results', { url: '/plugins', plugins: [PLUGIN] }],
+      ['on a filter and a page', { url: '/plugins?brand=MDA&page=1', plugins: [PLUGIN] }],
+      ['without results', { url: '/plugins' }],
+      ['when the plugins fail to load', { url: '/plugins', status: SERVER_ERROR_STATUS }]
+    ])('names the tab %s', async (description, page) => {
+      await renderPage(page);
+
+      expect(document.title).toBe('Plugins - Pedalboards');
+    });
+
+    it('makes the heading focusable by a script only', async () => {
+      await renderPage({ url: '/plugins' });
+
+      const heading = screen.getByRole('heading', { level: 1, name: 'Plugins' });
+      expect(heading.getAttribute('tabindex')).toBe('-1');
+    });
+  });
 });

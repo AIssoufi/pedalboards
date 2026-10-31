@@ -1,4 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import {
+  act, fireEvent, render, screen, waitFor
+} from '@testing-library/react';
 import { Provider } from 'react-redux';
 import setupStore from '../redux/store';
 import App from './App';
@@ -10,6 +12,9 @@ const EMPTY_DETAILS_TEXT = 'No data available';
 const EMPTY_PLUGIN_LIST = { data: [], count: 0, numberPages: 0 };
 const PLUGIN_ID = '5c0d2b8f';
 const PLUGIN_LABEL = 'MDA Overdrive';
+const PLUGIN = { _id: PLUGIN_ID, label: PLUGIN_LABEL };
+// Answer of the API for a list of that plugin alone
+const PLUGIN_LIST = { data: [PLUGIN], count: 1, numberPages: 1 };
 
 // The API answers a plugin at /api/plugin/:id, and the lists at /api/plugins
 const isPluginUrl = url => String(url).includes('/api/plugin/');
@@ -21,10 +26,12 @@ const isPluginUrl = url => String(url).includes('/api/plugin/');
  * @param {string} params.url - URL the browser shows when the app starts, such as '/plugin/2'.
  * @param {Object} [params.plugin] - Plugin that the API answers to the fetch of a plugin, none
  *   when omitted.
+ * @param {Object} [params.list] - Answer of the API to each fetch of the plugins, empty when
+ *   omitted.
  */
-const renderAt = ({ url, plugin }) => {
+const renderAt = ({ url, plugin, list = EMPTY_PLUGIN_LIST }) => {
   vi.spyOn(window, 'fetch').mockImplementation(url => Promise.resolve(jsonResponse({
-    body: isPluginUrl(url) ? { data: plugin } : EMPTY_PLUGIN_LIST
+    body: isPluginUrl(url) ? { data: plugin } : list
   })));
   window.history.pushState({}, '', url);
 
@@ -81,4 +88,79 @@ it.each([
 
   expect(await screen.findByText(EMPTY_GRID_TEXT)).toBeDefined();
   expect(window.location.pathname).toBe('/plugins');
+});
+
+describe('a change of route', () => {
+  const headingOf = name => screen.findByRole('heading', { level: 1, name });
+
+  // Opens the details from the card of the list, once the list shows it
+  const openPluginCard = async () => {
+    await screen.findByRole('link', { name: PLUGIN_LABEL });
+    const isDetailsLink = link => link.getAttribute('href') === `/plugin/${PLUGIN_ID}`;
+
+    fireEvent.click(screen.getAllByRole('link').find(isDetailsLink));
+  };
+
+  it('gives each route its title', async () => {
+    renderAt({ url: `/plugin/${PLUGIN_ID}`, plugin: PLUGIN });
+
+    await headingOf(PLUGIN_LABEL);
+    expect(document.title).toBe(`${PLUGIN_LABEL} - Pedalboards`);
+
+    fireEvent.click(screen.getByRole('link', { name: 'Plugins' }));
+
+    await headingOf('Plugins');
+    expect(document.title).toBe('Plugins - Pedalboards');
+  });
+
+  it('focuses the label of the plugin a card opens, through its loading headings', async () => {
+    renderAt({ url: '/plugins', plugin: PLUGIN, list: PLUGIN_LIST });
+
+    await openPluginCard();
+
+    const heading = await headingOf(PLUGIN_LABEL);
+    await waitFor(() => expect(document.activeElement).toBe(heading));
+  });
+
+  it('focuses the heading of the list from the link of the header, which keeps no focus', async () => {
+    renderAt({ url: `/plugin/${PLUGIN_ID}`, plugin: PLUGIN });
+    const link = screen.getByRole('link', { name: 'Plugins' });
+    link.focus();
+
+    fireEvent.click(link);
+
+    expect(document.activeElement).toBe(await headingOf('Plugins'));
+  });
+
+  it('focuses the heading of the page the Back button returns to', async () => {
+    renderAt({ url: '/plugins', plugin: PLUGIN, list: PLUGIN_LIST });
+    await openPluginCard();
+    await headingOf(PLUGIN_LABEL);
+
+    act(() => window.history.back());
+
+    const heading = await headingOf('Plugins');
+    await waitFor(() => expect(document.activeElement).toBe(heading));
+  });
+
+  it('leaves the focus of the browser after the redirect of the first address', async () => {
+    renderAt({ url: '/' });
+
+    await headingOf('Plugins');
+
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it('moves nothing when the search changes the address of the list', async () => {
+    renderAt({ url: '/plugins?page=1', list: PLUGIN_LIST });
+    await screen.findByRole('link', { name: PLUGIN_LABEL });
+
+    // Async, so that the fetch of the new search ends inside act
+    await act(async () => {
+      window.history.pushState({}, '', '/plugins?brand=MDA');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+
+    expect(document.activeElement).toBe(document.body);
+  });
 });

@@ -20,10 +20,15 @@ import {
   isValidPage,
   parsePluginsSearch
 } from '../../utils/plugin-filter';
+import { buildPageTitle } from '../../utils/page-title';
 
 // Style
 import './style.scss';
 
+// Heading of the page
+const PAGE_NAME = 'Plugins';
+// Title of the tab
+const PAGE_TITLE = buildPageTitle(PAGE_NAME);
 // Number of plugins on each page
 const PAGE_SIZE = 10;
 // Shown in place of the grid when the plugins fail to load
@@ -98,8 +103,9 @@ const PluginsPage = () => {
 
   return (
     <div className="plugins-page-container">
+      <title>{PAGE_TITLE}</title>
       <header>
-        <h1>Plugins</h1>
+        <h1 tabIndex={-1}>{PAGE_NAME}</h1>
         <p>Here be plugins</p>
         <hr />
       </header>

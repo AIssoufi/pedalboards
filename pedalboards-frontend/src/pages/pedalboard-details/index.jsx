@@ -19,6 +19,7 @@ import {
 import { PLUGINS_PATHNAME } from '../../constants/routes';
 
 // Utils
+import { buildPageTitle } from '../../utils/page-title';
 import { isPluginLabelShown } from '../../utils/plugin-label';
 import { isPluginNotFound } from './utils';
 
@@ -30,9 +31,12 @@ import './style.scss';
 // that chunk loads, and shows the loader in its card meanwhile, as while the plugin is fetched
 const PedalboardDetails = lazy(() => import('../../components/pedalboard-details'));
 
-// Titles the page for screen readers whenever the label of a plugin does not: while it loads,
-// when it fails or is unknown, when there is no plugin or when the plugin has no label
-const PAGE_TITLE = <h1 className="visually-hidden">Plugin</h1>;
+// Names the page whenever the label of a plugin does not: while it loads, when it fails or is
+// unknown, when there is no plugin or when the plugin has no label
+const PAGE_NAME = 'Plugin';
+
+// Titles the page for screen readers in those cases
+const PAGE_TITLE = <h1 className="visually-hidden" tabIndex={-1}>{PAGE_NAME}</h1>;
 
 // Shown when the plugin or the chunk of its details fails to load, unless the id is unknown
 const LOAD_ERROR_CONTENT = (
@@ -135,6 +139,7 @@ const PedalboardDetailsPage = () => {
 
   return (
     <div className="pedalboard-details-wrapper">
+      <title>{buildPageTitle(isLabelShown ? plugin.label : PAGE_NAME)}</title>
       <div className="details-container">
         {renderContent()}
       </div>

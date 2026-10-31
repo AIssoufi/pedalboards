@@ -33,13 +33,16 @@ const mockFetch = getPlugin => vi.spyOn(window, 'fetch')
 /**
  * Holds each fetch until the test answers it with the plugin of its id.
  *
- * @returns {Object} A function by plugin id, which answers the fetch of that id.
+ * @returns {Object} A function by plugin id, which answers the fetch of that id, with the extra
+ *   fields it receives.
  */
 const holdFetch = () => {
   const answerById = {};
   vi.spyOn(window, 'fetch').mockImplementation(url => new Promise((resolve) => {
     const id = String(url).split('/').pop();
-    answerById[id] = () => resolve(jsonResponse({ body: { data: { uri: `https://plugin/${id}` } } }));
+    answerById[id] = fields => resolve(jsonResponse({
+      body: { data: { uri: `https://plugin/${id}`, ...fields } }
+    }));
   }));
   return answerById;
 };
@@ -277,4 +280,86 @@ it('shows an error message, not a blank app, when the details fail to load', asy
   expect((await screen.findByRole('alert')).textContent).toBe(ERROR_TEXT);
   expect(screen.queryByText(LOADER_TEXT)).toBeNull();
   expect(readPageTitles()).toEqual(['Plugin']);
+});
+
+describe('the title of the tab', () => {
+  it('names the plugin once it has loaded', async () => {
+    mockFetch(() => ({ uri: 'https://plugin/2', label: 'abGate' }));
+    renderAt('/plugin/2');
+
+    expect(await screen.findByRole('heading', { name: 'abGate' })).toBeDefined();
+    expect(document.title).toBe('abGate - Pedalboards');
+  });
+
+  it('names the page while the plugin loads', async () => {
+    holdFetch();
+    renderAt('/plugin/2');
+
+    expect(await screen.findByText(LOADER_TEXT)).toBeDefined();
+    expect(document.title).toBe('Plugin - Pedalboards');
+  });
+
+  it('names the page when the plugin fails to load', async () => {
+    vi.spyOn(window, 'fetch').mockImplementation(() => Promise.reject(new TypeError('offline')));
+    renderAt('/plugin/2');
+
+    expect(await screen.findByRole('alert')).toBeDefined();
+    expect(document.title).toBe('Plugin - Pedalboards');
+  });
+
+  it('names the page when the API knows no such plugin', async () => {
+    vi.spyOn(window, 'fetch').mockImplementation(() => Promise.resolve(jsonResponse({
+      body: {},
+      status: NOT_FOUND_STATUS
+    })));
+    renderAt('/plugin/2');
+
+    expect(await screen.findByRole('alert')).toBeDefined();
+    expect(document.title).toBe('Plugin - Pedalboards');
+  });
+
+  it('names the page on a route without an id', async () => {
+    renderAt('/plugin');
+
+    expect(await screen.findByText(EMPTY_STATE_TEXT)).toBeDefined();
+    expect(document.title).toBe('Plugin - Pedalboards');
+  });
+
+  it.each([
+    ['no label', {}],
+    ['an empty label', { label: '' }],
+    ['a null label', { label: null }],
+    ['a label made only of spaces', { label: '   ' }],
+    ['a label that is no text', { label: 42 }]
+  ])('names the page for a plugin with %s', async (description, labelField) => {
+    mockFetch(() => ({ uri: 'https://plugin/2', ...labelField }));
+    renderAt('/plugin/2');
+
+    expect(await screen.findByRole('heading', { name: 'Plugin' })).toBeDefined();
+    expect(document.title).toBe('Plugin - Pedalboards');
+  });
+
+  it('follows the plugin of a new id, with the page name while it loads', async () => {
+    const answerById = holdFetch();
+    const router = renderAt('/plugin/1');
+    await act(async () => {
+      answerById[1]({ label: 'abGate' });
+    });
+    await screen.findByRole('heading', { name: 'abGate' });
+    expect(document.title).toBe('abGate - Pedalboards');
+
+    await navigate({ router, url: '/plugin/2' });
+
+    expect(document.title).toBe('Plugin - Pedalboards');
+  });
+});
+
+it.each([
+  ['a loading plugin', () => holdFetch(), 'Plugin'],
+  ['a loaded plugin', () => mockFetch(() => ({ uri: 'https://plugin/2', label: 'abGate' })), 'abGate']
+])('makes the heading of %s focusable by a script only', async (description, mockApi, name) => {
+  mockApi();
+  renderAt('/plugin/2');
+
+  expect((await screen.findByRole('heading', { name })).getAttribute('tabindex')).toBe('-1');
 });
