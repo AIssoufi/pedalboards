@@ -11,11 +11,13 @@ import { LOAD_STATUS, PLUGINS_SLICE_NAME } from './constants';
 import { hasPluginFilters, toPluginsPage } from './utils';
 
 /**
- * State of the plugins page: the plugins of the page shown, the number of pages of the results,
- * where their loading stands, and the message of its last failure.
+ * State of the plugins page: the plugins of the page shown, the query string they answer, the
+ * number of pages of the results, where their loading stands, and the message of its last failure.
  *
  * @typedef {Object} PluginsState
  * @property {Object[]} plugins - Plugins of the page shown.
+ * @property {string|null} heldSearch - Query string of the URL that `plugins` answer, null before
+ *   the first answer, or when the request named no URL.
  * @property {number} pageCount - Number of pages of the results.
  * @property {string} status - One of LOAD_STATUS.
  * @property {string|null} error - Message of the failed request, null otherwise.
@@ -25,6 +27,7 @@ import { hasPluginFilters, toPluginsPage } from './utils';
 /** @type {PluginsState} */
 const initialState = {
   plugins: [],
+  heldSearch: null,
   pageCount: 0,
   status: LOAD_STATUS.IDLE,
   error: null,
@@ -38,6 +41,8 @@ const initialState = {
  * @param {URLSearchParams} [params.filters] - Fields and values the plugins must match.
  * @param {number} params.page - Page to load, from 1.
  * @param {number} params.pageSize - Number of plugins on each page.
+ * @param {string} [params.search] - Query string of the URL asking for them, which the store keeps
+ *   with the answer, so that `selectPluginsPage` can tell the list of that URL is held.
  * @returns The thunk, whose fulfilled action holds the page read by `toPluginsPage`.
  */
 const loadPlugins = createAsyncThunk(
@@ -69,6 +74,7 @@ const pluginsSlice = createSlice({
         if (!isCurrentRequest({ state, action })) return;
 
         state.plugins = action.payload.plugins;
+        state.heldSearch = action.meta.arg.search ?? null;
         state.pageCount = action.payload.pageCount;
         state.status = LOAD_STATUS.SUCCEEDED;
         state.requestId = null;
@@ -86,21 +92,32 @@ const pluginsSlice = createSlice({
 });
 
 /**
- * Reads what the plugins page shows from the store.
+ * Reads what the plugins page shows from the store. The list of a URL the store still holds, as
+ * when the visitor comes back from a plugin, stays on screen while it reloads, with no loader and
+ * no failure: the page keeps its height, so the browser can restore the scroll position.
  *
- * @param {Object} rootState - State of the store.
+ * @param {Object} params
+ * @param {Object} params.rootState - State of the store.
+ * @param {string} [params.search] - Query string of the URL shown.
  * @returns {{ plugins: Object[], pageCount: number, isLoading: boolean, hasFailed: boolean }}
- * The plugins and the number of pages, whether a page is loading (or none was asked yet), and
- * whether the last request failed.
+ * The plugins and the number of pages, whether the page shows the loader (a list that is not held
+ * is loading, or none was asked yet), and whether it shows the failure of its last request.
  */
 const selectPluginsPage = createSelector(
-  rootState => rootState[PLUGINS_SLICE_NAME],
-  ({ plugins, pageCount, status }) => ({
-    plugins,
-    pageCount,
-    isLoading: status === LOAD_STATUS.IDLE || status === LOAD_STATUS.LOADING,
-    hasFailed: status === LOAD_STATUS.FAILED
-  })
+  [({ rootState }) => rootState[PLUGINS_SLICE_NAME], ({ search }) => search],
+  ({
+    plugins, heldSearch, pageCount, status
+  }, search) => {
+    const isListHeld = heldSearch !== null && heldSearch === search;
+    const isWaiting = status === LOAD_STATUS.IDLE || status === LOAD_STATUS.LOADING;
+
+    return {
+      plugins,
+      pageCount,
+      isLoading: !isListHeld && isWaiting,
+      hasFailed: !isListHeld && status === LOAD_STATUS.FAILED
+    };
+  }
 );
 
 export { initialState, loadPlugins, selectPluginsPage };

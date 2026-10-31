@@ -61,6 +61,7 @@ describe('PluginsPage', () => {
         <RouterSpy />
         <Routes>
           <Route path="/plugins" element={<PluginsPage />} />
+          <Route path="/plugin/:id" element={null} />
         </Routes>
       </MemoryRouter>
     </Provider>
@@ -205,6 +206,116 @@ describe('PluginsPage', () => {
 
     expect(location.search).toBe(search);
     expect(fetchCount()).toBe(1);
+  });
+
+  describe('when the visitor comes back from a plugin', () => {
+    const openPluginAndComeBack = async () => {
+      await act(async () => { navigate(`/plugin/${PLUGIN._id}`); });
+      expect(screen.queryByRole('heading', { level: 1 })).toBeNull();
+
+      await act(async () => { navigate(-1); });
+    };
+
+    it.each([
+      ['the first page', '/plugins'],
+      ['another page', '/plugins?page=3'],
+      ['a filtered list', '/plugins?brand=MDA'],
+      ['a filtered list on another page', '/plugins?brand=MDA&page=2']
+    ])('shows the list of %s while it reloads, with no loader', async (listName, url) => {
+      await renderPage({ url, countPlugins: 3, plugins: [PLUGIN] });
+      vi.spyOn(window, 'fetch').mockImplementation(() => new Promise(() => {}));
+
+      await openPluginAndComeBack();
+
+      expect(window.fetch).toHaveBeenCalled();
+      expect(screen.queryByText(LOADER_TEXT)).toBeNull();
+      expect(screen.getByAltText(/Echo/)).toBeDefined();
+    });
+
+    it('reloads the list behind the scenes', async () => {
+      await renderPage({ url: '/plugins', plugins: [PLUGIN] });
+
+      await openPluginAndComeBack();
+
+      expect(fetchCount()).toBe(2);
+    });
+
+    it('keeps the list and shows no error when its reload fails', async () => {
+      await renderPage({ url: '/plugins', plugins: [PLUGIN] });
+      vi.spyOn(window, 'fetch').mockRejectedValue(new TypeError('offline'));
+
+      await openPluginAndComeBack();
+      await flushAnswers();
+
+      expect(screen.queryByText(ERROR_TEXT)).toBeNull();
+      expect(screen.getByAltText(/Echo/)).toBeDefined();
+    });
+
+    it('shows the loader for a list that the store no longer holds', async () => {
+      await renderPage({ url: '/plugins', countPlugins: 3, plugins: [PLUGIN] });
+      fireEvent.click(getPageButton(2));
+      await flushAnswers();
+      vi.spyOn(window, 'fetch').mockImplementation(() => new Promise(() => {}));
+
+      await act(async () => { navigate(-1); });
+
+      expect(screen.getByText(LOADER_TEXT)).toBeDefined();
+    });
+  });
+
+  describe('moving the focus on a page change', () => {
+    const getLastButton = name => screen.getAllByRole('button', { name }).at(-1);
+    const getList = () => screen.getByRole('region', { name: 'Plugin list' });
+
+    it.each([
+      ['NEXT', '?page=3'],
+      ['PREVIOUS', ''],
+      ['3', '?page=3']
+    ])('moves it to the list after %s below the list', async (name, search) => {
+      await renderPage({ url: '/plugins?page=2', countPlugins: 3, plugins: [PLUGIN] });
+
+      fireEvent.click(getLastButton(name));
+      await flushAnswers();
+
+      expect(location.search).toBe(search);
+      expect(document.activeElement).toBe(getList());
+    });
+
+    it('keeps the focus on the list while the loader replaces the grid', async () => {
+      await renderPage({ url: '/plugins', countPlugins: 3, plugins: [PLUGIN] });
+      vi.spyOn(window, 'fetch').mockImplementation(() => new Promise(() => {}));
+
+      fireEvent.click(getLastButton('NEXT'));
+      await flushAnswers();
+
+      expect(screen.getByText(LOADER_TEXT)).toBeDefined();
+      expect(document.activeElement).toBe(getList());
+    });
+
+    it('leaves it alone after NEXT above the list', async () => {
+      await renderPage({ url: '/plugins', countPlugins: 3, plugins: [PLUGIN] });
+      const nextButton = getPaginationButton('NEXT');
+      nextButton.focus();
+
+      fireEvent.click(nextButton);
+      await flushAnswers();
+
+      expect(document.activeElement).toBe(nextButton);
+    });
+
+    it.each([
+      ['next', 'NEXT', '/plugins?page=3'],
+      ['previous', 'PREVIOUS', '/plugins']
+    ])('leaves it alone below the list when there is no %s page', async (direction, name, url) => {
+      await renderPage({ url, countPlugins: 3, plugins: [PLUGIN] });
+      const button = getLastButton(name);
+      button.focus();
+
+      fireEvent.click(button);
+      await flushAnswers();
+
+      expect(document.activeElement).toBe(button);
+    });
   });
 
   it('starts a new search on the first page', async () => {

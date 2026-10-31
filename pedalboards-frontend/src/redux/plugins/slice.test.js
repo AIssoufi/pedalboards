@@ -10,8 +10,14 @@ import { loadPlugins, selectPluginsPage } from './slice';
 const PLUGIN = { _id: 'abgate', label: 'Gate' };
 const PAGE_SIZE = 10;
 const SERVER_ERROR_STATUS = 500;
+const HELD_SEARCH = 'brand=MDA&page=2';
+const OTHER_SEARCH = 'brand=MDA&page=3';
 
 const fetchedUrl = (index = 0) => new URL(String(window.fetch.mock.calls[index][0]));
+
+const selectPage = ({ store, search }) => selectPluginsPage({
+  rootState: store.getState(), search
+});
 
 /**
  * Holds each fetch until the test answers it.
@@ -33,7 +39,7 @@ afterEach(() => {
 
 describe('loadPlugins', () => {
   it('is loading before the first request, as the page shows the loader at once', () => {
-    expect(selectPluginsPage(setupStore().getState())).toEqual({
+    expect(selectPage({ store: setupStore() })).toEqual({
       plugins: [], pageCount: 0, isLoading: true, hasFailed: false
     });
   });
@@ -44,10 +50,10 @@ describe('loadPlugins', () => {
     const store = setupStore();
 
     const request = store.dispatch(loadPlugins({ page: 2, pageSize: PAGE_SIZE }));
-    expect(selectPluginsPage(store.getState()).isLoading).toBe(true);
+    expect(selectPage({ store }).isLoading).toBe(true);
     await request;
 
-    expect(selectPluginsPage(store.getState())).toEqual({
+    expect(selectPage({ store })).toEqual({
       plugins: [PLUGIN], pageCount: 1, isLoading: false, hasFailed: false
     });
     expect(fetchedUrl().searchParams.get('page')).toBe('2');
@@ -64,7 +70,7 @@ describe('loadPlugins', () => {
     }));
 
     expect(fetchedUrl().searchParams.get('filterby[categories]')).toBe('Delay');
-    expect(selectPluginsPage(store.getState()).plugins).toEqual([PLUGIN]);
+    expect(selectPage({ store }).plugins).toEqual([PLUGIN]);
   });
 
   it.each([
@@ -77,7 +83,7 @@ describe('loadPlugins', () => {
     const action = await store.dispatch(loadPlugins({ page: 1, pageSize: PAGE_SIZE }));
 
     expect(action.type).toBe(loadPlugins.rejected.type);
-    expect(selectPluginsPage(store.getState())).toMatchObject({ isLoading: false, hasFailed: true });
+    expect(selectPage({ store })).toMatchObject({ isLoading: false, hasFailed: true });
     expect(store.getState().plugins.error).toContain('/api/plugins');
   });
 
@@ -90,7 +96,7 @@ describe('loadPlugins', () => {
     await store.dispatch(loadPlugins({ page: 1, pageSize: PAGE_SIZE }));
     await store.dispatch(loadPlugins({ page: 2, pageSize: PAGE_SIZE }));
 
-    expect(selectPluginsPage(store.getState())).toMatchObject({
+    expect(selectPage({ store })).toMatchObject({
       plugins: [PLUGIN], pageCount: 1, hasFailed: true
     });
   });
@@ -102,7 +108,7 @@ describe('loadPlugins', () => {
 
     store.dispatch(loadPlugins({ page: 1, pageSize: PAGE_SIZE }));
 
-    expect(selectPluginsPage(store.getState())).toMatchObject({ isLoading: true, hasFailed: false });
+    expect(selectPage({ store })).toMatchObject({ isLoading: true, hasFailed: false });
     expect(store.getState().plugins.error).toBeNull();
   });
 
@@ -117,7 +123,7 @@ describe('loadPlugins', () => {
     answers[0]({ data: [], numberPages: 1 });
     await first;
 
-    expect(selectPluginsPage(store.getState())).toMatchObject({ plugins: [PLUGIN], pageCount: 2 });
+    expect(selectPage({ store })).toMatchObject({ plugins: [PLUGIN], pageCount: 2 });
   });
 
   it('waits for no answer once its request is aborted, and shows no failure', async () => {
@@ -139,11 +145,11 @@ describe('loadPlugins', () => {
 
     first.abort();
     await first;
-    expect(selectPluginsPage(store.getState()).isLoading).toBe(true);
+    expect(selectPage({ store }).isLoading).toBe(true);
     answers[1]({ data: [PLUGIN], numberPages: 2 });
     await second;
 
-    expect(selectPluginsPage(store.getState())).toMatchObject({ plugins: [PLUGIN], isLoading: false });
+    expect(selectPage({ store })).toMatchObject({ plugins: [PLUGIN], isLoading: false });
   });
 
   it('gives an empty page for an answer without plugins', async () => {
@@ -152,6 +158,91 @@ describe('loadPlugins', () => {
 
     await store.dispatch(loadPlugins({ page: 1, pageSize: PAGE_SIZE }));
 
-    expect(selectPluginsPage(store.getState())).toMatchObject({ plugins: [], pageCount: 0 });
+    expect(selectPage({ store })).toMatchObject({ plugins: [], pageCount: 0 });
+  });
+
+  describe('with the list of a URL held in the store', () => {
+    const setupHeldList = async ({ search = HELD_SEARCH } = {}) => {
+      vi.spyOn(window, 'fetch').mockImplementation(
+        () => Promise.resolve(jsonResponse({ body: { data: [PLUGIN], numberPages: 3 } }))
+      );
+      const store = setupStore();
+      await store.dispatch(loadPlugins({ page: 2, pageSize: PAGE_SIZE, search }));
+      return store;
+    };
+
+    it('keeps showing the list while that URL reloads', async () => {
+      const store = await setupHeldList();
+      holdFetch();
+
+      store.dispatch(loadPlugins({ page: 2, pageSize: PAGE_SIZE, search: HELD_SEARCH }));
+
+      expect(selectPage({ store, search: HELD_SEARCH })).toEqual({
+        plugins: [PLUGIN], pageCount: 3, isLoading: false, hasFailed: false
+      });
+    });
+
+    it('holds the list of the URL without a query string too', async () => {
+      const store = await setupHeldList({ search: '' });
+      holdFetch();
+
+      store.dispatch(loadPlugins({ page: 2, pageSize: PAGE_SIZE, search: '' }));
+
+      expect(selectPage({ store, search: '' }).isLoading).toBe(false);
+    });
+
+    it('keeps showing the list when its reload fails', async () => {
+      const store = await setupHeldList();
+      vi.spyOn(window, 'fetch').mockRejectedValue(new TypeError('offline'));
+
+      await store.dispatch(loadPlugins({ page: 2, pageSize: PAGE_SIZE, search: HELD_SEARCH }));
+
+      expect(selectPage({ store, search: HELD_SEARCH })).toMatchObject({
+        plugins: [PLUGIN], isLoading: false, hasFailed: false
+      });
+    });
+
+    it('still holds the list once its reload is aborted', async () => {
+      const store = await setupHeldList();
+      holdFetch();
+
+      const request = store.dispatch(loadPlugins({
+        page: 2, pageSize: PAGE_SIZE, search: HELD_SEARCH
+      }));
+      request.abort();
+      await request;
+
+      expect(selectPage({ store, search: HELD_SEARCH })).toMatchObject({
+        plugins: [PLUGIN], isLoading: false
+      });
+    });
+
+    it('shows the loader and the failure of another URL', async () => {
+      const store = await setupHeldList();
+      holdFetch();
+
+      store.dispatch(loadPlugins({ page: 3, pageSize: PAGE_SIZE, search: OTHER_SEARCH }));
+      expect(selectPage({ store, search: OTHER_SEARCH }).isLoading).toBe(true);
+
+      vi.spyOn(window, 'fetch').mockRejectedValue(new TypeError('offline'));
+      await store.dispatch(loadPlugins({ page: 3, pageSize: PAGE_SIZE, search: OTHER_SEARCH }));
+      expect(selectPage({ store, search: OTHER_SEARCH }).hasFailed).toBe(true);
+    });
+
+    it('holds nothing before an answer, or for a request naming no URL', async () => {
+      const emptyStore = setupStore();
+
+      expect(selectPage({ store: emptyStore, search: HELD_SEARCH }).isLoading).toBe(true);
+      expect(selectPage({ store: emptyStore, search: undefined }).isLoading).toBe(true);
+      expect(selectPage({ store: emptyStore, search: null }).isLoading).toBe(true);
+
+      vi.spyOn(window, 'fetch').mockResolvedValue(jsonResponse({ body: { data: [PLUGIN] } }));
+      const store = setupStore();
+      await store.dispatch(loadPlugins({ page: 2, pageSize: PAGE_SIZE }));
+      holdFetch();
+      store.dispatch(loadPlugins({ page: 2, pageSize: PAGE_SIZE }));
+
+      expect(selectPage({ store }).isLoading).toBe(true);
+    });
   });
 });
