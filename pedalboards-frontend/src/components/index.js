@@ -3,6 +3,7 @@
 import ErrorBoundary from './error-boundary';
 import Header from './header';
 import Loader from './loader';
+import Main from './main';
 import Pagination from './pagination';
 import Plugin from './plugin';
 import PluginGrid from './plugin-grid';
@@ -13,6 +14,7 @@ export {
   ErrorBoundary,
   Header,
   Loader,
+  Main,
   Pagination,
   Plugin,
   PluginGrid,
