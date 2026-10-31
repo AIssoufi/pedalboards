@@ -11,3 +11,9 @@ it('shows its waiting text in the language of the page', () => {
 
   expect(screen.getByText(LOADER_TEXT).closest('[lang]')).toBeNull();
 });
+
+it('exposes the waiting as a status named by its text', () => {
+  render(<Loader />);
+
+  expect(screen.getByRole('status').textContent).toBe(LOADER_TEXT);
+});
