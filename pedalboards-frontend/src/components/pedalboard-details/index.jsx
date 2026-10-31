@@ -91,7 +91,7 @@ const PedalboardDetails = ({
           )
           : null}
       </header>
-      {isPluginLabelShown(label) && <h1>{label}</h1>}
+      {isPluginLabelShown(label) && <h1 tabIndex={-1}>{label}</h1>}
       <div className="plugin-media-container">
         {screenshotUrl && (
           <img
