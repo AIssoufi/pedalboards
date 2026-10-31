@@ -459,3 +459,27 @@ that of `_globals.scss`, and these warnings hid any new one. The built CSS does 
 | Sass deprecation warnings of the frontend build | 20 | 0 |
 | `@import` rules in `pedalboards-frontend/src` | 11 | 0 |
 | Built CSS, SHA-1 of `index` / `pedalboard-details` | `33aea44e` / `742cbac2` | the same |
+
+## Since 2026: Node.js 26 LTS
+
+The project moves from Node.js 24, in maintenance since 2026-10-20, to Node.js 26, whose first LTS
+release is v26.13.0. `.nvmrc` pins it and `engines` requires it, and the workflows follow `.nvmrc`
+without any change. No dependency or source file changes. The development server of the CMS still
+fails, with the same `http_parser` error as on 24, until the CMS leaves Create React App
+([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
+
+Measured on 2026-10-31 on an Apple M3 (8 cores), with pnpm 12.14.0, Node.js 24.22.0 on the base and
+26.13.0 on the branch. The ranges of the three runs overlap or touch, so the times show no clear
+gain or loss.
+
+| Figure | Before (`dee9e109`, Node.js 24) | After (Node.js 26) |
+| --- | --- | --- |
+| Install after deleting `node_modules`, median of 3 | 1.7 s | 1.9 s |
+| `pnpm build`, median of 3 | 2.7 s | 2.4 s |
+| `pnpm test`, median of 3 | 8.5 s | 6.9 s |
+| Tests of `pnpm test`, all passing | 1,400 | 1,400 |
+| Frontend JS, raw / gzipped | 401,496 / 123,120 B | the same |
+| Frontend CSS, raw / gzipped | 34,816 / 5,977 B | the same |
+| Workspace audit advisories, critical / high / moderate / low | 27 / 100 / 69 / 25 | the same |
+
+Decision: [0011. Adopt Node.js 26 LTS](decisions/0011-node-26-lts.md)

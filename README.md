@@ -26,7 +26,7 @@ A store of audio plugins: virtual effect pedals that visitors browse, search and
 - API: Express 5 in a Cloudflare Worker, on a Cloudflare D1 database, tested with Vitest 5 in the
   Workers runtime.
 - Hosting: Cloudflare Pages for the frontend, Cloudflare Workers for the API.
-- Tooling: Node.js 24, a pnpm workspace, GitHub Actions, ESLint 9 for the frontend, commitlint and
+- Tooling: Node.js 26, a pnpm workspace, GitHub Actions, ESLint 9 for the frontend, commitlint and
   husky.
 
 ## Architecture
@@ -47,7 +47,7 @@ The conventions that contributors and coding agents follow are in [`CLAUDE.md`](
 
 ### Prerequisites
 
-- Node.js 24, the version of [`.nvmrc`](.nvmrc): `nvm use` selects it.
+- Node.js 26, the version of [`.nvmrc`](.nvmrc): `nvm use` selects it.
 - pnpm 10 or later: it switches by itself to the version of the `packageManager` field of
   `package.json`.
 
@@ -68,7 +68,7 @@ pnpm start
 
 - It starts the API on [localhost:8080](http://localhost:8080), the frontend on
   [localhost:3001](http://localhost:3001) and the CMS on [localhost:3002](http://localhost:3002).
-- The CMS development server does not start on Node.js 24 yet (see [Node.js 24](#nodejs-24)).
+- The CMS development server does not start yet (see [Node.js version](#nodejs-version)).
 
 ### Test and build
 
@@ -133,20 +133,21 @@ pnpm build
   of the CMS, leaves out: without them, pnpm would give this package the hoisted React of another
   app rather than the React of the CMS.
 
-## Node.js 24
+## Node.js version
 
-- The three apps install, test and build on Node.js 24, the current LTS: [`.nvmrc`](.nvmrc) pins it,
-  and the `engines` field of every `package.json` requires it.
+- The three apps install, test and build on the Node.js LTS that [`.nvmrc`](.nvmrc) pins, and the
+  `engines` field of every `package.json` requires it. A new LTS is adopted on purpose
+  ([decision record](docs/decisions/0011-node-26-lts.md)).
 - The frontend runs on Vite and Vitest
   ([decision record](docs/decisions/0006-vite-and-vitest.md)), so its development server starts
-  on Node.js 24, and the CI checks it.
-- The development server of the CMS does not start on Node.js 24 yet: `webpack-dev-server` 3 of
+  on this version, and the CI checks it.
+- The development server of the CMS does not start on this version yet: `webpack-dev-server` 3 of
   Create React App 2 loads `http-deceiver`, which calls `process.binding('http_parser')`, removed
   from Node.js. It works again when the CMS leaves Create React App
   ([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
 - The CMS compiles its styles with Dart Sass, installed under the `node-sass` name
   (`"node-sass": "npm:sass@…"`): `sass-loader` 7 of Create React App 2 only loads a module called
-  `node-sass`, and `node-sass` itself has no build for Node.js 24. The frontend installs `sass`
+  `node-sass`, and `node-sass` itself has no build for this version. The frontend installs `sass`
   under its own name, which Vite loads.
 - The `start` and `build` scripts of the CMS set `NODE_OPTIONS=--openssl-legacy-provider`:
   webpack 4 hashes modules with MD4, which OpenSSL 3 disables. The alias and the flag go away when

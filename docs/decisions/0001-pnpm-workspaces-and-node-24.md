@@ -1,7 +1,7 @@
 # 0001. Move to pnpm workspaces and pin Node.js 24
 
 - Date: 2026-10-20
-- Status: Accepted
+- Status: Accepted, amended by [0011](0011-node-26-lts.md) for the pinned Node.js version
 
 ## Context
 

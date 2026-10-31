@@ -19,8 +19,9 @@ Create React App 2. It is not deployed: it runs against the local API only.
    pnpm start:cms
    ```
 
-- The development server of the CMS does not start on Node.js 24 yet. It works again when the CMS
-  leaves Create React App ([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
+- The development server of the CMS does not start on the Node.js version of
+  [`.nvmrc`](../.nvmrc) yet. It works again when the CMS leaves Create React App
+  ([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
 - The [README of the API](../pedalboards-core-service/README.md#write-routes-local-only) describes
   the routes and the form fields that the CMS sends.
 
