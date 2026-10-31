@@ -61,6 +61,7 @@ describe('PluginsPage', () => {
         <RouterSpy />
         <Routes>
           <Route path="/plugins" element={<PluginsPage />} />
+          <Route path="/plugin/:id" element={null} />
         </Routes>
       </MemoryRouter>
     </Provider>
@@ -205,6 +206,61 @@ describe('PluginsPage', () => {
 
     expect(location.search).toBe(search);
     expect(fetchCount()).toBe(1);
+  });
+
+  describe('when the visitor comes back from a plugin', () => {
+    const openPluginAndComeBack = async () => {
+      await act(async () => { navigate(`/plugin/${PLUGIN._id}`); });
+      expect(screen.queryByRole('heading', { level: 1 })).toBeNull();
+
+      await act(async () => { navigate(-1); });
+    };
+
+    it.each([
+      ['the first page', '/plugins'],
+      ['another page', '/plugins?page=3'],
+      ['a filtered list', '/plugins?brand=MDA'],
+      ['a filtered list on another page', '/plugins?brand=MDA&page=2']
+    ])('shows the list of %s while it reloads, with no loader', async (listName, url) => {
+      await renderPage({ url, countPlugins: 3, plugins: [PLUGIN] });
+      vi.spyOn(window, 'fetch').mockImplementation(() => new Promise(() => {}));
+
+      await openPluginAndComeBack();
+
+      expect(window.fetch).toHaveBeenCalled();
+      expect(screen.queryByText(LOADER_TEXT)).toBeNull();
+      expect(screen.getByAltText(/Echo/)).toBeDefined();
+    });
+
+    it('reloads the list behind the scenes', async () => {
+      await renderPage({ url: '/plugins', plugins: [PLUGIN] });
+
+      await openPluginAndComeBack();
+
+      expect(fetchCount()).toBe(2);
+    });
+
+    it('keeps the list and shows no error when its reload fails', async () => {
+      await renderPage({ url: '/plugins', plugins: [PLUGIN] });
+      vi.spyOn(window, 'fetch').mockRejectedValue(new TypeError('offline'));
+
+      await openPluginAndComeBack();
+      await flushAnswers();
+
+      expect(screen.queryByText(ERROR_TEXT)).toBeNull();
+      expect(screen.getByAltText(/Echo/)).toBeDefined();
+    });
+
+    it('shows the loader for a list that the store no longer holds', async () => {
+      await renderPage({ url: '/plugins', countPlugins: 3, plugins: [PLUGIN] });
+      fireEvent.click(getPageButton(2));
+      await flushAnswers();
+      vi.spyOn(window, 'fetch').mockImplementation(() => new Promise(() => {}));
+
+      await act(async () => { navigate(-1); });
+
+      expect(screen.getByText(LOADER_TEXT)).toBeDefined();
+    });
   });
 
   it('starts a new search on the first page', async () => {

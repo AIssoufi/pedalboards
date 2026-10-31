@@ -39,22 +39,25 @@ const ignoreFailure = () => {};
  * last one, such as `?page=999`, is replaced in the history by the last page of the results.
  * It renders inside a router, since it reads and writes its query string with useSearchParams,
  * and inside the Redux store, which loads the plugins. A failed request shows an error message in
- * place of the grid.
+ * place of the grid. Coming back to the URL of the list in the store shows it at once, and reloads
+ * it behind the scenes, so that the browser restores the scroll position.
  */
 const PluginsPage = () => {
   const dispatch = useDispatch();
-  const {
-    plugins, pageCount, isLoading, hasFailed
-  } = useSelector(selectPluginsPage);
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.toString();
+  const {
+    plugins, pageCount, isLoading, hasFailed
+  } = useSelector(rootState => selectPluginsPage({ rootState, search }));
   const { filters, page: currentPage } = parsePluginsSearch(search);
   const searchFilter = getSearchFilter(filters);
 
   // filters and currentPage are derived from search, so search alone tells when they change
   useEffect(() => {
     let isCurrentSearch = true;
-    const request = dispatch(loadPlugins({ filters, page: currentPage, pageSize: PAGE_SIZE }));
+    const request = dispatch(loadPlugins({
+      filters, page: currentPage, pageSize: PAGE_SIZE, search
+    }));
 
     // The count of this answer, not the one of the store, which a new search leaves stale
     request.unwrap().then(({ pageCount: answerPageCount }) => {
