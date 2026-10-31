@@ -5,11 +5,14 @@ import { Link } from 'react-router';
 import Loader from '../loader';
 
 // Utils
+import { toImageDimension } from '../../utils/image-dimension';
 import { buildPluginFilterLink, isPluginFilterValue } from '../../utils/plugin-filter';
 import { isPluginLabelShown } from '../../utils/plugin-label';
 import { isNonBlankText } from '../../utils/text';
 import { toScreenshotAlt } from '../../utils/screenshot-alt';
-import { hasPedalboards, isControlPort, toCellText } from './utils';
+import {
+  hasPedalboards, isControlPort, toCellText, toScreenshotStyle
+} from './utils';
 
 // Style
 import './style.scss';
@@ -41,6 +44,10 @@ import './style.scss';
  * @property {number} [pedalboardCount=0] - Number of pedalboards using the plugin. Hidden
  *   unless it is a finite number above 0.
  * @property {string} [screenshotUrl=''] - URL of the screenshot. The image is omitted when empty.
+ * @property {number} [imageWidth] - Width of the screenshot in pixels, which with its height
+ *   reserves the box of the screenshot before it loads. Without a whole number above 0 for both,
+ *   the screenshot takes its own size once loaded.
+ * @property {number} [imageHeight] - Height of the screenshot in pixels, see `imageWidth`.
  * @property {string} [uri=''] - LV2 URI of the plugin, an identifier rather than a web page: shown
  *   as labelled plain text. It and its label are omitted unless it is a text that is not blank.
  * @property {string} [version=''] - Version, shown after a 'v'. Hidden when empty.
@@ -55,8 +62,8 @@ import './style.scss';
  * @param {PedalboardDetailsProps} props - Props of the component.
  */
 const PedalboardDetails = ({
-  author = {}, uri = '', pedalboardCount = 0, label = '', screenshotUrl = '', categories = [],
-  controlPorts = [], version = '', description = '', isLoading = false
+  author = {}, uri = '', pedalboardCount = 0, label = '', screenshotUrl = '', imageWidth,
+  imageHeight, categories = [], controlPorts = [], version = '', description = '', isLoading = false
 }) => {
   if (isLoading) return <Loader />;
 
@@ -87,7 +94,14 @@ const PedalboardDetails = ({
       {isPluginLabelShown(label) && <h1>{label}</h1>}
       <div className="plugin-media-container">
         {screenshotUrl && (
-          <img className="plugin-media" src={screenshotUrl} alt={toScreenshotAlt(label)} />
+          <img
+            className="plugin-media"
+            src={screenshotUrl}
+            alt={toScreenshotAlt(label)}
+            width={toImageDimension(imageWidth)}
+            height={toImageDimension(imageHeight)}
+            style={toScreenshotStyle({ imageWidth, imageHeight })}
+          />
         )}
       </div>
       <div className="category-container">

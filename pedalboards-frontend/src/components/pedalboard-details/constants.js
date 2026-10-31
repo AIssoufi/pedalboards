@@ -9,3 +9,6 @@ export const CELL_NUMBER_FORMAT = new Intl.NumberFormat('en', {
 
 /** Text the formatter gives to a negative number that rounds to zero, such as -0.00001. */
 export const NEGATIVE_ZERO_TEXT = '-0';
+
+/** Custom property of the screenshot holding its height from the API, which reserves its box. */
+export const SCREENSHOT_HEIGHT_PROPERTY = '--screenshot-height';

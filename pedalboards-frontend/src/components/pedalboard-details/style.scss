@@ -57,9 +57,11 @@ $control-ports-narrow-cell-padding: 6px;
     max-height: 400px;
     text-align: center;
 
+    // The height from the API, capped like the loaded image, gives the box of the screenshot its
+    // final size before it loads, its width following the ratio of its size attributes
     img {
       width: auto;
-      height: auto;
+      height: var(--screenshot-height, auto);
       max-height: 400px;
     }
   }
