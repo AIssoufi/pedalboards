@@ -2,6 +2,8 @@
 
 // Height of the box of every screenshot, about that of a 357x430 one scaled to the card
 $screenshot-height: 240px;
+// Takes an info link from its 18px line to the minimum target size of 24px
+$info-link-growth: 6px;
 
 .plugin {
   // With the padding and the margins, the $plugin-card-column-width of plugin-grid/style.scss
@@ -47,10 +49,16 @@ $screenshot-height: 240px;
   .info-container {
     display: flex;
     flex-flow: column nowrap;
+    // Inside the span of their Tooltip the links stay inline, so their padding moves neither their
+    // text nor the card. Each one grows away from the other, above and below the container, so
+    // that the two targets never overlap
     .info {
+      padding-top: $info-link-growth;
       text-decoration: none;
       color: globals.$text-primary-color;
       &.brand {
+        padding-top: 0;
+        padding-bottom: $info-link-growth;
         color: globals.$bg-primary-color;
       }
     }
