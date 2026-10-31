@@ -17,12 +17,6 @@ $control-ports-narrow-cell-padding: 6px;
         font-weight: bold;
         color: #444;
       }
-      a {
-        font-size: 0.9em;
-        color: globals.$text-primary-color;
-        text-decoration: none;
-        overflow-wrap: anywhere;
-      }
     }
     .count-container {
       display: flex;
@@ -140,8 +134,14 @@ $control-ports-narrow-cell-padding: 6px;
       overflow-wrap: anywhere;
     }
 
+    .plugin-uri-label {
+      font-weight: bold;
+    }
+
+    // Stays on the right when no URI comes before it
     .plugin-version {
       flex-shrink: 0;
+      margin-left: auto;
     }
   }
 }

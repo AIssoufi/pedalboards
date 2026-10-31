@@ -7,6 +7,7 @@ import Loader from '../loader';
 // Utils
 import { buildPluginFilterLink, isPluginFilterValue } from '../../utils/plugin-filter';
 import { isPluginLabelShown } from '../../utils/plugin-label';
+import { isNonBlankText } from '../../utils/text';
 import { toScreenshotAlt } from '../../utils/screenshot-alt';
 import { hasPedalboards, isControlPort, toCellText } from './utils';
 
@@ -40,14 +41,14 @@ import './style.scss';
  * @property {number} [pedalboardCount=0] - Number of pedalboards using the plugin. Hidden
  *   unless it is a finite number above 0.
  * @property {string} [screenshotUrl=''] - URL of the screenshot. The image is omitted when empty.
- * @property {string} [uri=''] - URI of the plugin, linked in the header. The link is omitted when
- *   empty.
+ * @property {string} [uri=''] - LV2 URI of the plugin, an identifier rather than a web page: shown
+ *   as labelled plain text. It and its label are omitted unless it is a text that is not blank.
  * @property {string} [version=''] - Version, shown after a 'v'. Hidden when empty.
  */
 
 /**
- * Details of a plugin: its author and URI, how many pedalboards use it, its label, screenshot,
- * categories linking to the plugins of each category, description, control ports and version.
+ * Details of a plugin: its author, how many pedalboards use it, its label, screenshot, categories
+ * linking to the plugins of each category, description, control ports, URI and version.
  * A missing field shows nothing in its place. Shows the loader in their place while `isLoading`
  * is truthy.
  *
@@ -71,7 +72,6 @@ const PedalboardDetails = ({
             {' '}
             {authorName}
           </span>
-          {uri && <a href={uri} target="_blank" rel="noopener noreferrer">{uri}</a>}
         </div>
         {hasPedalboards(pedalboardCount)
           ? (
@@ -128,7 +128,13 @@ const PedalboardDetails = ({
       </div>
 
       <div className="plugin-misc-info-container">
-        <span className="plugin-uri">{uri}</span>
+        {isNonBlankText(uri) && (
+          <span className="plugin-uri">
+            <span className="plugin-uri-label">Plugin identifier:</span>
+            {' '}
+            {uri}
+          </span>
+        )}
         {version && (
           <span className="plugin-version">
             v

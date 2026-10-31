@@ -8,6 +8,7 @@ import { MemoryRouter } from 'react-router';
 import PedalboardDetails from './index';
 
 const LOADER_TEXT = 'Loading...';
+const URI_LABEL = 'Plugin identifier:';
 
 /**
  * Renders the details of a plugin in a router.
@@ -73,11 +74,38 @@ it('renders without props', () => {
   const container = renderDetails();
 
   expect(screen.queryByRole('img')).toBeNull();
-  expect(container.querySelector('.author a')).toBeNull();
+  expect(container.querySelector('.plugin-uri')).toBeNull();
   expect(container.querySelector('.plugin-version')).toBeNull();
   expect(screen.queryByRole('heading')).toBeNull();
   expect(container.querySelectorAll('.plugin-category, tbody tr')).toHaveLength(0);
   expect(container.textContent).not.toContain('undefined');
+});
+
+it.each([
+  ['an HTTP identifier', 'http://moddevices.com/plugins/mda/Overdrive'],
+  ['a URN', 'urn:maxgen:WOV_gendsp']
+])('shows %s once, labelled, as plain text', (description, uri) => {
+  const container = renderDetails({ uri });
+
+  expect(container.querySelector('.plugin-uri').textContent).toBe(`${URI_LABEL} ${uri}`);
+  expect(container.textContent.split(uri)).toHaveLength(2);
+  expect(container.querySelector('a[target="_blank"]')).toBeNull();
+  expect(screen.queryByRole('link')).toBeNull();
+});
+
+it.each([
+  ['missing', undefined],
+  ['null', null],
+  ['empty', ''],
+  ['made only of spaces', '   '],
+  ['a number', 42],
+  ['an object', { en: 'urn:maxgen:WOV_gendsp' }]
+])('shows no identifier and no label when the URI is %s', (description, uri) => {
+  const container = renderDetails({ uri, version: '1.0' });
+
+  expect(container.querySelector('.plugin-uri')).toBeNull();
+  expect(container.textContent).not.toContain(URI_LABEL);
+  expect(container.querySelector('.plugin-version').textContent).toBe('v1.0');
 });
 
 it.each([
