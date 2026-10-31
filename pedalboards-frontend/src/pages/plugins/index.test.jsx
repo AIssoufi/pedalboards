@@ -263,6 +263,61 @@ describe('PluginsPage', () => {
     });
   });
 
+  describe('moving the focus on a page change', () => {
+    const getLastButton = name => screen.getAllByRole('button', { name }).at(-1);
+    const getList = () => screen.getByRole('region', { name: 'Plugin list' });
+
+    it.each([
+      ['NEXT', '?page=3'],
+      ['PREVIOUS', ''],
+      ['3', '?page=3']
+    ])('moves it to the list after %s below the list', async (name, search) => {
+      await renderPage({ url: '/plugins?page=2', countPlugins: 3, plugins: [PLUGIN] });
+
+      fireEvent.click(getLastButton(name));
+      await flushAnswers();
+
+      expect(location.search).toBe(search);
+      expect(document.activeElement).toBe(getList());
+    });
+
+    it('keeps the focus on the list while the loader replaces the grid', async () => {
+      await renderPage({ url: '/plugins', countPlugins: 3, plugins: [PLUGIN] });
+      vi.spyOn(window, 'fetch').mockImplementation(() => new Promise(() => {}));
+
+      fireEvent.click(getLastButton('NEXT'));
+      await flushAnswers();
+
+      expect(screen.getByText(LOADER_TEXT)).toBeDefined();
+      expect(document.activeElement).toBe(getList());
+    });
+
+    it('leaves it alone after NEXT above the list', async () => {
+      await renderPage({ url: '/plugins', countPlugins: 3, plugins: [PLUGIN] });
+      const nextButton = getPaginationButton('NEXT');
+      nextButton.focus();
+
+      fireEvent.click(nextButton);
+      await flushAnswers();
+
+      expect(document.activeElement).toBe(nextButton);
+    });
+
+    it.each([
+      ['next', 'NEXT', '/plugins?page=3'],
+      ['previous', 'PREVIOUS', '/plugins']
+    ])('leaves it alone below the list when there is no %s page', async (direction, name, url) => {
+      await renderPage({ url, countPlugins: 3, plugins: [PLUGIN] });
+      const button = getLastButton(name);
+      button.focus();
+
+      fireEvent.click(button);
+      await flushAnswers();
+
+      expect(document.activeElement).toBe(button);
+    });
+  });
+
   it('starts a new search on the first page', async () => {
     await renderPage({ url: '/plugins?brand=MDA&page=4', countPlugins: 5 });
 
