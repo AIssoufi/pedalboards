@@ -50,6 +50,8 @@ Install once from the root: `pnpm install --frozen-lockfile`. Then, as the CI ru
   `src/helpers/` and `src/services/`.
 - In the frontend and the CMS, imports are grouped under comments such as `// Dependencies`,
   `// Components`, `// Hooks`, `// Services`, `// Constants`, `// Utils` and `// Style`.
+- A page of the frontend renders its `<title>` with `buildPageTitle` and its `h1` with
+  `tabIndex={-1}`, which takes the focus after a change of route.
 - Constants of a source file at module level, never inside a component or a function.
 - A function of more than one argument takes one named-parameters object.
 - The core service indents with tabs, the other apps with two spaces.
