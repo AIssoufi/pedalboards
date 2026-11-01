@@ -354,6 +354,65 @@ describe('the title of the tab', () => {
   });
 });
 
+describe('the canonical link', () => {
+  // Addresses of the canonical links of the head, which should hold one
+  const readCanonicalUrls = () => [...document.head.querySelectorAll('link[rel="canonical"]')]
+    .map(link => link.href);
+
+  it('names the plugin of the route while it loads', () => {
+    holdFetch();
+    renderAt('/plugin/abgate');
+
+    expect(readCanonicalUrls()).toEqual(['https://pedalboards.issoufi.fr/plugin/abgate']);
+  });
+
+  it('keeps the plugin of the route once it has loaded', async () => {
+    mockFetch(() => ({ uri: 'https://plugin/2', label: 'abGate' }));
+    renderAt('/plugin/abgate');
+
+    await screen.findByRole('heading', { name: 'abGate' });
+    expect(readCanonicalUrls()).toEqual(['https://pedalboards.issoufi.fr/plugin/abgate']);
+  });
+
+  it('leaves out the query string and the hash of the route', () => {
+    holdFetch();
+    renderAt('/plugin/abgate?ref=mail#top');
+
+    expect(readCanonicalUrls()).toEqual(['https://pedalboards.issoufi.fr/plugin/abgate']);
+  });
+
+  it('encodes an id as the links of the site do', () => {
+    holdFetch();
+    renderAt('/plugin/a%2Fb%3Fc');
+
+    expect(readCanonicalUrls()).toEqual(['https://pedalboards.issoufi.fr/plugin/a%2Fb%3Fc']);
+  });
+
+  it('follows a new id, with one link', async () => {
+    holdFetch();
+    const router = renderAt('/plugin/1');
+
+    await navigate({ router, url: '/plugin/2' });
+
+    expect(readCanonicalUrls()).toEqual(['https://pedalboards.issoufi.fr/plugin/2']);
+  });
+
+  it('leaves the head when the page does', async () => {
+    holdFetch();
+    const router = renderAt('/plugin/1');
+
+    await navigate({ router, url: '/plugins' });
+
+    expect(readCanonicalUrls()).toEqual([]);
+  });
+
+  it('names the list on a route without an id, which shows no plugin', () => {
+    renderAt('/plugin');
+
+    expect(readCanonicalUrls()).toEqual(['https://pedalboards.issoufi.fr/plugins']);
+  });
+});
+
 it.each([
   ['a loading plugin', () => holdFetch(), 'Plugin'],
   ['a loaded plugin', () => mockFetch(() => ({ uri: 'https://plugin/2', label: 'abGate' })), 'abGate']

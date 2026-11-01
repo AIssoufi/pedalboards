@@ -19,8 +19,10 @@ import {
 import { PLUGINS_PATHNAME } from '../../constants/routes';
 
 // Utils
+import { buildCanonicalUrl } from '../../utils/canonical-url';
 import { buildPageTitle } from '../../utils/page-title';
 import { isPluginLabelShown } from '../../utils/plugin-label';
+import { buildPluginPathname } from '../../utils/plugin-pathname';
 import { isPluginNotFound } from './utils';
 
 // Style
@@ -140,6 +142,7 @@ const PedalboardDetailsPage = () => {
   return (
     <div className="pedalboard-details-wrapper">
       <title>{buildPageTitle(isLabelShown ? plugin.label : PAGE_NAME)}</title>
+      <link rel="canonical" href={buildCanonicalUrl(buildPluginPathname(pluginId))} />
       <div className="details-container">
         {renderContent()}
       </div>
