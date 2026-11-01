@@ -56,7 +56,7 @@ export const queryDatabase = async runQueries => {
 };
 
 /**
- * Reads one page of the plugins matching the filters, sorted by name across all the pages.
+ * Reads one page of the plugins matching the filters, sorted by label across all the pages.
  *
  * @param {Object} params
  * @param {D1Database} params.db - Database of the plugins.

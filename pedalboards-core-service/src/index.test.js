@@ -20,8 +20,15 @@ const callApi = async ({ path, method }) => {
 	return { status: response.status, headers: response.headers, body: await response.json() };
 };
 
-const byName = (a, b) => a.toLowerCase().localeCompare(b.toLowerCase());
-const sortedNames = plugins.map(plugin => plugin.name).toSorted(byName);
+const FIRST_THREE_LABELS = ['abGate', 'Ambience', 'AutoFilter'];
+
+// The labels in the order of COLLATE NOCASE, which compares bytes with the ASCII letters in one case
+const byLabel = (a, b) => {
+	const [first, second] = [a.toLowerCase(), b.toLowerCase()];
+	if (first === second) return 0;
+	return first < second ? -1 : 1;
+};
+const sortedLabels = plugins.map(plugin => plugin.label).toSorted(byLabel);
 
 describe('GET /api/plugins', () => {
 	it('serves the first page of 10 plugins by default', async () => {
@@ -30,15 +37,29 @@ describe('GET /api/plugins', () => {
 		expect(status).toBe(200);
 		expect(headers.get('Access-Control-Allow-Origin')).toBe('*');
 		expect(body).toMatchObject({ msg: MESSAGES.pluginsFound, count: 50, currentPage: 1, numberPages: 5 });
-		expect(body.data.map(plugin => plugin.name)).toEqual(sortedNames.slice(0, 10));
+		expect(body.data.map(plugin => plugin.label)).toEqual(sortedLabels.slice(0, 10));
 	});
 
-	it('sorts by name before paging, so the pages follow each other without overlap', async () => {
-		const pages = await Promise.all([1, 2, 3, 4, 5, 6, 7, 8, 9].map(page => callApi({ path: `/plugins?page=${page}&pagesize=7` })));
-		const names = pages.flatMap(({ body }) => body.data.map(plugin => plugin.name));
+	it('follows the printed labels whatever their case', async () => {
+		const { body } = await callApi({ path: '/plugins' });
 
-		expect(names).toEqual(sortedNames);
+		expect(body.data.slice(0, FIRST_THREE_LABELS.length).map(plugin => plugin.label)).toEqual(FIRST_THREE_LABELS);
+	});
+
+	it('sorts by label before paging, so the pages follow each other without overlap', async () => {
+		const pages = await Promise.all([1, 2, 3, 4, 5, 6, 7, 8, 9].map(page => callApi({ path: `/plugins?page=${page}&pagesize=7` })));
+		const labels = pages.flatMap(({ body }) => body.data.map(plugin => plugin.label));
+
+		expect(labels).toEqual(sortedLabels);
 		expect(pages[8].body).toMatchObject({ data: [], count: 50, currentPage: 9, numberPages: 8 });
+	});
+
+	it('finds a word of the label that the name lacks, and a word of the name that the label lacks', async () => {
+		const search = text => callApi({ path: `/plugins?pagesize=100&filterby[name]=${text}&filterby[label]=${text}` });
+		const [{ body: byPrintedWord }, { body: byHiddenWord }] = await Promise.all([search('SPhaser'), search('Invada')]);
+
+		expect(byPrintedWord.data.map(plugin => plugin.label)).toEqual(['SPhaser Stereo', 'SPhaser Sum']);
+		expect(byHiddenWord.data.map(plugin => plugin.label)).toEqual(expect.arrayContaining(['SPhaser Stereo', 'SPhaser Sum']));
 	});
 
 	it('falls back to the default page and caps the page size', async () => {
@@ -56,7 +77,7 @@ describe('GET /api/plugins', () => {
 			|| plugin.categories.some(category => category.toLowerCase().includes('delay')));
 
 		expect(body.count).toBe(expected.length);
-		expect(body.data.map(plugin => plugin.name)).toEqual(expected.map(plugin => plugin.name).toSorted(byName));
+		expect(body.data.map(plugin => plugin.label)).toEqual(expected.map(plugin => plugin.label).toSorted(byLabel));
 	});
 
 	it.each(['%', '_', '\\'])('searches "%s" as a literal character', async text => {
