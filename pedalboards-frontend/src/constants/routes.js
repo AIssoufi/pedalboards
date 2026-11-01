@@ -1,3 +1,6 @@
+/** Origin of the deployed site, which starts the canonical address of each page. */
+export const SITE_ORIGIN = 'https://pedalboards.issoufi.fr';
+
 /** Path of the home page, which redirects to the list of the plugins. */
 export const HOME_PATHNAME = '/';
 

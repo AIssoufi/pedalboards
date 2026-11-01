@@ -729,6 +729,26 @@ describe('PluginsPage', () => {
       expect(document.title).toBe('Plugins - Pedalboards');
     });
 
+    it.each([
+      ['with no query string', '/plugins'],
+      ['on a filter and a page', '/plugins?brand=MDA&page=2'],
+      ['on a hash', '/plugins#top']
+    ])('gives one canonical link without a query string %s', async (description, url) => {
+      await renderPage({ url, plugins: [PLUGIN] });
+
+      const links = document.head.querySelectorAll('link[rel="canonical"]');
+      expect([...links].map(link => link.href)).toEqual(['https://pedalboards.issoufi.fr/plugins']);
+    });
+
+    it('keeps one canonical link while the search changes', async () => {
+      await renderPage({ url: '/plugins', plugins: [PLUGIN] });
+
+      await act(async () => navigate('/plugins?brand=MDA'));
+
+      const links = document.head.querySelectorAll('link[rel="canonical"]');
+      expect([...links].map(link => link.href)).toEqual(['https://pedalboards.issoufi.fr/plugins']);
+    });
+
     it('makes the heading focusable by a script only', async () => {
       await renderPage({ url: '/plugins' });
 

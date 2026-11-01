@@ -11,7 +11,11 @@ import {
 // Redux
 import { loadPlugins, selectPluginsPage } from '../../redux/plugins/slice';
 
+// Constants
+import { PLUGINS_PATHNAME } from '../../constants/routes';
+
 // Utils
+import { buildCanonicalUrl } from '../../utils/canonical-url';
 import {
   buildLastPageSearch,
   buildPluginsSearch,
@@ -30,6 +34,8 @@ import './style.scss';
 const PAGE_NAME = 'Plugins';
 // Title of the tab
 const PAGE_TITLE = buildPageTitle(PAGE_NAME);
+// Address of the page for search engines, the same for every filter and page of the list
+const CANONICAL_URL = buildCanonicalUrl(PLUGINS_PATHNAME);
 // Number of plugins on each page
 const PAGE_SIZE = 10;
 // Shown in place of the grid when the plugins fail to load
@@ -122,6 +128,7 @@ const PluginsPage = () => {
   return (
     <div className="plugins-page-container">
       <title>{PAGE_TITLE}</title>
+      <link rel="canonical" href={CANONICAL_URL} />
       <header>
         <h1 tabIndex={-1}>{PAGE_NAME}</h1>
         <p>Here be plugins</p>
