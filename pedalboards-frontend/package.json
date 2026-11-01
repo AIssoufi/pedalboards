@@ -28,7 +28,8 @@
     "test": "vitest run",
     "lint": "eslint . --max-warnings 0",
     "check:dev-server": "node ../tools/dev-server-check/check-dev-server.mjs",
-    "check:bundle": "node scripts/check-bundle.mjs"
+    "check:bundle": "node scripts/check-bundle.mjs",
+    "generate:sitemap": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/generate-sitemap.mjs"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.3.1",

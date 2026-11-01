@@ -34,3 +34,18 @@ export const REQUIRED_HEADERS = [
 
 /** Indentation that starts the header lines of a rule in a headers file */
 export const INDENTED_LINE = /^\s/;
+
+/** Plugins that seed the database, and so the plugin pages that the site serves */
+export const SEED_DATA_URL = new URL(
+  '../../pedalboards-core-service/data/plugins.json',
+  import.meta.url
+);
+
+/** Sitemap of the site, written by generate-sitemap.mjs and copied to the build by Vite */
+export const SITEMAP_URL = new URL('../public/sitemap.xml', import.meta.url);
+
+/** Path of the sitemap on the site */
+export const SITEMAP_PATHNAME = '/sitemap.xml';
+
+/** XML namespace of the sitemap protocol */
+export const SITEMAP_NAMESPACE = 'http://www.sitemaps.org/schemas/sitemap/0.9';

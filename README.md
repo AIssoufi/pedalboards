@@ -97,7 +97,9 @@ pnpm build
   ships them. The [README](pedalboards-core-service/README.md) of the API describes both.
 - The migrations, in `pedalboards-core-service/migrations`, create the `plugins` table and fill it
   with the records of `data/plugins.json`. After a change to that file, run
-  `pnpm db:seed:generate` in `pedalboards-core-service` to write the seed migration again.
+  `pnpm db:seed:generate` in `pedalboards-core-service` to write the seed migration again, and
+  `pnpm generate:sitemap` in `pedalboards-frontend` to write the sitemap again: the tests of the
+  frontend fail while it disagrees with that file.
 
 ## pnpm workspace
 
