@@ -230,7 +230,9 @@ Dependabot opens its pull requests each week ([config](.github/dependabot.yml)):
 - one for the `@fortawesome/*` packages, majors included, since the core, the icons and the React
   component share their version;
 - none for the Create React App 2 tooling of the CMS until
-  [#45](https://github.com/AIssoufi/pedalboards/issues/45), security updates included.
+  [#45](https://github.com/AIssoufi/pedalboards/issues/45), security updates included;
+- none for `sass` until #45 either: Dependabot leaves `pnpm-lock.yaml` behind for it, probably
+  because of the `node-sass` alias of the CMS, so the `sass` of the frontend is updated by hand.
 
 ## Deployment
 

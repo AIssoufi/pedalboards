@@ -24,12 +24,16 @@ updates:
           - minor
           - patch
     # The Create React App 2 tooling of the CMS goes away with #45: no update for it until then.
-    # An ignore rule covers the whole workspace, so it only names packages that the CMS alone uses
+    # An ignore rule covers the whole workspace, so it only names packages that the CMS alone uses.
+    # sass is the exception: the frontend declares it too, and updates it by hand until #45.
+    # Dependabot changes package.json without pnpm-lock.yaml for it, probably because of the
+    # node-sass alias of the CMS, and the frozen install of the CI then fails
     ignore:
       - dependency-name: react-scripts
       - dependency-name: eslint-config-airbnb
       - dependency-name: eslint-plugin-import
       - dependency-name: http-proxy-middleware
+      - dependency-name: sass
 
   - package-ecosystem: github-actions
     directory: /
