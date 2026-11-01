@@ -23,3 +23,6 @@ export const MAX_SEARCH_TEXT_BYTES = MAX_SEARCH_PATTERN_BYTES - SEARCH_PATTERN_W
  * bytes than code units, so no longer text fits the pattern.
  */
 export const MAX_SEARCH_TEXT_LENGTH = MAX_SEARCH_TEXT_BYTES;
+
+/** Shown in place of the grid when no plugin matches the search, and read to a screen reader. */
+export const EMPTY_STATE_TEXT = 'No plugin matches your search!';

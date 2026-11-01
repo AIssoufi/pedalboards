@@ -19,6 +19,8 @@ import { jsonResponse } from '../../test-utils/fetch';
 import PluginsPage from './index';
 
 const EMPTY_GRID_TEXT = 'No plugin matches your search!';
+// The status region of the page reads the same text as the grid
+const GRID_ONLY = { ignore: '[role="status"]' };
 const ERROR_TEXT = 'Could not load the plugins, try again later.';
 const LOADER_TEXT = 'Loading...';
 const SERVER_ERROR_STATUS = 500;
@@ -77,13 +79,14 @@ describe('PluginsPage', () => {
    * @param {string} params.url - URL the router starts at, such as '/plugins?brand=MDA'.
    * @param {number} [params.countPlugins] - Number of pages of the results.
    * @param {Object[]} [params.plugins] - Plugins of the page shown.
+   * @param {number} [params.totalCount] - Number of plugins on all the pages of the results.
    * @param {number} [params.status] - HTTP status of the answers, such as 500 for a failure.
    */
   const renderPage = async ({
-    url, countPlugins = 1, plugins = [], status
+    url, countPlugins = 1, plugins = [], totalCount = plugins.length, status
   }) => {
     vi.spyOn(window, 'fetch').mockImplementation(() => Promise.resolve(jsonResponse({
-      body: { data: plugins, count: plugins.length, numberPages: countPlugins },
+      body: { data: plugins, count: totalCount, numberPages: countPlugins },
       status
     })));
     renderAt(url);
@@ -157,7 +160,7 @@ describe('PluginsPage', () => {
   it('shows the empty state for an answer without plugins', async () => {
     await renderPage({ url: '/plugins', countPlugins: 0 });
 
-    expect(screen.getByText(EMPTY_GRID_TEXT)).toBeDefined();
+    expect(screen.getByText(EMPTY_GRID_TEXT, GRID_ONLY)).toBeDefined();
   });
 
   it('fetches the first page of all the plugins without a filter', async () => {
@@ -561,7 +564,7 @@ describe('PluginsPage', () => {
       await flushAnswers();
 
       expect(location.search).toBe('?brand=MDA');
-      expect(screen.getByText(EMPTY_GRID_TEXT)).toBeDefined();
+      expect(screen.getByText(EMPTY_GRID_TEXT, GRID_ONLY)).toBeDefined();
     });
 
     it.each(['0', '-3', 'abc', ''])('stays on the URL of the invalid page %j', async (page) => {
@@ -602,6 +605,115 @@ describe('PluginsPage', () => {
 
       expect(location.search).toBe('?brand=MDA');
       expect(screen.getByRole('link', { name: 'Echo' })).toBeDefined();
+    });
+  });
+
+  describe('its status region', () => {
+    // The loader is a status too, placed after the region in the page
+    const getRegion = () => screen.getAllByRole('status')[0];
+    const statusText = () => getRegion().textContent;
+
+    it('is in the page, empty, before any answer', () => {
+      vi.spyOn(window, 'fetch').mockImplementation(() => new Promise(() => {}));
+      renderAt('/plugins');
+
+      expect(statusText()).toBe('');
+    });
+
+    it('is hidden from the eye', async () => {
+      await renderPage({ url: '/plugins', plugins: [PLUGIN] });
+
+      expect(getRegion().className).toBe('visually-hidden');
+    });
+
+    it.each([
+      ['the singular for one plugin', 1, '1 plugin found'],
+      ['the plural for several', 2, '2 plugins found'],
+      ['the plugins of all the pages', 25, '25 plugins found']
+    ])('reads %s', async (description, totalCount, expected) => {
+      await renderPage({ url: '/plugins', plugins: [PLUGIN], totalCount });
+
+      expect(statusText()).toBe(expected);
+    });
+
+    it('reads the empty text when no plugin matches', async () => {
+      await renderPage({ url: '/plugins?brand=MDA' });
+
+      expect(statusText()).toBe(EMPTY_GRID_TEXT);
+    });
+
+    it('stays the same element through a search, and clears until an answer of the same count', async () => {
+      await renderPage({ url: '/plugins', plugins: [PLUGIN] });
+      const region = getRegion();
+      let answerSearch;
+      window.fetch.mockImplementation(() => new Promise((resolve) => {
+        answerSearch = resolve;
+      }));
+
+      fireEvent.submit(fillSearch({ value: 'Gx' }));
+      await flushAnswers();
+
+      expect(screen.getByText(LOADER_TEXT)).toBeDefined();
+      expect(getRegion()).toBe(region);
+      expect(region.textContent).toBe('');
+
+      await act(async () => {
+        answerSearch(jsonResponse({ body: { data: [PLUGIN], count: 1, numberPages: 1 } }));
+      });
+      await flushAnswers();
+
+      expect(getRegion()).toBe(region);
+      expect(region.textContent).toBe('1 plugin found');
+    });
+
+    it('moves from the count to the empty text with the search', async () => {
+      await renderPage({ url: '/plugins', plugins: [PLUGIN] });
+      window.fetch.mockImplementation(() => Promise.resolve(jsonResponse({
+        body: { data: [], count: 0, numberPages: 0 }
+      })));
+
+      fireEvent.submit(fillSearch({ value: 'Gx' }));
+      await flushAnswers();
+
+      expect(statusText()).toBe(EMPTY_GRID_TEXT);
+    });
+
+    it.each([
+      ['the network fails', () => Promise.reject(new TypeError('Failed to fetch'))],
+      ['the API answers an error', () => Promise.resolve(jsonResponse({ status: SERVER_ERROR_STATUS }))]
+    ])('leaves the failure to the alert when %s', async (description, answer) => {
+      await renderPage({ url: '/plugins', plugins: [PLUGIN] });
+      window.fetch.mockImplementation(answer);
+
+      fireEvent.submit(fillSearch({ value: 'Gx' }));
+      await flushAnswers();
+
+      expect((await screen.findByRole('alert')).textContent).toBe(ERROR_TEXT);
+      expect(statusText()).toBe('');
+    });
+
+    it('reads the count again once a search answers after a failure', async () => {
+      await renderPage({ url: '/plugins', plugins: [PLUGIN] });
+      window.fetch.mockRejectedValueOnce(new TypeError('offline'));
+      fireEvent.submit(fillSearch({ value: 'Gx' }));
+      await flushAnswers();
+
+      fireEvent.submit(fillSearch({ value: 'Echo' }));
+      await flushAnswers();
+
+      expect(statusText()).toBe('1 plugin found');
+    });
+
+    it('leaves the focus on the search input', async () => {
+      await renderPage({ url: '/plugins', plugins: [PLUGIN] });
+      const input = screen.getByRole('textbox');
+      input.focus();
+
+      fireEvent.submit(fillSearch({ value: 'Gx' }));
+      await flushAnswers();
+
+      expect(statusText()).toBe('1 plugin found');
+      expect(document.activeElement).toBe(input);
     });
   });
 

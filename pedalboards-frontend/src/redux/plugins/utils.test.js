@@ -3,9 +3,9 @@ import { hasPluginFilters, toPluginsPage } from './utils';
 const PLUGIN = { _id: 'abgate', label: 'Gate' };
 
 describe('toPluginsPage', () => {
-  it('reads the plugins and the number of pages of an answer', () => {
-    expect(toPluginsPage({ data: [PLUGIN], count: 1, numberPages: 3 }))
-      .toEqual({ plugins: [PLUGIN], pageCount: 3 });
+  it('reads the plugins and the numbers of pages and of plugins of an answer', () => {
+    expect(toPluginsPage({ data: [PLUGIN], count: 25, numberPages: 3 }))
+      .toEqual({ plugins: [PLUGIN], pageCount: 3, pluginCount: 25 });
   });
 
   it.each([
@@ -14,7 +14,7 @@ describe('toPluginsPage', () => {
     ['a text', 'error'],
     ['an empty object', {}]
   ])('gives an empty page for %s', (description, answer) => {
-    expect(toPluginsPage(answer)).toEqual({ plugins: [], pageCount: 0 });
+    expect(toPluginsPage(answer)).toEqual({ plugins: [], pageCount: 0, pluginCount: 0 });
   });
 
   it('keeps only the objects of the data', () => {
@@ -34,6 +34,22 @@ describe('toPluginsPage', () => {
 
   it('keeps 0 pages', () => {
     expect(toPluginsPage({ data: [], numberPages: 0 }).pageCount).toBe(0);
+  });
+
+  it.each([
+    ['missing', undefined],
+    ['null', null],
+    ['a negative number', -1],
+    ['a fraction', 1.5],
+    ['a text', '2'],
+    ['NaN', Number.NaN],
+    ['Infinity', Infinity]
+  ])('counts the plugins of the answer when its count is %s', (description, count) => {
+    expect(toPluginsPage({ data: [PLUGIN, PLUGIN], count }).pluginCount).toBe(2);
+  });
+
+  it('keeps a count of 0', () => {
+    expect(toPluginsPage({ data: [], count: 0 }).pluginCount).toBe(0);
   });
 });
 

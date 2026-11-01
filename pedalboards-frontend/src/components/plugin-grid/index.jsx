@@ -4,6 +4,9 @@
 import Plugin from '../plugin';
 import Loader from '../loader';
 
+// Constants
+import { EMPTY_STATE_TEXT } from '../../constants/search';
+
 // Styles
 import './style.scss';
 
@@ -13,8 +16,6 @@ const NO_PLUGINS = [];
 // 1200 of the main container: their screenshots load at once, the others once they near the
 // viewport
 const FIRST_ROW_CARD_COUNT = 5;
-// Shown in place of the grid when no plugin matches the search
-const EMPTY_STATE_TEXT = 'No plugin matches your search!';
 
 /**
  * Props of {@link PluginGrid}.

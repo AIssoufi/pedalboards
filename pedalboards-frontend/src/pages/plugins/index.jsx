@@ -21,6 +21,7 @@ import {
   parsePluginsSearch
 } from '../../utils/plugin-filter';
 import { buildPageTitle } from '../../utils/page-title';
+import { buildResultsStatus } from './utils';
 
 // Style
 import './style.scss';
@@ -48,7 +49,9 @@ const ignoreFailure = () => {};
  * and inside the Redux store, which loads the plugins. A failed request shows an error message in
  * place of the grid. Coming back to the URL of the list in the store shows it at once, and reloads
  * it behind the scenes, so that the browser restores the scroll position. A page change from the
- * pagination below the list moves the focus to the top of the list.
+ * pagination below the list moves the focus to the top of the list. A visually hidden status
+ * region reads the results to a screen reader: it stays in the page, since a region added with
+ * its text may never be announced, while the loader or the error message replaces the grid.
  */
 const PluginsPage = () => {
   const dispatch = useDispatch();
@@ -56,7 +59,7 @@ const PluginsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.toString();
   const {
-    plugins, pageCount, isLoading, hasFailed
+    plugins, pageCount, pluginCount, isLoading, hasFailed
   } = useSelector(rootState => selectPluginsPage({ rootState, search }));
   const { filters, page: currentPage } = parsePluginsSearch(search);
   const searchFilter = getSearchFilter(filters);
@@ -129,6 +132,9 @@ const PluginsPage = () => {
         field={searchFilter.field}
         onSubmit={handleSearchSubmit}
       />
+      <p className="visually-hidden" role="status">
+        {buildResultsStatus({ pluginCount, isLoading, hasFailed })}
+      </p>
       <Pagination
         currentPage={currentPage}
         elementCount={pageCount}
