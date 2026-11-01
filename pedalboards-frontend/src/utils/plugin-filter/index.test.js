@@ -7,7 +7,8 @@ import {
   getSearchFilter,
   isPluginFilterValue,
   isValidPage,
-  parsePluginsSearch
+  parsePluginsSearch,
+  toApiFilters
 } from './index';
 
 // Constants
@@ -214,6 +215,47 @@ describe('a field repeated in the URL, which the API refuses', () => {
 
   it('keeps the first of two equal values once', () => {
     expect(entriesOf(parsePluginsSearch('?brand=a&brand=a').filters)).toEqual([['brand', 'a']]);
+  });
+});
+
+describe('toApiFilters', () => {
+  it('searches the label with the text of the name filter', () => {
+    expect(entriesOf(toApiFilters(new URLSearchParams('name=SPhaser'))))
+      .toEqual([['name', 'SPhaser'], ['label', 'SPhaser']]);
+  });
+
+  it('keeps the other filters next to the name and its label', () => {
+    expect(entriesOf(toApiFilters(new URLSearchParams('brand=MDA&name=Gx'))))
+      .toEqual([['brand', 'MDA'], ['name', 'Gx'], ['label', 'Gx']]);
+  });
+
+  it.each([
+    ['the label filter of the URL', 'name=Gx&label=Echo', [['name', 'Gx'], ['label', 'Echo']]],
+    ['a filter without a name', 'label=Echo', [['label', 'Echo']]],
+    ['another field', 'categories=Delay', [['categories', 'Delay']]]
+  ])('adds no label to %s, since the API refuses a repeated field', (description, search, expected) => {
+    expect(entriesOf(toApiFilters(new URLSearchParams(search)))).toEqual(expected);
+  });
+
+  it('leaves the filters of the URL as they are', () => {
+    const filters = new URLSearchParams('name=Gx');
+
+    toApiFilters(filters);
+
+    expect(filters.toString()).toBe('name=Gx');
+  });
+
+  it('gives no filter without filters', () => {
+    expect(entriesOf(toApiFilters(new URLSearchParams()))).toEqual([]);
+  });
+
+  it.each([
+    ['undefined', undefined],
+    ['null', null],
+    ['a string', 'name=Gx'],
+    ['an object', { name: 'Gx' }]
+  ])('gives no filter for %s', (description, filters) => {
+    expect(entriesOf(toApiFilters(filters))).toEqual([]);
   });
 });
 

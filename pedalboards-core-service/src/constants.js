@@ -37,8 +37,8 @@ export const PLUGIN_FILTER_CONDITIONS = {
 	name: "name LIKE ? ESCAPE '\\'"
 };
 
-/** Order of the plugin lists: by name whatever the case, then by id, so that pages never overlap */
-export const PLUGIN_ORDER_BY = 'ORDER BY name COLLATE NOCASE, id';
+/** Order of the plugin lists: by the printed label whatever the case, then by id, so that pages never overlap */
+export const PLUGIN_ORDER_BY = 'ORDER BY label COLLATE NOCASE, id';
 
 /** Columns that the write routes may set: the id, the stability flag and the image size stay as they are */
 export const PLUGIN_WRITABLE_COLUMNS = [

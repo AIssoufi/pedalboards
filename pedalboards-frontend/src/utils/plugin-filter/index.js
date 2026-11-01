@@ -1,7 +1,9 @@
 // Constants
 import { PLUGINS_PATHNAME } from '../../constants/routes';
 import { FIRST_PAGE } from '../page/constants';
-import { PAGE_PARAM, PLUGIN_FILTER_FIELDS } from './constants';
+import {
+  LABEL_FILTER_FIELD, NAME_FILTER_FIELD, PAGE_PARAM, PLUGIN_FILTER_FIELDS
+} from './constants';
 
 // Utils
 import { isPageCount, isPageNumber } from '../page';
@@ -143,6 +145,31 @@ const getSearchFilter = (filters) => {
 };
 
 /**
+ * Gives the filters to send to the API for the filters of the URL. A card prints the label of a
+ * plugin, which its name may not hold, so the `name` filter searches the label too: the API keeps
+ * a plugin when one of its filters matches. The URL keeps its one `name` filter.
+ *
+ * @param {*} filters - Filters of the plugins page, as `parsePluginsSearch` reads them.
+ * @returns {URLSearchParams} A copy of the filters, with the label of the `name` filter, unless
+ * they filter on the label already, since the API refuses a repeated field. No filter for a value
+ * that is not a `URLSearchParams`.
+ * @example
+ * toApiFilters(new URLSearchParams('name=SPhaser')).toString(); // 'name=SPhaser&label=SPhaser'
+ */
+const toApiFilters = (filters) => {
+  const isSearchParams = filters instanceof URLSearchParams;
+  const apiFilters = new URLSearchParams(isSearchParams ? filters : undefined);
+  const shouldSearchLabel = apiFilters.has(NAME_FILTER_FIELD)
+    && !apiFilters.has(LABEL_FILTER_FIELD);
+
+  if (shouldSearchLabel) {
+    apiFilters.append(LABEL_FILTER_FIELD, apiFilters.get(NAME_FILTER_FIELD));
+  }
+
+  return apiFilters;
+};
+
+/**
  * Tells whether a page can be shown.
  *
  * @param {Object} params
@@ -184,5 +211,6 @@ export {
   getSearchFilter,
   isPluginFilterValue,
   isValidPage,
-  parsePluginsSearch
+  parsePluginsSearch,
+  toApiFilters
 };

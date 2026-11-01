@@ -8,7 +8,7 @@ deployed Worker serves the read routes only, on `pedalboards.issoufi.fr/api/*`
 
 | Route | Answer |
 | --- | --- |
-| `GET /api/plugins?page=1&pagesize=10` | `{ msg, data, count, currentPage, numberPages }`, sorted by name |
+| `GET /api/plugins?page=1&pagesize=10` | `{ msg, data, count, currentPage, numberPages }`, sorted by label whatever the case of ASCII letters, then by id |
 | `GET /api/plugins?filterby[name]=gate` | The same, for the plugins whose `name` holds `gate` |
 | `GET /api/plugins/count?name=gate` | `{ msg, data }`, where `data` is the number of plugins whose name holds `gate` |
 | `GET /api/plugin/:id` | `{ msg, data }`, or a `404` |
@@ -63,6 +63,8 @@ pnpm start:local
 - [`migrations/0002_seed_plugins.sql`](migrations/0002_seed_plugins.sql) inserts the 50 records of
   [`data/plugins.json`](data/plugins.json). `pnpm db:seed:generate` writes it from that file, with
   ids made from the plugin names (`MDA Overdrive` becomes `mda-overdrive`).
+- [`migrations/0003_index_plugins_by_label.sql`](migrations/0003_index_plugins_by_label.sql)
+  replaces the index of the name with the index of the label, which the list pages sort on.
 - A change to the data after the deployment goes into a new migration: D1 applies each migration
   once.
 
