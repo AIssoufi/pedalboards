@@ -4,6 +4,7 @@
 $control-ports-narrow-viewport: 480px;
 $control-ports-narrow-font-size: 0.875em;
 $control-ports-narrow-cell-padding: 6px;
+$screenshot-max-height: 400px;
 
 .pedalboard-details {
   header {
@@ -54,15 +55,21 @@ $control-ports-narrow-cell-padding: 6px;
 
   .plugin-media-container {
     max-width: 100%;
-    max-height: 400px;
+    max-height: $screenshot-max-height;
     text-align: center;
 
-    // The height from the API, capped like the loaded image, gives the box of the screenshot its
-    // final size before it loads, its width following the ratio of its size attributes
+    // The size from the API gives the box of the screenshot its final size before it loads: its
+    // width from the capped height and the ratio, its height from that width, so that both scale
+    // down together on a narrow page. Without those properties the width is invalid, so auto, and
+    // the image takes its own size. A screenshot whose real ratio differs slightly from the API
+    // fits inside the box rather than stretching
     img {
-      width: auto;
-      height: var(--screenshot-height, auto);
-      max-height: 400px;
+      width: calc(min(var(--screenshot-height), $screenshot-max-height) * var(--screenshot-ratio));
+      height: auto;
+      max-width: 100%;
+      max-height: $screenshot-max-height;
+      aspect-ratio: var(--screenshot-ratio, auto);
+      object-fit: contain;
     }
   }
 

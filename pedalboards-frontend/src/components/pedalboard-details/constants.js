@@ -12,3 +12,6 @@ export const NEGATIVE_ZERO_TEXT = '-0';
 
 /** Custom property of the screenshot holding its height from the API, which reserves its box. */
 export const SCREENSHOT_HEIGHT_PROPERTY = '--screenshot-height';
+
+/** Custom property of the screenshot holding its ratio from the API, which scales its box. */
+export const SCREENSHOT_RATIO_PROPERTY = '--screenshot-ratio';

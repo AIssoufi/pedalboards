@@ -54,9 +54,10 @@ describe('hasPedalboards', () => {
 });
 
 describe('toScreenshotStyle', () => {
-  it.each([[261, 430], [1, 1], [800, 200]])('holds the height of a %p by %p screenshot', (imageWidth, imageHeight) => {
+  it.each([[261, 430], [1, 1], [985, 161]])('holds the height and ratio of a %p by %p screenshot', (imageWidth, imageHeight) => {
     expect(toScreenshotStyle({ imageWidth, imageHeight })).toEqual({
-      '--screenshot-height': `${imageHeight}px`
+      '--screenshot-height': `${imageHeight}px`,
+      '--screenshot-ratio': `${imageWidth} / ${imageHeight}`
     });
   });
 
