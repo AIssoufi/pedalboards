@@ -217,6 +217,7 @@ it('reserves the box of the screenshot from its size', () => {
   expect(screenshot.getAttribute('width')).toBe('261');
   expect(screenshot.getAttribute('height')).toBe('430');
   expect(screenshot.style.getPropertyValue('--screenshot-height')).toBe('430px');
+  expect(screenshot.style.getPropertyValue('--screenshot-ratio')).toBe('261 / 430');
 });
 
 it.each([

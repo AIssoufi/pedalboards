@@ -1,5 +1,7 @@
 // Constants
-import { CELL_NUMBER_FORMAT, NEGATIVE_ZERO_TEXT, SCREENSHOT_HEIGHT_PROPERTY } from './constants';
+import {
+  CELL_NUMBER_FORMAT, NEGATIVE_ZERO_TEXT, SCREENSHOT_HEIGHT_PROPERTY, SCREENSHOT_RATIO_PROPERTY
+} from './constants';
 
 // Utils
 import { toImageDimension } from '../../utils/image-dimension';
@@ -69,15 +71,15 @@ const hasPedalboards = pedalboardCount => (
  */
 
 /**
- * Gives the style that reserves the box of the screenshot before it loads: its height from the
- * API, which the style sheet caps like the loaded image, while its width follows from the ratio
- * of the `width` and `height` attributes.
+ * Gives the style that reserves the box of the screenshot before it loads: its height and its
+ * ratio from the API, from which the style sheet sizes the box and scales it to fit the page.
  *
  * @param {ToScreenshotStyleParams} [params] - Size of the screenshot.
- * @returns {Object|undefined} The style holding the height, or undefined unless both sizes are
- *   whole numbers of pixels above 0, so that the image keeps its own size once loaded.
+ * @returns {Object|undefined} The style holding the height and the ratio, or undefined unless both
+ *   sizes are whole numbers of pixels above 0, so that the image keeps its own size once loaded.
  * @example
- * toScreenshotStyle({ imageWidth: 261, imageHeight: 430 }); // { '--screenshot-height': '430px' }
+ * toScreenshotStyle({ imageWidth: 261, imageHeight: 430 });
+ * // { '--screenshot-height': '430px', '--screenshot-ratio': '261 / 430' }
  * toScreenshotStyle({ imageWidth: 261 }); // undefined
  */
 const toScreenshotStyle = ({ imageWidth, imageHeight } = {}) => {
@@ -85,7 +87,14 @@ const toScreenshotStyle = ({ imageWidth, imageHeight } = {}) => {
   const height = toImageDimension(imageHeight);
   const isSizeKnown = width !== undefined && height !== undefined;
 
-  return isSizeKnown ? { [SCREENSHOT_HEIGHT_PROPERTY]: `${height}px` } : undefined;
+  if (!isSizeKnown) {
+    return undefined;
+  }
+
+  return {
+    [SCREENSHOT_HEIGHT_PROPERTY]: `${height}px`,
+    [SCREENSHOT_RATIO_PROPERTY]: `${width} / ${height}`
+  };
 };
 
 export {
