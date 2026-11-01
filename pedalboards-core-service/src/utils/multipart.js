@@ -1,5 +1,7 @@
 // Reads the multipart forms of the CMS. Only the write routes use it, so the deployed Worker never
 // ships it (`pnpm check:bundle` checks it).
+import { Buffer } from 'node:buffer';
+
 import express from 'express';
 
 import { CLIENT_ERROR_STATUS, MAX_FORM_BYTES } from '../constants.js';
