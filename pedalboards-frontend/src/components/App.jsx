@@ -11,7 +11,8 @@ import {
 } from '../pages';
 
 import {
-  Header
+  Header,
+  Main
 } from '.';
 
 // Constants
@@ -30,13 +31,13 @@ const App = () => (
   <BrowserRouter>
     <Fragment>
       <Header />
-      <main className="main-container">
+      <Main>
         <Routes>
           <Route path={PLUGINS_PATHNAME} element={<Plugins />} />
           <Route path={PLUGIN_DETAILS_ROUTE} element={<PedalboardDetails />} />
           <Route path={ANY_OTHER_ROUTE} element={<Navigate to={PLUGINS_PATHNAME} replace />} />
         </Routes>
-      </main>
+      </Main>
     </Fragment>
   </BrowserRouter>
 );

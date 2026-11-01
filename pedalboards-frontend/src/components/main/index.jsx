@@ -4,6 +4,9 @@ import { useRef } from 'react';
 // Hooks
 import useRouteHeadingFocus from './hooks/useRouteHeadingFocus';
 
+// Style
+import './style.scss';
+
 /**
  * Props of {@link Main}.
  *
