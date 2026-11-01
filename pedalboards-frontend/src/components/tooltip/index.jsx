@@ -30,11 +30,11 @@ import './style.scss';
  */
 
 /**
- * Shows `content` in a dark bubble next to its children while the pointer is over them or the
- * focus is inside them, until Escape. The bubble sits at the end of the page, so no parent clips
- * it, and stays within the viewport. A single child element gets the bubble as its description
- * (`aria-describedby`), which screen readers announce on focus. Renders the children alone without
- * content, and nothing without children.
+ * Shows `content` in a dark bubble next to its children while the pointer is over them or a
+ * visible focus (`:focus-visible`) is inside them, until Escape. The bubble sits at the end of the
+ * page, so no parent clips it, and stays within the viewport. A single child element gets the
+ * bubble as its description (`aria-describedby`), which screen readers announce on focus. Renders
+ * the children alone without content, and nothing without children.
  *
  * @param {TooltipProps} props - Props of the component.
  *

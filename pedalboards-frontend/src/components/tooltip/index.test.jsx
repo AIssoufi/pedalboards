@@ -50,10 +50,12 @@ describe('Tooltip', () => {
     expect(isShown(screen.getByRole('tooltip'))).toBe(false);
   });
 
-  it('shows the tooltip while the focus is inside the children', () => {
+  it('shows the tooltip while a visible focus is inside the children', () => {
     render(<Tooltip content="Save the plugin"><button type="button">Save</button></Tooltip>);
     const button = screen.getByRole('button');
 
+    // In jsdom, a real focus matches `:focus-visible` or not after the events of earlier tests.
+    vi.spyOn(button, 'matches').mockReturnValueOnce(true);
     fireEvent.focus(button);
     expect(isShown(screen.getByRole('tooltip'))).toBe(true);
 
@@ -61,10 +63,20 @@ describe('Tooltip', () => {
     expect(isShown(screen.getByRole('tooltip'))).toBe(false);
   });
 
+  it('keeps the tooltip hidden on a focus event of an element that does not show the focus', () => {
+    render(<Tooltip content="Save the plugin"><button type="button">Save</button></Tooltip>);
+
+    fireEvent.focus(screen.getByRole('button'));
+
+    expect(isShown(screen.getByRole('tooltip'))).toBe(false);
+  });
+
   it('hides the tooltip on Escape', () => {
     render(<Tooltip content="Save the plugin"><button type="button">Save</button></Tooltip>);
     const button = screen.getByRole('button');
+    vi.spyOn(button, 'matches').mockReturnValueOnce(true);
     fireEvent.focus(button);
+    expect(isShown(screen.getByRole('tooltip'))).toBe(true);
 
     fireEvent.keyDown(button, { key: 'Escape' });
 

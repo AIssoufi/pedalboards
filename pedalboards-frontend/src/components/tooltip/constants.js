@@ -17,6 +17,12 @@ export const VIEWPORT_MARGIN_PX = 10;
 export const CLOSE_KEY = 'Escape';
 
 /**
+ * Selector of a focus that the browser shows, such as one from the keyboard. A focus left by the
+ * mouse or a script after a click does not match it, and opens no tooltip.
+ */
+export const VISIBLE_FOCUS_SELECTOR = ':focus-visible';
+
+/**
  * Options of the scroll listener that moves an open tooltip: in the capture phase, to hear the
  * scroll of any container, and passive, since it never cancels the scroll.
  */
