@@ -64,6 +64,20 @@ describe('findPlugins', () => {
     expect(searchParams.get('pagesize')).toBe('10');
   });
 
+  it('searches the label of a plugin along with its name', async () => {
+    await PedalboardService.findPlugins({ filters: new URLSearchParams('name=SPhaser') });
+
+    const { searchParams } = new URL(fetchedUrl());
+    expect(searchParams.get('filterby[name]')).toBe('SPhaser');
+    expect(searchParams.get('filterby[label]')).toBe('SPhaser');
+  });
+
+  it('searches only the field of a filter other than the name', async () => {
+    await PedalboardService.findPlugins({ filters: new URLSearchParams('brand=MDA') });
+
+    expect(new URL(fetchedUrl()).searchParams.has('filterby[label]')).toBe(false);
+  });
+
   it('sends the default page and page size when none is given', async () => {
     await PedalboardService.findPlugins({ filters: new URLSearchParams('brand=MDA') });
 

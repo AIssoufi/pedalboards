@@ -3,6 +3,7 @@ import { RequestHelper } from '../helpers';
 
 // Utils
 import { Env } from '../utils';
+import { toApiFilters } from '../utils/plugin-filter';
 
 // Constants
 import { FIRST_PAGE } from '../utils/page/constants';
@@ -60,8 +61,8 @@ class PedalboardsService {
    * Reads a page of the plugins that match the filters.
    *
    * @param {Object} [params]
-   * @param {URLSearchParams} [params.filters] - Fields and values the plugins must match; any
-   * other value adds no filter.
+   * @param {URLSearchParams} [params.filters] - Fields and values the plugins must match, where
+   * `name` searches the label too (see `toApiFilters`); any other value adds no filter.
    * @param {number} [params.page] - Page to read, from 1.
    * @param {number} [params.pageSize] - Number of plugins on each page.
    * @returns {Promise<*>} The answer of the API.
@@ -69,11 +70,9 @@ class PedalboardsService {
   async findPlugins({ filters, page, pageSize } = {}) {
     const url = this.pluginsUrl({ page, pageSize });
 
-    if (filters instanceof URLSearchParams) {
-      filters.forEach((value, field) => {
-        url.searchParams.append(`filterby[${field}]`, value);
-      });
-    }
+    toApiFilters(filters).forEach((value, field) => {
+      url.searchParams.append(`filterby[${field}]`, value);
+    });
 
     return RequestHelper.get(url);
   }

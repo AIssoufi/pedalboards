@@ -32,6 +32,9 @@ const PLUGIN = {
   screenshotUrl: 'http://example.com/screenshot'
 };
 
+// Labels that no sort of the page would keep in this order, whatever the case
+const LABELS_OF_ANSWER = ['Zeta', 'alpha', 'Beta'];
+
 // Longer than the 900 ms debounce of the search field
 const SEARCH_DEBOUNCE_WAIT_MS = 1000;
 
@@ -130,6 +133,17 @@ describe('PluginsPage', () => {
     expect(screen.getByText(LOADER_TEXT)).toBeDefined();
     expect(await screen.findByRole('link', { name: 'Echo' })).toBeDefined();
     expect(screen.queryByText(LOADER_TEXT)).toBeNull();
+  });
+
+  it('keeps the order of the answer, which the API sorts on the printed labels', async () => {
+    const plugins = LABELS_OF_ANSWER.map(label => ({ ...PLUGIN, _id: label, name: label, label }));
+    await renderPage({ url: '/plugins', plugins });
+
+    const labelsShown = screen.getAllByRole('link')
+      .map(link => link.textContent)
+      .filter(text => LABELS_OF_ANSWER.includes(text));
+
+    expect(labelsShown).toEqual(LABELS_OF_ANSWER);
   });
 
   it('titles the page with its one top level heading', async () => {
@@ -297,7 +311,29 @@ describe('PluginsPage', () => {
 
       expect(location.search).toBe('?name=MDA');
       expect(fetchCount()).toBe(2);
-      expect(lastFetch().filters).toEqual([['name', 'MDA']]);
+      expect(lastFetch().filters).toEqual([['name', 'MDA'], ['label', 'MDA']]);
+    });
+
+    it('finds a word of the printed label through the name of the URL, Back included', async () => {
+      await renderPage({ url: '/plugins' });
+      const input = screen.getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'SPhaser' } });
+      fireEvent.submit(input.form);
+      await flushAnswers();
+
+      expect(location.search).toBe('?name=SPhaser');
+      expect(lastFetch().filters).toEqual([['name', 'SPhaser'], ['label', 'SPhaser']]);
+      expect(screen.getByLabelText('in').value).toBe('name');
+
+      act(() => {
+        navigate(-1);
+      });
+      await flushAnswers();
+
+      expect(location.search).toBe('');
+      expect(lastFetch().filters).toEqual([]);
+      expect(input.value).toBe('');
     });
 
     it('adds one history entry when the search is typed, then submitted', async () => {
