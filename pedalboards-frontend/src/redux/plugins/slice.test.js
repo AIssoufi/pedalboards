@@ -40,13 +40,13 @@ afterEach(() => {
 describe('loadPlugins', () => {
   it('is loading before the first request, as the page shows the loader at once', () => {
     expect(selectPage({ store: setupStore() })).toEqual({
-      plugins: [], pageCount: 0, isLoading: true, hasFailed: false
+      plugins: [], pageCount: 0, pluginCount: 0, isLoading: true, hasFailed: false
     });
   });
 
   it('loads a page of all the plugins without filters', async () => {
     vi.spyOn(window, 'fetch')
-      .mockResolvedValue(jsonResponse({ body: { data: [PLUGIN], count: 1, numberPages: 1 } }));
+      .mockResolvedValue(jsonResponse({ body: { data: [PLUGIN], count: 15, numberPages: 1 } }));
     const store = setupStore();
 
     const request = store.dispatch(loadPlugins({ page: 2, pageSize: PAGE_SIZE }));
@@ -54,7 +54,7 @@ describe('loadPlugins', () => {
     await request;
 
     expect(selectPage({ store })).toEqual({
-      plugins: [PLUGIN], pageCount: 1, isLoading: false, hasFailed: false
+      plugins: [PLUGIN], pageCount: 1, pluginCount: 15, isLoading: false, hasFailed: false
     });
     expect(fetchedUrl().searchParams.get('page')).toBe('2');
     expect(fetchedUrl().searchParams.get('pagesize')).toBe(String(PAGE_SIZE));
@@ -178,7 +178,7 @@ describe('loadPlugins', () => {
       store.dispatch(loadPlugins({ page: 2, pageSize: PAGE_SIZE, search: HELD_SEARCH }));
 
       expect(selectPage({ store, search: HELD_SEARCH })).toEqual({
-        plugins: [PLUGIN], pageCount: 3, isLoading: false, hasFailed: false
+        plugins: [PLUGIN], pageCount: 3, pluginCount: 1, isLoading: false, hasFailed: false
       });
     });
 

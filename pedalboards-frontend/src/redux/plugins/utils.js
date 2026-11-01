@@ -14,19 +14,21 @@ const isPlugin = value => typeof value === 'object' && value !== null;
  * another type.
  *
  * @param {*} answer - Body of the answer, such as `{ data: [...], count: 12, numberPages: 2 }`.
- * @returns {{ plugins: Object[], pageCount: number }} The plugins, only the objects of `data`,
- * and the number of pages, 0 when `numberPages` is not a whole number from 0.
+ * @returns {{ plugins: Object[], pageCount: number, pluginCount: number }} The plugins, only the
+ * objects of `data`, the number of pages, 0 when `numberPages` is not a whole number from 0, and
+ * the number of plugins on all the pages, those of `plugins` when `count` is not such a number.
  * @example
- * toPluginsPage({ data: [{ _id: 'abgate' }], numberPages: 1 });
- * // { plugins: [{ _id: 'abgate' }], pageCount: 1 }
+ * toPluginsPage({ data: [{ _id: 'abgate' }], count: 12, numberPages: 2 });
+ * // { plugins: [{ _id: 'abgate' }], pageCount: 2, pluginCount: 12 }
  */
 const toPluginsPage = (answer) => {
-  const { data, numberPages } = answer ?? {};
+  const { data, count, numberPages } = answer ?? {};
   const plugins = Array.isArray(data) ? data.filter(isPlugin) : [];
 
   return {
     plugins,
-    pageCount: isPageCount(numberPages) ? numberPages : 0
+    pageCount: isPageCount(numberPages) ? numberPages : 0,
+    pluginCount: isPageCount(count) ? count : plugins.length
   };
 };
 

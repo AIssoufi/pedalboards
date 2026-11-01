@@ -12,13 +12,15 @@ import { hasPluginFilters, toPluginsPage } from './utils';
 
 /**
  * State of the plugins page: the plugins of the page shown, the query string they answer, the
- * number of pages of the results, where their loading stands, and the message of its last failure.
+ * number of pages and of plugins of the results, where their loading stands, and the message of
+ * its last failure.
  *
  * @typedef {Object} PluginsState
  * @property {Object[]} plugins - Plugins of the page shown.
  * @property {string|null} heldSearch - Query string of the URL that `plugins` answer, null before
  *   the first answer, or when the request named no URL.
  * @property {number} pageCount - Number of pages of the results.
+ * @property {number} pluginCount - Number of plugins of the results, on all their pages.
  * @property {string} status - One of LOAD_STATUS.
  * @property {string|null} error - Message of the failed request, null otherwise.
  * @property {string|null} requestId - Id of the request whose answer the state waits for.
@@ -29,6 +31,7 @@ const initialState = {
   plugins: [],
   heldSearch: null,
   pageCount: 0,
+  pluginCount: 0,
   status: LOAD_STATUS.IDLE,
   error: null,
   requestId: null
@@ -76,6 +79,7 @@ const pluginsSlice = createSlice({
         state.plugins = action.payload.plugins;
         state.heldSearch = action.meta.arg.search ?? null;
         state.pageCount = action.payload.pageCount;
+        state.pluginCount = action.payload.pluginCount;
         state.status = LOAD_STATUS.SUCCEEDED;
         state.requestId = null;
       })
@@ -99,14 +103,17 @@ const pluginsSlice = createSlice({
  * @param {Object} params
  * @param {Object} params.rootState - State of the store.
  * @param {string} [params.search] - Query string of the URL shown.
- * @returns {{ plugins: Object[], pageCount: number, isLoading: boolean, hasFailed: boolean }}
- * The plugins and the number of pages, whether the page shows the loader (a list that is not held
- * is loading, or none was asked yet), and whether it shows the failure of its last request.
+ * @returns {{
+ *   plugins: Object[], pageCount: number, pluginCount: number, isLoading: boolean,
+ *   hasFailed: boolean
+ * }} The plugins, the numbers of pages and of plugins, whether the page shows the loader (a list
+ * that is not held is loading, or none was asked yet), and whether it shows the failure of its
+ * last request.
  */
 const selectPluginsPage = createSelector(
   [({ rootState }) => rootState[PLUGINS_SLICE_NAME], ({ search }) => search],
   ({
-    plugins, heldSearch, pageCount, status
+    plugins, heldSearch, pageCount, pluginCount, status
   }, search) => {
     const isListHeld = heldSearch !== null && heldSearch === search;
     const isWaiting = status === LOAD_STATUS.IDLE || status === LOAD_STATUS.LOADING;
@@ -114,6 +121,7 @@ const selectPluginsPage = createSelector(
     return {
       plugins,
       pageCount,
+      pluginCount,
       isLoading: !isListHeld && isWaiting,
       hasFailed: !isListHeld && status === LOAD_STATUS.FAILED
     };
