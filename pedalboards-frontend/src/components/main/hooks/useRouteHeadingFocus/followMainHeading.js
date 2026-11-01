@@ -2,18 +2,7 @@
 import { MAIN_HEADING_SELECTOR } from '../../constants';
 
 // Utils
-import { isFinalHeading } from '../../utils';
-
-/**
- * Tells whether the focus belongs to nothing, as after the removal of the focused element.
- *
- * @returns {boolean} True when no element but the body has the focus.
- */
-const isFocusLost = () => {
-  const { activeElement, body } = document;
-
-  return !activeElement || activeElement === body;
-};
+import { isFinalHeading, isFocusLost } from '../../utils';
 
 /**
  * Moves the focus to the main heading of a new page. A page that is still loading shows a
