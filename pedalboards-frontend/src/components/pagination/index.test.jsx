@@ -4,6 +4,9 @@ import { fireEvent, render, screen } from '@testing-library/react';
 // Components
 import Pagination from './index';
 
+// Names of the controls around the page numbers
+const END_BUTTON_NAMES = ['PREVIOUS', 'NEXT'];
+
 it('renders without crashing', () => {
   render(<Pagination currentPage={6} elementCount={54} onCurrentPageChange={() => { }} />);
 
@@ -72,13 +75,106 @@ describe('Pagination', () => {
   it('makes PREVIOUS and NEXT buttons that the keyboard reaches and presses', () => {
     renderPagination({ currentPage: 6, elementCount: 54 });
 
-    ['PREVIOUS', 'NEXT'].forEach((name) => {
+    END_BUTTON_NAMES.forEach((name) => {
       const button = screen.getByRole('button', { name });
 
       // A native button takes the focus with Tab and clicks on Enter and Space
       expect(button.tagName).toBe('BUTTON');
       expect(button.type).toBe('button');
       expect(button.hasAttribute('tabindex')).toBe(false);
+    });
+  });
+
+  describe('at the ends of the pages', () => {
+    const getButton = name => screen.getByRole('button', { name });
+    const getDisabledStates = () => END_BUTTON_NAMES
+      .map(name => getButton(name).getAttribute('aria-disabled'));
+
+    it.each([
+      ['the first page', 1, 5, ['true', 'false']],
+      ['the page after the first', 2, 5, ['false', 'false']],
+      ['the page before the last', 4, 5, ['false', 'false']],
+      ['the last page', 5, 5, ['false', 'true']],
+      ['the only page', 1, 1, ['true', 'true']],
+      ['a page past the last', 9, 5, ['false', 'true']]
+    ])('exposes the disabled state on %s', (_, currentPage, elementCount, expected) => {
+      renderPagination({ currentPage, elementCount });
+
+      expect(getDisabledStates()).toEqual(expected);
+    });
+
+    it.each([NaN, undefined, null, 0, -1, 2.5, '3'])(
+      'treats the invalid page %p as the first page',
+      (currentPage) => {
+        renderPagination({ currentPage, elementCount: 5 });
+
+        expect(getDisabledStates()).toEqual(['true', 'false']);
+      }
+    );
+
+    it('does not call back from PREVIOUS on the first page', () => {
+      const onCurrentPageChange = vi.fn();
+      renderPagination({ currentPage: 1, elementCount: 5, onCurrentPageChange });
+
+      fireEvent.click(getButton('PREVIOUS'));
+
+      expect(onCurrentPageChange).not.toHaveBeenCalled();
+    });
+
+    it('does not call back from NEXT on the last page', () => {
+      const onCurrentPageChange = vi.fn();
+      renderPagination({ currentPage: 5, elementCount: 5, onCurrentPageChange });
+
+      fireEvent.click(getButton('NEXT'));
+
+      expect(onCurrentPageChange).not.toHaveBeenCalled();
+    });
+
+    it('calls back from the control of the other end', () => {
+      const onCurrentPageChange = vi.fn();
+      const { rerender } = render(
+        <Pagination currentPage={1} elementCount={5} onCurrentPageChange={onCurrentPageChange} />
+      );
+
+      fireEvent.click(getButton('NEXT'));
+      rerender(
+        <Pagination currentPage={5} elementCount={5} onCurrentPageChange={onCurrentPageChange} />
+      );
+      fireEvent.click(getButton('PREVIOUS'));
+
+      expect(onCurrentPageChange.mock.calls).toEqual([[2], [4]]);
+    });
+
+    it('keeps the focus on NEXT when it reaches the last page', () => {
+      const { rerender } = render(<Pagination currentPage={4} elementCount={5} />);
+      const nextButton = getButton('NEXT');
+      nextButton.focus();
+
+      rerender(<Pagination currentPage={5} elementCount={5} />);
+
+      expect(getButton('NEXT')).toBe(nextButton);
+      expect(document.activeElement).toBe(nextButton);
+      expect(nextButton.disabled).toBe(false);
+    });
+
+    it('keeps the focus on PREVIOUS when it reaches the first page', () => {
+      const { rerender } = render(<Pagination currentPage={2} elementCount={5} />);
+      const previousButton = getButton('PREVIOUS');
+      previousButton.focus();
+
+      rerender(<Pagination currentPage={1} elementCount={5} />);
+
+      expect(getButton('PREVIOUS')).toBe(previousButton);
+      expect(document.activeElement).toBe(previousButton);
+      expect(previousButton.disabled).toBe(false);
+    });
+
+    it('keeps the two ends in the order of the keyboard', () => {
+      renderPagination({ currentPage: 1, elementCount: 1 });
+
+      END_BUTTON_NAMES.forEach((name) => {
+        expect(getButton(name).hasAttribute('tabindex')).toBe(false);
+      });
     });
   });
 

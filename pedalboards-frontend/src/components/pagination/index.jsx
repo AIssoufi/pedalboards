@@ -26,7 +26,9 @@ import './style.scss';
 
 /**
  * Previous and next controls around the page numbers: the first and last pages, the pages next
- * to the current one, and a gap in place of the others. Renders nothing without pages.
+ * to the current one, and a gap in place of the others. Renders nothing without pages. PREVIOUS on
+ * the first page and NEXT on the last one are marked with `aria-disabled` and do nothing: the
+ * `disabled` attribute would drop the focus of the visitor who reaches the end from the keyboard.
  *
  * @param {PaginationProps} props - Props of the component.
  */
@@ -40,12 +42,24 @@ const Pagination = ({
   const showPage = (page) => {
     if (typeof onCurrentPageChange === 'function') onCurrentPageChange(page);
   };
-  const goToPreviousPage = () => showPage(shownPage - 1);
-  const goToNextPage = () => showPage(shownPage + 1);
+  const isFirstPage = shownPage === FIRST_PAGE;
+  // A page past the last one shows until the page corrects its URL
+  const isLastPage = shownPage >= elementCount;
+  const goToPreviousPage = () => {
+    if (!isFirstPage) showPage(shownPage - 1);
+  };
+  const goToNextPage = () => {
+    if (!isLastPage) showPage(shownPage + 1);
+  };
 
   return (
     <div className="navigation">
-      <button type="button" className="previous-page" onClick={goToPreviousPage}>
+      <button
+        type="button"
+        className="previous-page"
+        aria-disabled={isFirstPage}
+        onClick={goToPreviousPage}
+      >
         <FontAwesomeIcon icon={faAngleLeft} widthAuto />
         <span>PREVIOUS</span>
       </button>
@@ -69,7 +83,12 @@ const Pagination = ({
           );
         })}
       </div>
-      <button type="button" className="next-page" onClick={goToNextPage}>
+      <button
+        type="button"
+        className="next-page"
+        aria-disabled={isLastPage}
+        onClick={goToNextPage}
+      >
         <span>NEXT</span>
         <FontAwesomeIcon icon={faAngleRight} widthAuto />
       </button>

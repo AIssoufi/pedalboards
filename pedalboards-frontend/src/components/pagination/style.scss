@@ -1,5 +1,8 @@
 @use '../../styles/globals';
 
+// Keeps a contrast of 4.5:1 on the #f6f6f6 background of the page, which a lighter grey loses
+$inactive-text-color: #707070;
+
 .navigation {
   display: flex;
   justify-content: center;
@@ -40,6 +43,11 @@
     &:hover{
       color: globals.$bg-primary-color;
       cursor: pointer;
+    }
+    // After the hover, which it cancels, since nothing happens on a click
+    &[aria-disabled='true'] {
+      color: $inactive-text-color;
+      cursor: default;
     }
     span {
       margin: 0 10px;
