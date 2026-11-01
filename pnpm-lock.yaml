@@ -203,7 +203,7 @@ importers:
         version: 0.19.1(supports-color@5.5.0)
       node-sass:
         specifier: npm:sass@^1.105.1
-        version: sass@1.107.1
+        version: sass@1.107.0
       prop-types:
         specifier: ^15.8.1
         version: 15.8.1
@@ -214,8 +214,8 @@ importers:
         specifier: ^16.8.0
         version: 16.8.6(react@16.8.6)
       react-router-dom:
-        specifier: ^4.3.1
-        version: 4.3.1(react@16.8.6)
+        specifier: ^7.18.5
+        version: 7.18.5(react-dom@16.8.6(react@16.8.6))(react@16.8.6)
       react-scripts:
         specifier: 2.1.1
         version: 2.1.1(eslint@5.6.0(supports-color@5.5.0))(react@16.8.6)(supports-color@5.5.0)
@@ -4270,9 +4270,6 @@ packages:
   hex-color-regex@1.1.0:
     resolution: {integrity: sha512-l9sfDFsuqtOqKDsQdqrMRk0U85RZc0RtOR9yPI7mRVOa4FsR/BVnZ0shmQRM96Ji99kYZP/7hn1cedc1+ApsTQ==}
 
-  history@4.9.0:
-    resolution: {integrity: sha512-H2DkjCjXf0Op9OAr6nJ56fcRkTSNrUiv41vNJ6IswJjif6wlpZK0BTfFbi7qK9dXLSYZxkq5lBsj3vUjlYBYZA==}
-
   hmac-drbg@1.0.1:
     resolution: {integrity: sha512-Tti3gMqLdZfhOQY1Mzf/AanLiqh1WTiJgEj26ZuYQ9fbkLomzGchCws4FyrSd4VkpBfiNhaE1On+lOz894jvXg==}
 
@@ -4280,9 +4277,6 @@ packages:
     resolution: {integrity: sha512-QLg82fGkfnJ/4iy1xZ81/9SIJiq1NGFUMGs6ParyjBZr6jW2Ufj/snDqTHixNlHdPNwN2RLVD0Pi3igeK9+JfA==}
     engines: {node: '>=4.0.0'}
     deprecated: This version has been deprecated in accordance with the hapi support policy (hapi.im/support). Please upgrade to the latest version to get the best features, bug fixes, and security patches. If you are unable to upgrade at this time, paid support is available for older versions (hapi.im/commercial).
-
-  hoist-non-react-statics@2.5.5:
-    resolution: {integrity: sha512-rqcy4pJo55FTTLWt+bU8ukscqHeE/e9KWvsOW2b/a3afxQZhwkQdT1rPPCJ0rYXdj4vNcasY8zHTH+jF/qStxw==}
 
   home-or-tmp@2.0.0:
     resolution: {integrity: sha512-ycURW7oUxE2sNiPVw1HVEFsW+ecOpJ5zaj7eC0RlwhibhRBod20muUN8qu/gzx956YrLolVvs1MTXwKgC2rVEg==}
@@ -4841,9 +4835,6 @@ packages:
   is-wsl@3.1.1:
     resolution: {integrity: sha512-e6rvdUCiQCAuumZslxRJWR/Doq4VpPR82kqclvcS0efgt430SlGIk05vdCN58+VrzgtIcfNODjozVielycD4Sw==}
     engines: {node: '>=16'}
-
-  isarray@0.0.1:
-    resolution: {integrity: sha512-D2S+3GLxWH+uhrNEcoh/fnmYeP8E8/zHl644d/jdA0g2uyXvy3sb0qxotE+ne0LtccHknQzWwZEzhak7oJ0COQ==}
 
   isarray@1.0.0:
     resolution: {integrity: sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==}
@@ -5958,9 +5949,6 @@ packages:
   path-to-regexp@0.1.7:
     resolution: {integrity: sha512-5DFkuoqlv1uYQKxy8omFBeJPQcdoE07Kv2sferDCrAq1ohOU+MSDswDIbnx3YAM60qIOnYa53wBhXW0EbMonrQ==}
 
-  path-to-regexp@1.7.0:
-    resolution: {integrity: sha512-nifX1uj4S9IrK/w3Xe7kKvNEepXivANs9ng60Iq7PU/BlouV3yL/VUhFqTuTq33ykwUqoNcTeGo5vdOBP4jS/Q==}
-
   path-to-regexp@6.3.0:
     resolution: {integrity: sha512-Yhpw4T9C6hPpgPeA28us07OJeqZ5EzQTkbfwuhsUg0c237RomFoETJgmp2sa3F/41gfLE6G5cqcYwznmeEeOlQ==}
 
@@ -6538,15 +6526,22 @@ packages:
       redux:
         optional: true
 
-  react-router-dom@4.3.1:
-    resolution: {integrity: sha512-c/MlywfxDdCp7EnB7YfPMOfMD3tOtIjrQlj/CKfNMBxdmpJP8xcz5P/UAFn3JbnQCNUxsHyVVqllF9LhgVyFCA==}
+  react-router-dom@7.18.5:
+    resolution: {integrity: sha512-9HcfDMU6JJ/fp6gJZYGwNE6RknVGS4kBjH1HkNw959mCJi70TVwdipQWv2FEol9uGpi+SZTFtVpJPtEQfayeOw==}
+    engines: {node: '>=20.0.0'}
     peerDependencies:
-      react: '>=15'
+      react: '>=18'
+      react-dom: '>=18'
 
-  react-router@4.3.1:
-    resolution: {integrity: sha512-yrvL8AogDh2X42Dt9iknk4wF4V8bWREPirFfS9gLU1huk6qK41sg7Z/1S81jjTrGHxa3B8R3J6xIkDAA6CVarg==}
+  react-router@7.18.5:
+    resolution: {integrity: sha512-dTgvcXDOrLPrlLHrcZAqWveiK1hMSqN+rGAJzegP8HtmNkfRxOoshGWBNX3ZJ0cZjOHkRdlUJtaIhZMLLyGyPw==}
+    engines: {node: '>=20.0.0'}
     peerDependencies:
-      react: '>=15'
+      react: '>=18'
+      react-dom: '>=18'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
 
   react-router@8.5.1:
     resolution: {integrity: sha512-5u1eQ46QjuXjNfEnLwzrnou1Bm5dquO3xjVYkkMYCudtkicD2AQHtx+fvXzPATtPJx8TW6DR1x1TDRqsfHyZBw==}
@@ -6779,9 +6774,6 @@ packages:
     resolution: {integrity: sha512-qYg9KP24dD5qka9J47d0aVky0N+b4fTU89LN9iDnjB5waksiC49rvMB0PrUJQGoTmH50XPiqOvAjDfaijGxYZw==}
     engines: {node: '>=8'}
 
-  resolve-pathname@2.2.0:
-    resolution: {integrity: sha512-bAFz9ld18RzJfddgrO2e/0S2O81710++chRMUxHjXOYKF6jTAMrUNZrEZ1PvV0zlhfjidm08iRPdTLPno1FuRg==}
-
   resolve-pkg-maps@1.0.0:
     resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
 
@@ -6899,6 +6891,11 @@ packages:
     peerDependencies:
       webpack: ^3.0.0 || ^4.0.0
 
+  sass@1.107.0:
+    resolution: {integrity: sha512-+whPilvVNoAD57xvdIPLQT0gXo4RD1lHYw+Uw8zYHlojaeaMDxK14tc0JmEsz/XMns48h3lpypisMP+3E8eHQA==}
+    engines: {node: '>=20.19.0'}
+    hasBin: true
+
   sass@1.107.1:
     resolution: {integrity: sha512-aJ1/LvxOOb04YhmiBjzZn3jVwdHKol+OVhoMV6fFl02fF9T3i+5Mg9l/CnzqtM+NX5Jn5o3lAbs/ZJivTCLHfQ==}
     engines: {node: '>=20.19.0'}
@@ -6977,6 +6974,9 @@ packages:
 
   set-blocking@2.0.0:
     resolution: {integrity: sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw==}
+
+  set-cookie-parser@2.7.3:
+    resolution: {integrity: sha512-irZHtTqurLna57KQG/s+fzOwv/J6XSH4cs8M/vsrY3uCaQ3S6+QJguAH0WdN47SXlk82voMZ4naWMQf8fdEoIg==}
 
   set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
@@ -7395,12 +7395,6 @@ packages:
   timsort@0.3.0:
     resolution: {integrity: sha512-qsdtZH+vMoCARQtyod4imc2nIJwg9Cc7lPRrw9CzF8ZKR0khdr8+2nX80PBhET3tcyTtJDxAffGh2rXH4tyU8A==}
 
-  tiny-invariant@1.0.4:
-    resolution: {integrity: sha512-lMhRd/djQJ3MoaHEBrw8e2/uM4rs9YMNk0iOr8rHQ0QdbM7D4l0gFl3szKdeixrlyfm9Zqi4dxHCM2qVG8ND5g==}
-
-  tiny-warning@1.0.2:
-    resolution: {integrity: sha512-rru86D9CpQRLvsFG5XFdy0KdLAvjdQDyZCsRcuu60WtzFylDM3eAWSxEVz5kzL2Gp544XiUvPbVKtOA/txLi9Q==}
-
   tinybench@6.2.2:
     resolution: {integrity: sha512-nIZ2N2dFpjBsg2hgitKu7mA+FvsIJuGJOwysRngmVRRmWgR/UyPjwJj8c/fT/dhm8EkHnF5EOogRf+0Z2qrimA==}
     engines: {node: '>=20.0.0'}
@@ -7692,9 +7686,6 @@ packages:
   validate-npm-package-license@3.0.4:
     resolution: {integrity: sha512-DpKm2Ui/xN7/HQKCtpZxoRWBhZ9Z0kqtygG8XCgNQ8ZlDnxuQmWhj566j8fN4Cu3/JmbhsDo7fcAJq4s9h27Ew==}
 
-  value-equal@0.4.0:
-    resolution: {integrity: sha512-x+cYdNnaA3CxvMaTX0INdTCN8m8aF2uY9BvEqmxuYp8bL09cs/kWVQPVGcA35fMktdOsP69IgU7wFj/61dJHEw==}
-
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
@@ -7809,9 +7800,6 @@ packages:
 
   walker@1.0.7:
     resolution: {integrity: sha512-cF4je9Fgt6sj1PKfuFt9jpQPeHosM+Ryma/hfY9U7uXGKM7pJCsF0v2r55o+Il54+i77SyYWetB4tD1dEygRkw==}
-
-  warning@4.0.3:
-    resolution: {integrity: sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==}
 
   watch@0.18.0:
     resolution: {integrity: sha512-oUcoHFG3UF2pBlHcMORAojsN09BfqSfWYWlR3eSSjUFR7eBEx53WT2HX/vZeVTTIVCGShcazb+t6IcBRCNXqvA==}
@@ -12919,15 +12907,6 @@ snapshots:
 
   hex-color-regex@1.1.0: {}
 
-  history@4.9.0:
-    dependencies:
-      '@babel/runtime': 7.29.10
-      loose-envify: 1.4.0
-      resolve-pathname: 2.2.0
-      tiny-invariant: 1.0.4
-      tiny-warning: 1.0.2
-      value-equal: 0.4.0
-
   hmac-drbg@1.0.1:
     dependencies:
       hash.js: 1.1.7
@@ -12935,8 +12914,6 @@ snapshots:
       minimalistic-crypto-utils: 1.0.1
 
   hoek@4.2.1: {}
-
-  hoist-non-react-statics@2.5.5: {}
 
   home-or-tmp@2.0.0:
     dependencies:
@@ -13491,8 +13468,6 @@ snapshots:
   is-wsl@3.1.1:
     dependencies:
       is-inside-container: 1.0.0
-
-  isarray@0.0.1: {}
 
   isarray@1.0.0: {}
 
@@ -14902,10 +14877,6 @@ snapshots:
 
   path-to-regexp@0.1.7: {}
 
-  path-to-regexp@1.7.0:
-    dependencies:
-      isarray: 0.0.1
-
   path-to-regexp@6.3.0: {}
 
   path-to-regexp@8.4.2: {}
@@ -15614,26 +15585,19 @@ snapshots:
     optionalDependencies:
       redux: 5.0.1
 
-  react-router-dom@4.3.1(react@16.8.6):
+  react-router-dom@7.18.5(react-dom@16.8.6(react@16.8.6))(react@16.8.6):
     dependencies:
-      history: 4.9.0
-      invariant: 2.2.4
-      loose-envify: 1.4.0
-      prop-types: 15.8.1
       react: 16.8.6
-      react-router: 4.3.1(react@16.8.6)
-      warning: 4.0.3
+      react-dom: 16.8.6(react@16.8.6)
+      react-router: 7.18.5(react-dom@16.8.6(react@16.8.6))(react@16.8.6)
 
-  react-router@4.3.1(react@16.8.6):
+  react-router@7.18.5(react-dom@16.8.6(react@16.8.6))(react@16.8.6):
     dependencies:
-      history: 4.9.0
-      hoist-non-react-statics: 2.5.5
-      invariant: 2.2.4
-      loose-envify: 1.4.0
-      path-to-regexp: 1.7.0
-      prop-types: 15.8.1
+      cookie: 1.1.1
       react: 16.8.6
-      warning: 4.0.3
+      set-cookie-parser: 2.7.3
+    optionalDependencies:
+      react-dom: 16.8.6(react@16.8.6)
 
   react-router@8.5.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
@@ -15944,8 +15908,6 @@ snapshots:
 
   resolve-from@5.0.0: {}
 
-  resolve-pathname@2.2.0: {}
-
   resolve-pkg-maps@1.0.0: {}
 
   resolve-url@0.2.1: {}
@@ -16097,6 +16059,14 @@ snapshots:
       semver: 5.7.0
       webpack: 4.19.1(supports-color@5.5.0)
 
+  sass@1.107.0:
+    dependencies:
+      chokidar: 5.0.0
+      immutable: 5.1.9
+      source-map-js: 1.2.2
+    optionalDependencies:
+      '@parcel/watcher': 2.6.0
+
   sass@1.107.1:
     dependencies:
       chokidar: 5.0.0
@@ -16214,6 +16184,8 @@ snapshots:
       - supports-color
 
   set-blocking@2.0.0: {}
+
+  set-cookie-parser@2.7.3: {}
 
   set-function-length@1.2.2:
     dependencies:
@@ -16771,10 +16743,6 @@ snapshots:
 
   timsort@0.3.0: {}
 
-  tiny-invariant@1.0.4: {}
-
-  tiny-warning@1.0.2: {}
-
   tinybench@6.2.2: {}
 
   tinyexec@1.3.1: {}
@@ -17092,8 +17060,6 @@ snapshots:
       spdx-correct: 3.1.0
       spdx-expression-parse: 3.0.0
 
-  value-equal@0.4.0: {}
-
   vary@1.1.2: {}
 
   vendors@1.0.3: {}
@@ -17161,10 +17127,6 @@ snapshots:
   walker@1.0.7:
     dependencies:
       makeerror: 1.0.11
-
-  warning@4.0.3:
-    dependencies:
-      loose-envify: 1.4.0
 
   watch@0.18.0:
     dependencies:
