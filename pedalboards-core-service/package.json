@@ -24,7 +24,8 @@
     "build": "wrangler deploy --env=\"\" --dry-run --outdir dist",
     "check:bundle": "node scripts/check-bundle.js",
     "deploy": "wrangler d1 migrations apply DB --remote --env=\"\" && wrangler deploy --env=\"\"",
-    "test": "vitest run"
+    "test": "vitest run",
+    "lint": "eslint . --max-warnings 0"
   },
   "author": {
     "name": "ADAM Issoufi",
@@ -37,6 +38,10 @@
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.4.6",
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "eslint-plugin-import-x": "^4.17.1",
+    "globals": "^17.13.0",
     "jsdom": "^30.1.3",
     "vitest": "^5.0.5",
     "wrangler": "^4.151.3"

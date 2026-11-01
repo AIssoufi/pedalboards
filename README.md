@@ -26,8 +26,8 @@ A store of audio plugins: virtual effect pedals that visitors browse, search and
 - API: Express 5 in a Cloudflare Worker, on a Cloudflare D1 database, tested with Vitest 5 in the
   Workers runtime.
 - Hosting: Cloudflare Pages for the frontend, Cloudflare Workers for the API.
-- Tooling: Node.js 26, a pnpm workspace, GitHub Actions, ESLint 9 for the frontend, commitlint and
-  husky.
+- Tooling: Node.js 26, a pnpm workspace, GitHub Actions, ESLint 9 for the frontend, the API and the
+  tools, commitlint and husky.
 
 ## Architecture
 
@@ -57,8 +57,8 @@ The conventions that contributors and coding agents follow are in [`CLAUDE.md`](
 pnpm install
 ```
 
-This installs the dependencies of the three apps of the [pnpm workspace](#pnpm-workspace) and
-turns on the [git hooks](#commit-messages).
+This installs the dependencies of the three apps and the tools of the
+[pnpm workspace](#pnpm-workspace) and turns on the [git hooks](#commit-messages).
 
 ### Start
 
@@ -78,7 +78,8 @@ pnpm build
 ```
 
 - `pnpm test` runs the tests of the tools and of the three apps once, and `pnpm lint` lints the
-  frontend ([decision record](docs/decisions/0008-eslint-flat-config.md)). The CMS has no lint
+  frontend, the API and the tools
+  ([decision record](docs/decisions/0012-lint-the-api-and-tools.md)). The CMS has no lint
   until it leaves Create React App ([#45](https://github.com/AIssoufi/pedalboards/issues/45)).
 - `pnpm build` builds the frontend and the CMS, and `pnpm --filter pedalboards-frontend preview`
   serves the frontend build.
@@ -100,8 +101,11 @@ pnpm build
 
 ## pnpm workspace
 
-- The three apps form a pnpm workspace ([`pnpm-workspace.yaml`](pnpm-workspace.yaml)) with a single
-  lockfile, `pnpm-lock.yaml`, that `pnpm install` installs from the root or from any app's folder.
+- The three apps and `tools` form a pnpm workspace ([`pnpm-workspace.yaml`](pnpm-workspace.yaml))
+  with a single lockfile, `pnpm-lock.yaml`, that `pnpm install` installs from the root or from any
+  app's folder.
+- `tools` is a package only to hold its ESLint, whose config lints that folder alone: at the root,
+  in `node_modules/eslint`, the preflight check of Create React App 2 would refuse it.
 - Run a script of one app with `pnpm <script>` in its folder, or with
   `pnpm --filter <app> <script>` from the root (`pnpm --filter pedalboards-cms test`).
 - Each app declares every package it imports: unlike npm, pnpm does not put the dependencies of
@@ -116,7 +120,7 @@ pnpm build
 | `pnpm test:commit-messages` | Runs the tests of the [commit message](#commit-messages) tools     |
 | `pnpm test:dev-server-check`| Runs the tests of the helpers of the dev server check              |
 | `pnpm build`                | Builds the frontend and the CMS                                    |
-| `pnpm lint`                 | Lints the frontend, which fails on any warning                     |
+| `pnpm lint`                 | Lints the frontend, the API and `tools`, failing on any warning    |
 | `pnpm check:dev-server`     | Checks that the dev server of the frontend starts and serves it    |
 
 - `pnpm start` keeps the other processes running when one of them stops (`--no-bail`), as

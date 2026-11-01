@@ -2,6 +2,7 @@ packages:
   - pedalboards-cms
   - pedalboards-core-service
   - pedalboards-frontend
+  - tools
 
 # The command shims of pnpm set NODE_PATH when it is empty, so Create React App would ignore the
 # NODE_PATH=src/ of the CMS's .env file (dotenv never overrides a variable), and its absolute

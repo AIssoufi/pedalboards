@@ -483,3 +483,24 @@ gain or loss.
 | Workspace audit advisories, critical / high / moderate / low | 27 / 100 / 69 / 25 | the same |
 
 Decision: [0011. Adopt Node.js 26 LTS](decisions/0011-node-26-lts.md)
+
+## Since 2026: the API and the tools linted with ESLint 9
+
+`pnpm lint` now also covers `pedalboards-core-service` and `tools/`, with the presets of the
+frontend and a check of the tabs of the API. `tools` becomes a workspace package to hold its
+ESLint, which the preflight check of Create React App 2 refuses at the root. The first run found
+three errors and no bug: two `Buffer` that the `worker` globals of ESLint do not list, and the
+`next` argument that Express needs on `sendError`.
+
+Measured on 2026-11-01 on an Apple M3, with Node.js 26.13.0 and pnpm 12.14.0, the medians of 3
+runs with the package store warm. The audit counts the advisories of the whole workspace.
+
+| Figure | Before (`a5351c63`) | After |
+| --- | --- | --- |
+| Files read by `pnpm lint` | 114 | 174 |
+| `pnpm lint`, median of 3 | 2.2 s | 5.0 s |
+| Install after deleting `node_modules`, median of 3 | 1.9 s | 2.1 s |
+| Direct dev dependencies of the core service | 4 | 8 |
+| Workspace audit advisories, critical / high / moderate / low | 27 / 105 / 73 / 28 | the same |
+
+Decision: [0012. Lint the API and the repository tools with ESLint 9](decisions/0012-lint-the-api-and-tools.md)

@@ -27,6 +27,7 @@ export const sendRouteNotFound = (req, res) => {
  *
  * @type {import('express').ErrorRequestHandler}
  */
+// eslint-disable-next-line no-unused-vars -- Express needs four arguments on an error handler
 export const sendError = (error, req, res, next) => {
 	// Express gives a 400 status to the errors of the request itself, such as a malformed URL
 	const isInvalidInput = error instanceof InvalidInputError || error.status === 400;

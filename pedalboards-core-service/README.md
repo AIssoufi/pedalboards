@@ -77,6 +77,7 @@ pnpm start:local
 | `pnpm db:migrate:local` | Applies the migrations to the local D1, kept in `.wrangler` |
 | `pnpm db:seed:generate` | Writes `migrations/0002_seed_plugins.sql` from `data/plugins.json` |
 | `pnpm test` | Runs the tests with Vitest in the Workers runtime, against a local D1 filled by the migrations |
+| `pnpm lint` | Lints the service with ESLint, tabs included, and fails on any warning |
 | `pnpm build` | Bundles the Worker into `dist`, as the deployment does, without publishing it |
 | `pnpm check:bundle` | Fails when the bundle holds a write route or a multipart parser |
 | `pnpm run deploy` | Applies the migrations to the remote D1, then deploys the Worker (Workers Builds runs it) |

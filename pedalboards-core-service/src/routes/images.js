@@ -1,4 +1,6 @@
 // Serves the plugin images that the CMS uploads. Only the local entry (src/local.js) mounts it.
+import { Buffer } from 'node:buffer';
+
 import { Router } from 'express';
 
 import { MESSAGES, PLUGIN_IMAGE_ROUTE } from '../constants.js';
