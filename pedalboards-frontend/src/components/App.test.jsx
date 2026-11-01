@@ -7,6 +7,8 @@ import App from './App';
 import { jsonResponse } from '../test-utils/fetch';
 
 const EMPTY_GRID_TEXT = 'No plugin matches your search!';
+// The status region of the page reads the same text as the grid
+const GRID_ONLY = { ignore: '[role="status"]' };
 const EMPTY_DETAILS_TEXT = 'No data available';
 // Answer of the API for a list without plugins
 const EMPTY_PLUGIN_LIST = { data: [], count: 0, numberPages: 0 };
@@ -54,7 +56,7 @@ it('renders without crashing', async () => {
 
   expect(screen.getByRole('link', { name: 'Plugins' })).toBeDefined();
   // The grid shows its empty state once the answer is in the store
-  expect(await screen.findByText(EMPTY_GRID_TEXT)).toBeDefined();
+  expect(await screen.findByText(EMPTY_GRID_TEXT, GRID_ONLY)).toBeDefined();
 });
 
 it('opens the plugin of a deep link', async () => {
@@ -73,7 +75,7 @@ it('shows the details of the plugin of a deep link, which load in their own chun
 it('searches the filter and the page of a deep link', async () => {
   renderAt({ url: '/plugins?brand=MDA&page=2' });
 
-  expect(await screen.findByText(EMPTY_GRID_TEXT)).toBeDefined();
+  expect(await screen.findByText(EMPTY_GRID_TEXT, GRID_ONLY)).toBeDefined();
   const { searchParams } = new URL(fetchedUrls()[0]);
   expect(searchParams.get('filterby[brand]')).toBe('MDA');
   expect(searchParams.get('page')).toBe('2');
@@ -86,7 +88,7 @@ it.each([
 ])('redirects %s to the plugins', async (description, url) => {
   renderAt({ url });
 
-  expect(await screen.findByText(EMPTY_GRID_TEXT)).toBeDefined();
+  expect(await screen.findByText(EMPTY_GRID_TEXT, GRID_ONLY)).toBeDefined();
   expect(window.location.pathname).toBe('/plugins');
 });
 
