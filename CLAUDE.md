@@ -1,6 +1,6 @@
 # Pedalboards
 
-A store of audio plugins: a pnpm workspace of three apps on Node.js 26 (`.nvmrc`). The
+A store of audio plugins: a pnpm workspace of three apps and `tools` on Node.js 26 (`.nvmrc`). The
 [README](README.md) explains how to run them; this file lists what agents must follow.
 
 ## Layout
@@ -11,7 +11,8 @@ A store of audio plugins: a pnpm workspace of three apps on Node.js 26 (`.nvmrc`
 - `pedalboards-core-service`: the API, Express 5 in a Cloudflare Worker on D1. The deployed
   Worker serves the read routes only; the write routes run locally (`start:local`).
 - `tools/`: the commitlint rule, the hook script and the dev server check, tested with
-  `node --test`.
+  `node --test`. A workspace package only to hold its ESLint: never add ESLint to the root
+  `package.json`, since the preflight check of Create React App 2 refuses it.
 - `docs/decisions/`: the decision records; `docs/evolution.md`: the measured steps of the stack.
 - `docs/ai-workflow/`: how the agents work here ([overview](docs/ai-workflow/overview.md)).
 
@@ -27,8 +28,9 @@ Install once from the root: `pnpm install --frozen-lockfile`. Then, as the CI ru
 
 - `CI=true` makes the Jest of the CMS run once instead of in watch mode.
 - `check:bundle` reads the build: run it after `pnpm run build`.
-- From the root, `pnpm test` runs every test suite, `pnpm lint` lints the frontend and
-  `pnpm build` builds the frontend and the CMS; the bundle checks run in their package.
+- From the root, `pnpm test` runs every test suite, `pnpm lint` lints the frontend, the core
+  service and `tools/` (the CI only lints the frontend so far) and `pnpm build` builds the
+  frontend and the CMS; the bundle checks run in their package.
 
 ## Known gaps
 
