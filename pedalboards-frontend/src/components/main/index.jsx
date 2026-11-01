@@ -16,7 +16,8 @@ import './style.scss';
 
 /**
  * Main area of the app, which holds the routes and moves the focus to the main heading of each
- * new page. Must be rendered inside a router. Each heading it focuses needs `tabIndex={-1}`.
+ * new page, or to the card of a list that the visitor comes back to. Must be rendered inside a
+ * router. Each heading it focuses needs `tabIndex={-1}`.
  *
  * @param {MainProps} props
  */

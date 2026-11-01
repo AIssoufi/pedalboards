@@ -93,12 +93,16 @@ it.each([
 describe('a change of route', () => {
   const headingOf = name => screen.findByRole('heading', { level: 1, name });
 
-  // Opens the details from the card of the list, once the list shows it
-  const openPluginCard = async () => {
+  // Finds the link to the details on the card of the list, once the list shows it
+  const findDetailsLink = async () => {
     await screen.findByRole('link', { name: PLUGIN_LABEL });
     const isDetailsLink = link => link.getAttribute('href') === `/plugin/${PLUGIN_ID}`;
 
-    fireEvent.click(screen.getAllByRole('link').find(isDetailsLink));
+    return screen.getAllByRole('link').find(isDetailsLink);
+  };
+
+  const openPluginCard = async () => {
+    fireEvent.click(await findDetailsLink());
   };
 
   it('gives each route its title', async () => {
@@ -132,15 +136,15 @@ describe('a change of route', () => {
     expect(document.activeElement).toBe(await headingOf('Plugins'));
   });
 
-  it('focuses the heading of the page the Back button returns to', async () => {
+  it('gives the focus back to the card that the Back button returns to', async () => {
     renderAt({ url: '/plugins', plugin: PLUGIN, list: PLUGIN_LIST });
     await openPluginCard();
     await headingOf(PLUGIN_LABEL);
 
     act(() => window.history.back());
 
-    const heading = await headingOf('Plugins');
-    await waitFor(() => expect(document.activeElement).toBe(heading));
+    const detailsLink = await findDetailsLink();
+    await waitFor(() => expect(document.activeElement).toBe(detailsLink));
   });
 
   it('leaves the focus of the browser after the redirect of the first address', async () => {
