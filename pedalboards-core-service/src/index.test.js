@@ -169,6 +169,31 @@ describe('GET /api/plugin/:id', () => {
 	});
 });
 
+describe('response headers', () => {
+	it.each(['/plugins', '/plugins/count', '/plugin/abgate'])('lets a browser cache %s for a minute', async path => {
+		const { status, headers } = await callApi({ path });
+
+		expect(status).toBe(200);
+		expect(headers.get('Cache-Control')).toBe('public, max-age=60');
+		expect(headers.get('X-Content-Type-Options')).toBe('nosniff');
+	});
+
+	it.each([
+		['GET', '/plugin/unknown', 404],
+		['GET', '/plugin/%E0', 400],
+		['GET', '/plugins?filterby[nope]=x', 400],
+		['GET', '/unknown', 404],
+		['POST', '/plugin', 404]
+	])('forbids caching %s %s, answered %i', async (method, path, expectedStatus) => {
+		const { status, headers } = await callApi({ path, method });
+
+		expect(status).toBe(expectedStatus);
+		expect(headers.get('Cache-Control')).toBe('no-store');
+		expect(headers.get('X-Content-Type-Options')).toBe('nosniff');
+		expect(headers.get('Access-Control-Allow-Origin')).toBe('*');
+	});
+});
+
 describe('routes outside the read API', () => {
 	it.each([
 		['POST', '/plugin'],

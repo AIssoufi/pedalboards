@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import { MESSAGES } from '../constants.js';
+import { setReadCacheHeaders } from '../middlewares.js';
 import { countPlugins, findPluginById, findPluginPage } from '../db/plugins.js';
 import { parseFilters, parseSearchText } from '../utils/filters.js';
 import { countPages, parsePagination } from '../utils/pagination.js';
@@ -13,6 +14,7 @@ import { countPages, parsePagination } from '../utils/pagination.js';
  */
 export const createReadRouter = db => {
 	const router = Router();
+	router.use(setReadCacheHeaders);
 
 	// Number of plugins whose name holds the `name` parameter
 	router.get('/plugins/count', async (req, res) => {

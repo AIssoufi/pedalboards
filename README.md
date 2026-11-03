@@ -262,7 +262,9 @@ origin ([decision record](docs/decisions/0005-cloudflare-pages-and-d1-worker.md)
   headers that Pages sends with the site: `Strict-Transport-Security`, `X-Frame-Options`, a
   `Permissions-Policy`, a `Content-Security-Policy` that blocks what it does not allow and logs
   each violation in the console, and a one-year `immutable` cache on `/assets/*`, whose file
-  names hold a hash of their content. The Worker sends its own headers.
+  names hold a hash of their content. The Worker sends its own headers on `/api`: the CORS
+  headers, `X-Content-Type-Options: nosniff`, and `Cache-Control: public, max-age=60` on a
+  successful read, `no-store` on every error and on the local write routes.
 - `robots.txt` names [`sitemap.xml`](pedalboards-frontend/public/sitemap.xml), which lists
   `/plugins` and the page of each plugin. Each page renders one canonical link on
   https://pedalboards.issoufi.fr with no query string, on a preview deployment too, so the
