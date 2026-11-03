@@ -33,13 +33,16 @@ describe('the link preview of the site', () => {
     ['meta[property="og:type"]', 'website'],
     ['meta[property="og:site_name"]', 'Pedalboards'],
     ['meta[property="og:title"]', 'Pedalboards'],
-    ['meta[property="og:url"]', 'https://pedalboards.issoufi.fr/'],
     ['meta[property="og:image"]', 'https://pedalboards.issoufi.fr/social-preview.jpg'],
     ['meta[property="og:image:width"]', '1200'],
     ['meta[property="og:image:height"]', '630'],
     ['meta[name="twitter:card"]', 'summary_large_image']
   ])('sets %s to %s', (selector, expected) => {
     expect(readMeta(selector)).toBe(expected);
+  });
+
+  it('declares no og:url, so a preview cites the shared link rather than the home page', () => {
+    expect(page.head.querySelectorAll('meta[property="og:url"]')).toHaveLength(0);
   });
 
   it('describes the preview image for screen readers', () => {
