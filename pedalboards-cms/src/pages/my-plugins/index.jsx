@@ -5,18 +5,16 @@ import { Link } from 'react-router-dom';
 
 // Components
 import { Pagination, RequestError } from 'components';
+import PluginItem from './plugin-item';
 
 // Utils
 import { Env } from 'utils';
-import { toPluginActionLabel } from './utils';
 
 // Hooks
 import usePluginList from './hooks/usePluginList';
 
 // Constants
-import {
-  ADD_PLUGIN_TEXT, DELETE_ACTION, EDIT_ACTION, EMPTY_STATE_TEXT, PAGE_TITLE, VIEW_ACTION
-} from './constants';
+import { ADD_PLUGIN_TEXT, EMPTY_STATE_TEXT, PAGE_TITLE } from './constants';
 
 // Style
 import './style.scss';
@@ -49,38 +47,13 @@ const MyPlugins = ({ location = {} }) => {
       <div className="content">
         {hasPlugins
           ? plugins.map(({ _id, name }) => (
-            <div className="plugin" key={_id}>
-              <h2 className="title">{name}</h2>
-              <div className="controls">
-                <a
-                  href={`${homePageUrl}/plugin/${_id}`}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  className="btn bg-white"
-                  aria-label={toPluginActionLabel({
-                    action: VIEW_ACTION, pluginName: name, opensInNewTab: true
-                  })}
-                >
-                  {VIEW_ACTION}
-
-                </a>
-                <Link
-                  to={`plugin/edit/${_id}`}
-                  className="btn bg-white"
-                  aria-label={toPluginActionLabel({ action: EDIT_ACTION, pluginName: name })}
-                >
-                  {EDIT_ACTION}
-                </Link>
-                <button
-                  type="button"
-                  className="btn bg-white"
-                  aria-label={toPluginActionLabel({ action: DELETE_ACTION, pluginName: name })}
-                  onClick={() => deletePlugin(_id)}
-                >
-                  {DELETE_ACTION}
-                </button>
-              </div>
-            </div>))
+            <PluginItem
+              key={_id}
+              id={_id}
+              name={name}
+              homePageUrl={homePageUrl}
+              onDelete={deletePlugin}
+            />))
           : <p>{EMPTY_STATE_TEXT}</p>
         }
       </div>
