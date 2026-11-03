@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 // Utils
-import { isFilledText, toPluginActionLabel, toPluginNames } from './utils';
+import { isFilledText } from '../utils';
+import { toPluginActionLabel, toPluginNames } from './utils';
 
 // Constants
 import { DELETE_ACTION, EDIT_ACTION, VIEW_ACTION } from './constants';

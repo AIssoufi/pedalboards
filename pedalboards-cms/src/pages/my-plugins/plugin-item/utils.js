@@ -9,13 +9,6 @@ import { NEW_TAB_NOTE, UNTITLED_PLUGIN_TEXT } from './constants';
 const toTrimmedText = value => (typeof value === 'string' ? value.trim() : '');
 
 /**
- * Tells whether a value is a text with a character other than a space.
- * @param {*} value value to check
- * @returns {boolean} `true` for a text that is not empty once trimmed
- */
-export const isFilledText = value => toTrimmedText(value) !== '';
-
-/**
  * Gives the names that a plugin of the list shows: its label as the title, since the API sorts the
  * list on it and the store prints it on its cards, and its name below when it says something else.
  * @param {Object} [plugin]

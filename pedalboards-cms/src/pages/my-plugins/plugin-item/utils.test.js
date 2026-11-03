@@ -1,5 +1,5 @@
 // Utils
-import { isFilledText, toPluginActionLabel, toPluginNames } from './utils';
+import { toPluginActionLabel, toPluginNames } from './utils';
 
 describe('toPluginNames', () => {
   it('gives the label as the title and the name below it', () => {
@@ -48,23 +48,6 @@ describe('toPluginNames', () => {
 
   it('gives a fallback title without a plugin', () => {
     expect(toPluginNames()).toEqual({ title: 'Untitled plugin', subtitle: '' });
-  });
-});
-
-describe('isFilledText', () => {
-  it.each(['Gate', ' Gate ', 'a'])('accepts the text %p', (value) => {
-    expect(isFilledText(value)).toBe(true);
-  });
-
-  it.each([
-    ['an empty text', ''],
-    ['a text of spaces', '   '],
-    ['a number', 42],
-    ['null', null],
-    ['a missing value', undefined],
-    ['an object', {}]
-  ])('refuses %s', (label, value) => {
-    expect(isFilledText(value)).toBe(false);
   });
 });
 

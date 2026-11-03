@@ -1,8 +1,17 @@
-// Utils
-import { isFilledText } from './plugin-item/utils';
-
 // Constants
 import { FIRST_PAGE, UNKNOWN_PAGE_COUNT } from './constants';
+
+/**
+ * Tells whether a value is a text with a character other than a space.
+ * @param {*} value value to check
+ * @returns {boolean} `true` for a text that is not empty once trimmed
+ *
+ * @example
+ * isFilledText(' Gate '); // true
+ * isFilledText('  '); // false
+ * isFilledText(42); // false
+ */
+export const isFilledText = value => typeof value === 'string' && value.trim() !== '';
 
 /**
  * Reads the number of pages that an answer of the list gives: a whole number of zero or more,

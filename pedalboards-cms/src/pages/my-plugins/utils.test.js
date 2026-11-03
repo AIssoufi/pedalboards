@@ -1,5 +1,24 @@
 // Utils
-import { isPageInRange, readLoadedPage, readPageCount, readPluginList } from './utils';
+import {
+  isFilledText, isPageInRange, readLoadedPage, readPageCount, readPluginList
+} from './utils';
+
+describe('isFilledText', () => {
+  it.each(['Gate', ' Gate ', 'a'])('accepts the text %p', (value) => {
+    expect(isFilledText(value)).toBe(true);
+  });
+
+  it.each([
+    ['an empty text', ''],
+    ['a text of spaces', '   '],
+    ['a number', 42],
+    ['null', null],
+    ['a missing value', undefined],
+    ['an object', {}]
+  ])('refuses %s', (label, value) => {
+    expect(isFilledText(value)).toBe(false);
+  });
+});
 
 describe('readPluginList', () => {
   it('keeps every plugin of the list, in its order', () => {
