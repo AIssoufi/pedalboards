@@ -56,8 +56,9 @@ const ignoreFailure = () => {};
  * place of the grid. Coming back to the URL of the list in the store shows it at once, and reloads
  * it behind the scenes, so that the browser restores the scroll position. A page change from the
  * pagination below the list moves the focus to the top of the list. A visually hidden status
- * region reads the results to a screen reader: it stays in the page, since a region added with
- * its text may never be announced, while the loader or the error message replaces the grid.
+ * region reads the waiting, then the results, to a screen reader: it stays in the page, since a
+ * region added with its text may never be announced, while the loader or the error message
+ * replaces the grid. So the loader, added with its text, is no status here.
  */
 const PluginsPage = () => {
   const dispatch = useDispatch();
@@ -150,7 +151,7 @@ const PluginsPage = () => {
       <section ref={listRef} aria-label={LIST_LABEL} tabIndex={-1}>
         {hasFailed
           ? <p role="alert">{LOAD_ERROR_TEXT}</p>
-          : <PluginGrid isLoading={isLoading} plugins={plugins} />}
+          : <PluginGrid isLoading={isLoading} isLoaderAnnounced={false} plugins={plugins} />}
       </section>
       <Pagination
         currentPage={currentPage}

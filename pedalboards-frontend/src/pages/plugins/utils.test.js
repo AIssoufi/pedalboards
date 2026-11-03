@@ -4,6 +4,8 @@ import { EMPTY_STATE_TEXT } from '../../constants/search';
 // Utils
 import { buildResultsStatus } from './utils';
 
+const LOADING_TEXT = 'Loading plugins...';
+
 describe('buildResultsStatus', () => {
   it.each([
     [1, '1 plugin found'],
@@ -27,10 +29,18 @@ describe('buildResultsStatus', () => {
   });
 
   it.each([
-    ['while loading', { pluginCount: 3, isLoading: true }],
+    ['while a new list loads', { pluginCount: 3, isLoading: true }],
     ['while the first list loads', { pluginCount: 0, isLoading: true }],
+    ['with a missing count', { isLoading: true }],
+    ['for a truthy isLoading that is not a boolean', { pluginCount: 3, isLoading: 'yes' }]
+  ])('reads the waiting %s', (description, params) => {
+    expect(buildResultsStatus(params)).toBe(LOADING_TEXT);
+  });
+
+  it.each([
     ['after a failure', { pluginCount: 3, hasFailed: true }],
-    ['after a failure with no plugin', { pluginCount: 0, hasFailed: true }]
+    ['after a failure with no plugin', { pluginCount: 0, hasFailed: true }],
+    ['when a failure and a load are both reported', { pluginCount: 3, isLoading: true, hasFailed: true }]
   ])('reads nothing %s', (description, params) => {
     expect(buildResultsStatus(params)).toBe('');
   });

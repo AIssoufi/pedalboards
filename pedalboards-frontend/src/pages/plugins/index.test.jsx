@@ -23,6 +23,7 @@ const EMPTY_GRID_TEXT = 'No plugin matches your search!';
 const GRID_ONLY = { ignore: '[role="status"]' };
 const ERROR_TEXT = 'Could not load the plugins, try again later.';
 const LOADER_TEXT = 'Loading...';
+const LOADING_STATUS_TEXT = 'Loading plugins...';
 const SERVER_ERROR_STATUS = 500;
 
 const PLUGIN = {
@@ -609,15 +610,16 @@ describe('PluginsPage', () => {
   });
 
   describe('its status region', () => {
-    // The loader is a status too, placed after the region in the page
-    const getRegion = () => screen.getAllByRole('status')[0];
+    // The only status of the page, the loader included, so the waiting is read once
+    const getRegion = () => screen.getByRole('status');
     const statusText = () => getRegion().textContent;
 
-    it('is in the page, empty, before any answer', () => {
+    it('reads the waiting before the first answer, as the only status of the page', () => {
       vi.spyOn(window, 'fetch').mockImplementation(() => new Promise(() => {}));
       renderAt('/plugins');
 
-      expect(statusText()).toBe('');
+      expect(screen.getByText(LOADER_TEXT)).toBeDefined();
+      expect(statusText()).toBe(LOADING_STATUS_TEXT);
     });
 
     it('is hidden from the eye', async () => {
@@ -642,7 +644,7 @@ describe('PluginsPage', () => {
       expect(statusText()).toBe(EMPTY_GRID_TEXT);
     });
 
-    it('stays the same element through a search, and clears until an answer of the same count', async () => {
+    it('stays the same element through a search, and reads the waiting until an answer of the same count', async () => {
       await renderPage({ url: '/plugins', plugins: [PLUGIN] });
       const region = getRegion();
       let answerSearch;
@@ -655,7 +657,7 @@ describe('PluginsPage', () => {
 
       expect(screen.getByText(LOADER_TEXT)).toBeDefined();
       expect(getRegion()).toBe(region);
-      expect(region.textContent).toBe('');
+      expect(region.textContent).toBe(LOADING_STATUS_TEXT);
 
       await act(async () => {
         answerSearch(jsonResponse({ body: { data: [PLUGIN], count: 1, numberPages: 1 } }));
