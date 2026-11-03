@@ -1,5 +1,5 @@
 /** Page of the CMS where the admin panel starts. */
-export const ADMIN_PANEL_PATH = '/login';
+export const ADMIN_PANEL_PATH = '/plugins';
 
 /** Site of the author, which the credit of the header links to. */
 export const AUTHOR_URL = 'https://issoufi.fr/';
