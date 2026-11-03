@@ -153,6 +153,71 @@ describe('MyPlugins', () => {
       .toEqual(['View Gate (new tab)', 'Edit Gate', 'Delete Gate']);
   });
 
+  it('titles each plugin by its label, the order of the API, with its name below', async () => {
+    PedalboardService.getPlugins.mockResolvedValue({
+      ...ALL_PLUGINS,
+      data: [
+        { _id: 'ambience', label: 'Ambience', name: 'MDA Ambience' },
+        { _id: 'filter', label: 'AutoFilter', name: 'C* AutoFilter' },
+        { _id: 'gate', label: 'Gate', name: 'Gate' }
+      ],
+      count: 3
+    });
+    view = renderMyPlugins();
+    await flushPromises();
+
+    const names = view.container.querySelectorAll('.plugin .name');
+
+    expect(readTitles(view.container)).toEqual(['Ambience', 'AutoFilter', 'Gate']);
+    expect(Array.from(names, name => name.textContent))
+      .toEqual(['MDA Ambience', 'C* AutoFilter']);
+    expect(view.container.querySelector('.plugin .controls > *').getAttribute('aria-label'))
+      .toBe('View Ambience (new tab)');
+  });
+
+  it('titles a plugin by its name without a label, or by a fallback without either', async () => {
+    PedalboardService.getPlugins.mockResolvedValue({
+      ...ALL_PLUGINS,
+      data: [{ _id: 'gate', label: '  ', name: 'Gate' }, { _id: 'nameless', label: null }],
+      count: 2
+    });
+    view = renderMyPlugins();
+    await flushPromises();
+
+    const actions = view.container.querySelectorAll('.plugin:last-child .controls > *');
+
+    expect(readTitles(view.container)).toEqual(['Gate', 'Untitled plugin']);
+    expect(view.container.querySelector('.plugin .name')).toBeNull();
+    expect(Array.from(actions, action => action.getAttribute('aria-label')))
+      .toEqual([
+        'View Untitled plugin (new tab)', 'Edit Untitled plugin', 'Delete Untitled plugin'
+      ]);
+  });
+
+  it('lists the other plugins when the API gives an entry that is not a plugin', async () => {
+    PedalboardService.getPlugins.mockResolvedValue({
+      ...ALL_PLUGINS,
+      data: [
+        null, { _id: 'gate', label: 'Gate' }, 'reverb', { label: 'Delay' },
+        { _id: 'reverb', label: 'Reverb' }
+      ],
+      count: 5
+    });
+    view = renderMyPlugins();
+    await flushPromises();
+
+    expect(readTitles(view.container)).toEqual(['Gate', 'Reverb']);
+  });
+
+  it('shows the empty state when the API gives no entry that is a plugin', async () => {
+    PedalboardService.getPlugins.mockResolvedValue({ ...ALL_PLUGINS, data: [null, 3], count: 2 });
+    view = renderMyPlugins();
+    await flushPromises();
+
+    expect(readTitles(view.container)).toEqual([]);
+    expect(view.container.textContent).toContain(EMPTY_STATE_TEXT);
+  });
+
   it('lists every plugin without a search', async () => {
     view = renderMyPlugins({ location: { search: '' } });
     await flushPromises();

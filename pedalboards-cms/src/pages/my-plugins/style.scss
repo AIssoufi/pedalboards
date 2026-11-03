@@ -18,53 +18,7 @@
     }
   }
 
-  .content {
-    .plugin {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 5px 10px;
-      background-color: #DDD;
-      margin-bottom: 10px;
-      &:last-of-type {
-        margin-bottom: 0;
-      }
-
-      .title {
-        margin: 0;
-        font-size: 1rem;
-        font-family: sans-serif;
-        font-weight: normal;
-      }
-
-      .controls {
-        display: flex;
-        .btn {
-          margin-left: 10px;
-        }
-      }
-    }
-  }
-
   footer {
     margin-top: auto;
-  }
-
-  @media (max-width: $phone-max-width) {
-    .content {
-      .plugin {
-        flex-flow: row wrap;
-        padding: 10px;
-
-        .title {
-          flex: 1 1 100%;
-          margin-bottom: 10px;
-        }
-
-        .controls .btn:first-child {
-          margin-left: 0;
-        }
-      }
-    }
   }
 }

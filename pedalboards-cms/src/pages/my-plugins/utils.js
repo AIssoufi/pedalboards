@@ -1,5 +1,17 @@
 // Constants
-import { FIRST_PAGE, NEW_TAB_NOTE, UNKNOWN_PAGE_COUNT } from './constants';
+import { FIRST_PAGE, UNKNOWN_PAGE_COUNT } from './constants';
+
+/**
+ * Tells whether a value is a text with a character other than a space.
+ * @param {*} value value to check
+ * @returns {boolean} `true` for a text that is not empty once trimmed
+ *
+ * @example
+ * isFilledText(' Gate '); // true
+ * isFilledText('  '); // false
+ * isFilledText(42); // false
+ */
+export const isFilledText = value => typeof value === 'string' && value.trim() !== '';
 
 /**
  * Reads the number of pages that an answer of the list gives: a whole number of zero or more,
@@ -54,27 +66,30 @@ export const isPageInRange = ({ page, pageCount } = {}) => {
 };
 
 /**
- * Gives the accessible name of an action on a plugin of the list, so that each "View", "Edit" or
- * "Delete" tells which plugin it acts on. It starts with the visible text of the action.
- * @param {Object} [params]
- * @param {string} [params.action=''] visible text of the action
- * @param {*} [params.pluginName] name of the plugin
- * @param {boolean} [params.opensInNewTab=false] whether the action opens a new tab, which the
- *   name then says
- * @returns {string} the action and the trimmed name, or the action alone when the name is not a
- *   text with a character other than a space, followed by `NEW_TAB_NOTE` for a new tab; the
- *   missing parts are left out with their space
+ * Tells whether an entry of the list is a plugin: an object, neither `null` nor an array, with an
+ * `_id` text that holds a character other than a space, which its row and its links need.
+ * @param {*} entry entry given by the API
+ * @returns {boolean} true for an object with a filled `_id`, false for any other value
+ */
+const isPluginEntry = (entry) => {
+  const isObject = typeof entry === 'object' && entry !== null && !Array.isArray(entry);
+
+  return isObject && isFilledText(entry._id);
+};
+
+/**
+ * Reads the plugins of a list given by the API, leaving out each entry that is not a plugin, so a
+ * `null` in the data never breaks the page.
+ * @param {*} plugins list given by the API
+ * @returns {Object[]} the entries that are objects with a filled `_id`, or an empty list when it is
+ *   not a list
  *
  * @example
- * toPluginActionLabel({ action: 'Edit', pluginName: 'Gate' }); // 'Edit Gate'
- * toPluginActionLabel({ action: 'Edit' }); // 'Edit'
- * toPluginActionLabel({ action: 'View', pluginName: 'Gate', opensInNewTab: true });
- * // 'View Gate (new tab)'
+ * readPluginList([null, { _id: 'gate' }]); // [{ _id: 'gate' }]
+ * readPluginList(null); // []
  */
-export const toPluginActionLabel = ({ action = '', pluginName, opensInNewTab = false } = {}) => {
-  const trimmedName = typeof pluginName === 'string' ? pluginName.trim() : '';
-  const newTabNote = opensInNewTab ? NEW_TAB_NOTE : '';
+export const readPluginList = (plugins) => {
+  if (!Array.isArray(plugins)) return [];
 
-  // Leaves the missing parts out, so that no space stands for them
-  return [action, trimmedName, newTabNote].filter(Boolean).join(' ');
+  return plugins.filter(isPluginEntry);
 };

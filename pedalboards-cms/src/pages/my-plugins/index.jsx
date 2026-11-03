@@ -5,26 +5,25 @@ import { Link } from 'react-router-dom';
 
 // Components
 import { Pagination, RequestError } from 'components';
+import PluginItem from './plugin-item';
 
 // Utils
 import { Env } from 'utils';
-import { toPluginActionLabel } from './utils';
+import { readPluginList } from './utils';
 
 // Hooks
 import usePluginList from './hooks/usePluginList';
 
 // Constants
-import {
-  ADD_PLUGIN_TEXT, DELETE_ACTION, EDIT_ACTION, EMPTY_STATE_TEXT, PAGE_TITLE, VIEW_ACTION
-} from './constants';
+import { ADD_PLUGIN_TEXT, EMPTY_STATE_TEXT, PAGE_TITLE } from './constants';
 
 // Style
 import './style.scss';
 
 /**
  * Page that lists the plugins, `PAGE_SIZE` per page, with links to edit them and a button to delete
- * them. The search of the address filters the list, and a new search reloads it from the first
- * page.
+ * them. Each plugin shows its label, which the API sorts the list on, with its name below. The
+ * search of the address filters the list, and a new search reloads it from the first page.
  */
 const MyPlugins = ({ location = {} }) => {
   const homePageUrl = Env.get('frontend');
@@ -32,7 +31,8 @@ const MyPlugins = ({ location = {} }) => {
   const {
     plugins, currentPage, pageCount, errorMessage, goToPage, deletePlugin
   } = usePluginList({ search });
-  const hasPlugins = Array.isArray(plugins) && plugins.length > 0;
+  const pluginList = readPluginList(plugins);
+  const hasPlugins = pluginList.length > 0;
 
   return (
     <section className="my-plugin-container">
@@ -48,39 +48,15 @@ const MyPlugins = ({ location = {} }) => {
       <RequestError message={errorMessage} />
       <div className="content">
         {hasPlugins
-          ? plugins.map(({ _id, name }) => (
-            <div className="plugin" key={_id}>
-              <h2 className="title">{name}</h2>
-              <div className="controls">
-                <a
-                  href={`${homePageUrl}/plugin/${_id}`}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  className="btn bg-white"
-                  aria-label={toPluginActionLabel({
-                    action: VIEW_ACTION, pluginName: name, opensInNewTab: true
-                  })}
-                >
-                  {VIEW_ACTION}
-
-                </a>
-                <Link
-                  to={`plugin/edit/${_id}`}
-                  className="btn bg-white"
-                  aria-label={toPluginActionLabel({ action: EDIT_ACTION, pluginName: name })}
-                >
-                  {EDIT_ACTION}
-                </Link>
-                <button
-                  type="button"
-                  className="btn bg-white"
-                  aria-label={toPluginActionLabel({ action: DELETE_ACTION, pluginName: name })}
-                  onClick={() => deletePlugin(_id)}
-                >
-                  {DELETE_ACTION}
-                </button>
-              </div>
-            </div>))
+          ? pluginList.map(({ _id, label, name }) => (
+            <PluginItem
+              key={_id}
+              id={_id}
+              label={label}
+              name={name}
+              homePageUrl={homePageUrl}
+              onDelete={deletePlugin}
+            />))
           : <p>{EMPTY_STATE_TEXT}</p>
         }
       </div>
