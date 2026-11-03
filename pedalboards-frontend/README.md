@@ -19,6 +19,7 @@ Run them in this folder, or from the root with `pnpm --filter pedalboards-fronte
 | `pnpm check:bundle`     | Fails when the scripts of `build/` hold development-only code, or its `_headers` lacks a required header; run `pnpm build` first |
 | `pnpm report:bundle`    | Builds the app and writes `bundle-report.html`, the share of each package and module in its scripts |
 | `pnpm generate:sitemap` | Writes `public/sitemap.xml` from `data/plugins.json` of the core service |
+| `pnpm generate:icons`   | Writes the install icons `public/icon-192.png` and `public/icon-512.png`, drawn by `scripts/icons.mjs` and encoded by `scripts/png.mjs` |
 
 - `pnpm dev` fails when port 3001 is taken, rather than moving to 3002, the port of the CMS.
 - `pnpm report:bundle` measures the minified scripts through source maps
