@@ -1,3 +1,6 @@
+// Utils
+import { isFilledText } from './plugin-item/utils';
+
 // Constants
 import { FIRST_PAGE, UNKNOWN_PAGE_COUNT } from './constants';
 
@@ -51,4 +54,33 @@ export const isPageInRange = ({ page, pageCount } = {}) => {
   const isWholePage = Number.isInteger(page);
 
   return isWholePage && page >= FIRST_PAGE && page <= pageCount;
+};
+
+/**
+ * Tells whether an entry of the list is a plugin: an object, neither `null` nor an array, with an
+ * `_id` text that holds a character other than a space, which its row and its links need.
+ * @param {*} entry entry given by the API
+ * @returns {boolean} true for an object with a filled `_id`, false for any other value
+ */
+const isPluginEntry = (entry) => {
+  const isObject = typeof entry === 'object' && entry !== null && !Array.isArray(entry);
+
+  return isObject && isFilledText(entry._id);
+};
+
+/**
+ * Reads the plugins of a list given by the API, leaving out each entry that is not a plugin, so a
+ * `null` in the data never breaks the page.
+ * @param {*} plugins list given by the API
+ * @returns {Object[]} the entries that are objects with a filled `_id`, or an empty list when it is
+ *   not a list
+ *
+ * @example
+ * readPluginList([null, { _id: 'gate' }]); // [{ _id: 'gate' }]
+ * readPluginList(null); // []
+ */
+export const readPluginList = (plugins) => {
+  if (!Array.isArray(plugins)) return [];
+
+  return plugins.filter(isPluginEntry);
 };

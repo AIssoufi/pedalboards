@@ -194,6 +194,30 @@ describe('MyPlugins', () => {
       ]);
   });
 
+  it('lists the other plugins when the API gives an entry that is not a plugin', async () => {
+    PedalboardService.getPlugins.mockResolvedValue({
+      ...ALL_PLUGINS,
+      data: [
+        null, { _id: 'gate', label: 'Gate' }, 'reverb', { label: 'Delay' },
+        { _id: 'reverb', label: 'Reverb' }
+      ],
+      count: 5
+    });
+    view = renderMyPlugins();
+    await flushPromises();
+
+    expect(readTitles(view.container)).toEqual(['Gate', 'Reverb']);
+  });
+
+  it('shows the empty state when the API gives no entry that is a plugin', async () => {
+    PedalboardService.getPlugins.mockResolvedValue({ ...ALL_PLUGINS, data: [null, 3], count: 2 });
+    view = renderMyPlugins();
+    await flushPromises();
+
+    expect(readTitles(view.container)).toEqual([]);
+    expect(view.container.textContent).toContain(EMPTY_STATE_TEXT);
+  });
+
   it('lists every plugin without a search', async () => {
     view = renderMyPlugins({ location: { search: '' } });
     await flushPromises();

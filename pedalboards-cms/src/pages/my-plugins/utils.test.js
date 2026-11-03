@@ -1,5 +1,43 @@
 // Utils
-import { isPageInRange, readLoadedPage, readPageCount } from './utils';
+import { isPageInRange, readLoadedPage, readPageCount, readPluginList } from './utils';
+
+describe('readPluginList', () => {
+  it('keeps every plugin of the list, in its order', () => {
+    const plugins = [{ _id: 'gate' }, { _id: 'reverb' }];
+
+    expect(readPluginList(plugins)).toEqual([{ _id: 'gate' }, { _id: 'reverb' }]);
+  });
+
+  it('leaves out the entries that are not plugins', () => {
+    const plugins = [null, { _id: 'gate' }, undefined, 'reverb', 3, [], { _id: 'reverb' }];
+
+    expect(readPluginList(plugins)).toEqual([{ _id: 'gate' }, { _id: 'reverb' }]);
+  });
+
+  it.each([
+    ['without an identifier', {}],
+    ['with an empty identifier', { _id: '' }],
+    ['with an identifier of spaces', { _id: '  ' }],
+    ['with an identifier that is not a text', { _id: 42 }]
+  ])('leaves out an entry %s', (label, entry) => {
+    expect(readPluginList([entry, { _id: 'gate' }])).toEqual([{ _id: 'gate' }]);
+  });
+
+  it('gives an empty list for a list without plugins', () => {
+    expect(readPluginList([])).toEqual([]);
+    expect(readPluginList([null, 'gate'])).toEqual([]);
+  });
+
+  it.each([
+    ['null', null],
+    ['undefined', undefined],
+    ['a text', 'gate'],
+    ['a number', 3],
+    ['an object', { _id: 'gate' }]
+  ])('gives an empty list for %s instead of a list', (label, plugins) => {
+    expect(readPluginList(plugins)).toEqual([]);
+  });
+});
 
 describe('readPageCount', () => {
   it.each([0, 1, 3, 54])('keeps a count of %i pages', (numberPages) => {

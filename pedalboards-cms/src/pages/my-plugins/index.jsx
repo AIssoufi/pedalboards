@@ -9,6 +9,7 @@ import PluginItem from './plugin-item';
 
 // Utils
 import { Env } from 'utils';
+import { readPluginList } from './utils';
 
 // Hooks
 import usePluginList from './hooks/usePluginList';
@@ -30,7 +31,8 @@ const MyPlugins = ({ location = {} }) => {
   const {
     plugins, currentPage, pageCount, errorMessage, goToPage, deletePlugin
   } = usePluginList({ search });
-  const hasPlugins = Array.isArray(plugins) && plugins.length > 0;
+  const pluginList = readPluginList(plugins);
+  const hasPlugins = pluginList.length > 0;
 
   return (
     <section className="my-plugin-container">
@@ -46,7 +48,7 @@ const MyPlugins = ({ location = {} }) => {
       <RequestError message={errorMessage} />
       <div className="content">
         {hasPlugins
-          ? plugins.map(({ _id, label, name }) => (
+          ? pluginList.map(({ _id, label, name }) => (
             <PluginItem
               key={_id}
               id={_id}
