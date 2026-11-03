@@ -22,10 +22,10 @@ describe('Header', () => {
     expect(view.container.querySelector('[lang]')).toBeNull();
   });
 
-  it('shows the sign-out button', () => {
+  it('shows no user, no image and no button, since the CMS has no sign-in', () => {
     view = render(<MemoryRouter><Header /></MemoryRouter>);
 
-    expect(view.container.querySelector('button').textContent).toBe('Sign out');
+    expect(view.container.querySelector('img, button, p')).toBeNull();
   });
 
   it('links to the list of plugins and to the form that adds one', () => {

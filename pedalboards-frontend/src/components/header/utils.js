@@ -8,7 +8,7 @@ import { ADMIN_PANEL_PATH } from './constants';
  *   deployed.
  * @returns {string|null} The link, or null without a CMS address, so that the header hides it.
  * @example
- * getAdminPanelUrl('http://localhost:3002'); // 'http://localhost:3002/login'
+ * getAdminPanelUrl('http://localhost:3002'); // 'http://localhost:3002/plugins'
  * getAdminPanelUrl(''); // null
  */
 const getAdminPanelUrl = cmsUrl => (cmsUrl ? `${cmsUrl}${ADMIN_PANEL_PATH}` : null);
