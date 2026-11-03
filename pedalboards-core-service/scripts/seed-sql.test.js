@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import plugins from '../data/plugins.json';
+import seedMigration from '../migrations/0002_seed_plugins.sql?raw';
 import { buildSeedSql, toSqlLiteral } from './seed-sql.js';
 
 describe('toSqlLiteral', () => {
@@ -22,6 +24,10 @@ describe('toSqlLiteral', () => {
 });
 
 describe('buildSeedSql', () => {
+	it('writes the committed seed migration from data/plugins.json', () => {
+		expect(buildSeedSql(plugins)).toBe(seedMigration);
+	});
+
 	it('writes one INSERT statement per plugin', () => {
 		const sql = buildSeedSql([{ name: 'abGate', stable: true }, { name: 'MDA Overdrive', stable: false }]);
 		const statements = sql.split('\n').filter(line => line.startsWith('INSERT'));

@@ -62,11 +62,17 @@ pnpm start:local
   table. Its `author`, `categories` and `controlPorts` columns hold JSON.
 - [`migrations/0002_seed_plugins.sql`](migrations/0002_seed_plugins.sql) inserts the 50 records of
   [`data/plugins.json`](data/plugins.json). `pnpm db:seed:generate` writes it from that file, with
-  ids made from the plugin names (`MDA Overdrive` becomes `mda-overdrive`).
+  ids made from the plugin names (`MDA Overdrive` becomes `mda-overdrive`). A test fails when the
+  two differ.
 - [`migrations/0003_index_plugins_by_label.sql`](migrations/0003_index_plugins_by_label.sql)
   replaces the index of the name with the index of the label, which the list pages sort on.
+- [`migrations/0004_correct_wov_image_size.sql`](migrations/0004_correct_wov_image_size.sql)
+  gives `wov` the real size of its screenshot on a database that `0002` seeded before the fix.
 - A change to the data after the deployment goes into a new migration: D1 applies each migration
-  once.
+  once. Write `data/plugins.json` and `0002` again too, so that a new database gets the same rows.
+- The tests cannot compare the stored `imageWidth` and `imageHeight` with the screenshots: these
+  are on `api.moddevices.com`, and the tests run without the network. Measure the image itself
+  (`sips -g pixelWidth -g pixelHeight <file>` on macOS) before storing its size.
 
 ## Scripts
 
