@@ -102,7 +102,11 @@ describe('tooltips', () => {
   it('shows the tooltip of the screenshot when its link gets the focus', () => {
     renderPlugin({ _id: 'ghjklmljhjkjhj', screenshotUrl: 'http://example.com/screenshot' });
 
-    fireEvent.focus(screen.getByRole('link'));
+    const link = screen.getByRole('link');
+
+    // In jsdom, a real focus matches `:focus-visible` or not after the events of earlier tests.
+    vi.spyOn(link, 'matches').mockReturnValueOnce(true);
+    fireEvent.focus(link);
 
     expect(screen.getByRole('tooltip').classList.contains('open')).toBe(true);
   });

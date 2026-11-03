@@ -2,10 +2,24 @@
 import { act, renderHook } from '@testing-library/react';
 
 // Constants
-import { CLOSE_KEY } from '../../constants';
+import { CLOSE_KEY, VISIBLE_FOCUS_SELECTOR } from '../../constants';
 
 // Hooks
 import useTooltipOpen from './index';
+
+/**
+ * Builds the event of a focus. In jsdom, a real focus matches `:focus-visible` or not after the
+ * events of earlier tests, so this target only answers `matches`.
+ *
+ * @param {boolean} isVisible - Whether the target matches the selector of a visible focus.
+ * @returns {{target: {matches: (selector: string) => boolean}}} The event.
+ */
+const buildFocusEvent = (isVisible) => ({
+  target: { matches: (selector) => isVisible && selector === VISIBLE_FOCUS_SELECTOR }
+});
+
+const VISIBLE_FOCUS_EVENT = buildFocusEvent(true);
+const HIDDEN_FOCUS_EVENT = buildFocusEvent(false);
 
 /**
  * Presses a key on the page.
@@ -39,21 +53,51 @@ describe('useTooltipOpen', () => {
     expect(result.current.isOpen).toBe(false);
   });
 
-  it('opens while the focus is inside the trigger', () => {
+  it('opens while a visible focus is inside the trigger', () => {
     const { result } = renderHook(() => useTooltipOpen());
 
-    act(() => result.current.triggerProps.onFocus());
+    act(() => result.current.triggerProps.onFocus(VISIBLE_FOCUS_EVENT));
     expect(result.current.isOpen).toBe(true);
 
     act(() => result.current.triggerProps.onBlur());
     expect(result.current.isOpen).toBe(false);
   });
 
-  it('stays open while the focus is inside after the pointer leaves', () => {
+  it('stays closed on a focus that the browser does not show', () => {
+    const { result } = renderHook(() => useTooltipOpen());
+
+    act(() => result.current.triggerProps.onFocus(HIDDEN_FOCUS_EVENT));
+
+    expect(result.current.isOpen).toBe(false);
+  });
+
+  it('closes when the pointer leaves after a focus that the browser does not show', () => {
     const { result } = renderHook(() => useTooltipOpen());
 
     act(() => {
-      result.current.triggerProps.onFocus();
+      result.current.triggerProps.onMouseEnter();
+      result.current.triggerProps.onFocus(HIDDEN_FOCUS_EVENT);
+    });
+    expect(result.current.isOpen).toBe(true);
+
+    act(() => result.current.triggerProps.onMouseLeave());
+    expect(result.current.isOpen).toBe(false);
+  });
+
+  it('closes when a hidden focus replaces a visible one inside the trigger', () => {
+    const { result } = renderHook(() => useTooltipOpen());
+    act(() => result.current.triggerProps.onFocus(VISIBLE_FOCUS_EVENT));
+
+    act(() => result.current.triggerProps.onFocus(HIDDEN_FOCUS_EVENT));
+
+    expect(result.current.isOpen).toBe(false);
+  });
+
+  it('stays open while a visible focus is inside after the pointer leaves', () => {
+    const { result } = renderHook(() => useTooltipOpen());
+
+    act(() => {
+      result.current.triggerProps.onFocus(VISIBLE_FOCUS_EVENT);
       result.current.triggerProps.onMouseEnter();
     });
     act(() => result.current.triggerProps.onMouseLeave());
@@ -64,7 +108,7 @@ describe('useTooltipOpen', () => {
   it('closes on the close key until the pointer comes back', () => {
     const { result } = renderHook(() => useTooltipOpen());
     act(() => {
-      result.current.triggerProps.onFocus();
+      result.current.triggerProps.onFocus(VISIBLE_FOCUS_EVENT);
       result.current.triggerProps.onMouseEnter();
     });
 
@@ -104,7 +148,7 @@ describe('useTooltipOpen', () => {
   it('stops listening to the keyboard on unmount', () => {
     const remove = vi.spyOn(document, 'removeEventListener');
     const { result, unmount } = renderHook(() => useTooltipOpen());
-    act(() => result.current.triggerProps.onFocus());
+    act(() => result.current.triggerProps.onFocus(VISIBLE_FOCUS_EVENT));
 
     unmount();
 

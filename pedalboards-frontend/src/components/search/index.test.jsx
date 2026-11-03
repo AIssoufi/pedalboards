@@ -133,6 +133,8 @@ it('shows the tooltip of the search button when it gets the focus', () => {
   render(<Search />);
   const button = screen.getByRole('button');
 
+  // In jsdom, a real focus matches `:focus-visible` or not after the events of earlier tests.
+  vi.spyOn(button, 'matches').mockReturnValueOnce(true);
   fireEvent.focus(button);
 
   expect(getDescription(button).classList.contains('open')).toBe(true);
