@@ -1,5 +1,11 @@
-import { CORS_HEADERS, MESSAGES } from './constants.js';
+import { API_HEADERS, CORS_HEADERS, MESSAGES, READ_CACHE_CONTROL } from './constants.js';
 import { ConflictError, DatabaseError, InvalidInputError } from './errors.js';
+
+/** Lowest HTTP status that is not a success */
+const FIRST_NON_SUCCESS_STATUS = 300;
+
+/** Methods whose successful responses a browser may cache */
+const READ_METHODS = ['GET', 'HEAD'];
 
 /**
  * Adds the CORS headers to every response.
@@ -8,6 +14,40 @@ import { ConflictError, DatabaseError, InvalidInputError } from './errors.js';
  */
 export const setCorsHeaders = (req, res, next) => {
 	res.set(CORS_HEADERS);
+	next();
+};
+
+/**
+ * Adds the standard headers of the API to every response: `nosniff`, and `no-store`, which the
+ * read routes replace on success with setReadCacheHeaders.
+ *
+ * @type {import('express').RequestHandler}
+ */
+export const setApiHeaders = (req, res, next) => {
+	res.set(API_HEADERS);
+	next();
+};
+
+/**
+ * Lets a browser cache the successful GET and HEAD responses of a read router for a short time;
+ * any other method or status keeps `no-store`, whatever the order of the routers.
+ *
+ * @type {import('express').RequestHandler}
+ */
+export const setReadCacheHeaders = (req, res, next) => {
+	const isRead = READ_METHODS.includes(req.method);
+	if (!isRead) {
+		next();
+		return;
+	}
+	const sendJson = res.json.bind(res);
+	res.json = body => {
+		const isSuccess = res.statusCode < FIRST_NON_SUCCESS_STATUS;
+		if (isSuccess) {
+			res.set('Cache-Control', READ_CACHE_CONTROL);
+		}
+		return sendJson(body);
+	};
 	next();
 };
 

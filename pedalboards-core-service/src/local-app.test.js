@@ -40,7 +40,9 @@ describe('createLocalApp', () => {
 		const image = await callServer({ port: LOCAL_SERVER_PORT, path: new URL(data.screenshotUrl).pathname.replace(/^\/api/, '') });
 
 		expect(created.status).toBe(201);
+		expect(created.headers.get('Cache-Control')).toBe('no-store');
 		expect(read.status).toBe(200);
+		expect(read.headers.get('Cache-Control')).toBe('public, max-age=60');
 		expect(data).toMatchObject({ _id: ID, name: 'Local Gate' });
 		expect(image.status).toBe(200);
 		expect(new Uint8Array(await image.arrayBuffer())).toEqual(PNG_BYTES);

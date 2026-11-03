@@ -83,6 +83,18 @@ export const CORS_HEADERS = {
 	'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
 };
 
+/** Headers of every API response: no MIME sniffing, and no cache unless a read route allows it */
+export const API_HEADERS = {
+	'X-Content-Type-Options': 'nosniff',
+	'Cache-Control': 'no-store'
+};
+
+/**
+ * Cache of a successful read response: one minute, so a browser spares D1 without serving stale
+ * data for long
+ */
+export const READ_CACHE_CONTROL = 'public, max-age=60';
+
 /** Methods that the CMS may send to the local entry, which serves the write routes */
 export const WRITE_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS';
 
