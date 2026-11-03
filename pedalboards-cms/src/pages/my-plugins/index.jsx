@@ -21,8 +21,8 @@ import './style.scss';
 
 /**
  * Page that lists the plugins, `PAGE_SIZE` per page, with links to edit them and a button to delete
- * them. The search of the address filters the list, and a new search reloads it from the first
- * page.
+ * them. Each plugin shows its label, which the API sorts the list on, with its name below. The
+ * search of the address filters the list, and a new search reloads it from the first page.
  */
 const MyPlugins = ({ location = {} }) => {
   const homePageUrl = Env.get('frontend');
@@ -46,10 +46,11 @@ const MyPlugins = ({ location = {} }) => {
       <RequestError message={errorMessage} />
       <div className="content">
         {hasPlugins
-          ? plugins.map(({ _id, name }) => (
+          ? plugins.map(({ _id, label, name }) => (
             <PluginItem
               key={_id}
               id={_id}
+              label={label}
               name={name}
               homePageUrl={homePageUrl}
               onDelete={deletePlugin}

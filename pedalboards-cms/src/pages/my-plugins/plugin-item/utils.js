@@ -1,12 +1,43 @@
 // Constants
-import { NEW_TAB_NOTE } from './constants';
+import { NEW_TAB_NOTE, UNTITLED_PLUGIN_TEXT } from './constants';
+
+/**
+ * Trims a text, and gives an empty text for any other value.
+ * @param {*} value value to read
+ * @returns {string} the trimmed text, or `''` when the value is not a text
+ */
+const toTrimmedText = value => (typeof value === 'string' ? value.trim() : '');
 
 /**
  * Tells whether a value is a text with a character other than a space.
  * @param {*} value value to check
  * @returns {boolean} `true` for a text that is not empty once trimmed
  */
-export const isFilledText = value => typeof value === 'string' && value.trim() !== '';
+export const isFilledText = value => toTrimmedText(value) !== '';
+
+/**
+ * Gives the names that a plugin of the list shows: its label as the title, since the API sorts the
+ * list on it and the store prints it on its cards, and its name below when it says something else.
+ * @param {Object} [plugin]
+ * @param {*} [plugin.label] label of the plugin, as `Ambience`
+ * @param {*} [plugin.name] name of the plugin, as `MDA Ambience`
+ * @returns {{ title: string, subtitle: string }} the trimmed label as the title, or the trimmed
+ *   name without a label, or `UNTITLED_PLUGIN_TEXT` without either; the trimmed name as the
+ *   subtitle when it differs from the title, otherwise an empty text
+ *
+ * @example
+ * toPluginNames({ label: 'Ambience', name: 'MDA Ambience' });
+ * // { title: 'Ambience', subtitle: 'MDA Ambience' }
+ * toPluginNames({ name: 'Gate' }); // { title: 'Gate', subtitle: '' }
+ * toPluginNames(); // { title: 'Untitled plugin', subtitle: '' }
+ */
+export const toPluginNames = ({ label, name } = {}) => {
+  const trimmedName = toTrimmedText(name);
+  const title = toTrimmedText(label) || trimmedName || UNTITLED_PLUGIN_TEXT;
+  const isNameAlreadyTitle = trimmedName === title;
+
+  return { title, subtitle: isNameAlreadyTitle ? '' : trimmedName };
+};
 
 /**
  * Gives the accessible name of an action on a plugin of the list, so that each "View", "Edit" or
@@ -27,7 +58,7 @@ export const isFilledText = value => typeof value === 'string' && value.trim() !
  * // 'View Gate (new tab)'
  */
 export const toPluginActionLabel = ({ action = '', pluginName, opensInNewTab = false } = {}) => {
-  const trimmedName = typeof pluginName === 'string' ? pluginName.trim() : '';
+  const trimmedName = toTrimmedText(pluginName);
   const newTabNote = opensInNewTab ? NEW_TAB_NOTE : '';
 
   // Leaves the missing parts out, so that no space stands for them

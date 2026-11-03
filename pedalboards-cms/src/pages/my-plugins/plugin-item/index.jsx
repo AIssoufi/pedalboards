@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 // Utils
-import { isFilledText, toPluginActionLabel } from './utils';
+import { isFilledText, toPluginActionLabel, toPluginNames } from './utils';
 
 // Constants
 import { DELETE_ACTION, EDIT_ACTION, VIEW_ACTION } from './constants';
@@ -13,14 +13,16 @@ import { DELETE_ACTION, EDIT_ACTION, VIEW_ACTION } from './constants';
 import './style.scss';
 
 /**
- * Row of the plugin list: the name of a plugin, a link to its page in the store, a link to edit it
- * and a button to delete it. Each action names the plugin it acts on. Without an `id`, it shows
- * no link, and without a `homePageUrl`, no link to the store. It needs a router, for the link to
- * the edit page.
+ * Row of the plugin list: the label of a plugin as its title, with its name below when it differs,
+ * a link to its page in the store, a link to edit it and a button to delete it. Each action names
+ * the plugin by its title. Without an `id`, it shows no link, and without a `homePageUrl`, no link
+ * to the store. It needs a router, for the link to the edit page.
  */
 const PluginItem = ({
-  id = '', name = '', homePageUrl = '', onDelete
+  id = '', label = '', name = '', homePageUrl = '', onDelete
 }) => {
+  const { title, subtitle } = toPluginNames({ label, name });
+  const hasSubtitle = subtitle !== '';
   const canEdit = isFilledText(id);
   const canLinkToStore = canEdit && isFilledText(homePageUrl);
 
@@ -32,7 +34,10 @@ const PluginItem = ({
 
   return (
     <div className="plugin">
-      <h2 className="title">{name}</h2>
+      <div className="names">
+        <h2 className="title">{title}</h2>
+        {hasSubtitle && <p className="name">{subtitle}</p>}
+      </div>
       <div className="controls">
         {canLinkToStore && (
           <a
@@ -41,7 +46,7 @@ const PluginItem = ({
             target="_blank"
             className="btn bg-white"
             aria-label={toPluginActionLabel({
-              action: VIEW_ACTION, pluginName: name, opensInNewTab: true
+              action: VIEW_ACTION, pluginName: title, opensInNewTab: true
             })}
           >
             {VIEW_ACTION}
@@ -51,7 +56,7 @@ const PluginItem = ({
           <Link
             to={`plugin/edit/${id}`}
             className="btn bg-white"
-            aria-label={toPluginActionLabel({ action: EDIT_ACTION, pluginName: name })}
+            aria-label={toPluginActionLabel({ action: EDIT_ACTION, pluginName: title })}
           >
             {EDIT_ACTION}
           </Link>
@@ -59,7 +64,7 @@ const PluginItem = ({
         <button
           type="button"
           className="btn bg-white"
-          aria-label={toPluginActionLabel({ action: DELETE_ACTION, pluginName: name })}
+          aria-label={toPluginActionLabel({ action: DELETE_ACTION, pluginName: title })}
           onClick={handleDelete}
         >
           {DELETE_ACTION}
@@ -77,7 +82,13 @@ PluginItem.propTypes = {
    */
   id: PropTypes.string,
   /**
-   * Name of the plugin, as `MDA Ambience`.
+   * Label of the plugin, which the API sorts the list on, shown as the title, as `Ambience`. A
+   * blank label falls back to `name`, then to `UNTITLED_PLUGIN_TEXT`.
+   * @default ''
+   */
+  label: PropTypes.string,
+  /**
+   * Name of the plugin, shown below the title when it differs from it, as `MDA Ambience`.
    * @default ''
    */
   name: PropTypes.string,

@@ -1,6 +1,9 @@
 /** End of the accessible name of a link that opens in a new tab */
 export const NEW_TAB_NOTE = '(new tab)';
 
+/** Title of a plugin of the list that has neither a label nor a name */
+export const UNTITLED_PLUGIN_TEXT = 'Untitled plugin';
+
 /** Visible text of the view action, which also starts its accessible name */
 export const VIEW_ACTION = 'View';
 

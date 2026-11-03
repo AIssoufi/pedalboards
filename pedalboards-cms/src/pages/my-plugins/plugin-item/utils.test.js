@@ -1,5 +1,55 @@
 // Utils
-import { isFilledText, toPluginActionLabel } from './utils';
+import { isFilledText, toPluginActionLabel, toPluginNames } from './utils';
+
+describe('toPluginNames', () => {
+  it('gives the label as the title and the name below it', () => {
+    expect(toPluginNames({ label: 'Ambience', name: 'MDA Ambience' }))
+      .toEqual({ title: 'Ambience', subtitle: 'MDA Ambience' });
+  });
+
+  it('trims the label and the name', () => {
+    expect(toPluginNames({ label: '  Ambience ', name: ' MDA Ambience  ' }))
+      .toEqual({ title: 'Ambience', subtitle: 'MDA Ambience' });
+  });
+
+  it.each([
+    ['the same as the label', { label: 'abGate', name: 'abGate' }],
+    ['the same as the label once trimmed', { label: 'abGate', name: ' abGate ' }]
+  ])('shows no subtitle for a name %s', (label, plugin) => {
+    expect(toPluginNames(plugin)).toEqual({ title: 'abGate', subtitle: '' });
+  });
+
+  it.each([
+    ['without a label', { name: 'Gate' }],
+    ['with an empty label', { label: '', name: 'Gate' }],
+    ['with a blank label', { label: '   ', name: 'Gate' }],
+    ['with a null label', { label: null, name: 'Gate' }],
+    ['with a label that is not a text', { label: 42, name: 'Gate' }]
+  ])('gives the name as the title, and no subtitle, %s', (label, plugin) => {
+    expect(toPluginNames(plugin)).toEqual({ title: 'Gate', subtitle: '' });
+  });
+
+  it.each([
+    ['without a label or a name', {}],
+    ['with a blank label and a blank name', { label: ' ', name: ' ' }],
+    ['with values that are not texts', { label: ['Gate'], name: { text: 'Gate' } }]
+  ])('gives a fallback title, and no subtitle, %s', (label, plugin) => {
+    expect(toPluginNames(plugin)).toEqual({ title: 'Untitled plugin', subtitle: '' });
+  });
+
+  it('shows the name below a label that differs from it by case only', () => {
+    expect(toPluginNames({ label: 'gate', name: 'Gate' }))
+      .toEqual({ title: 'gate', subtitle: 'Gate' });
+  });
+
+  it('keeps the label as the title without a name', () => {
+    expect(toPluginNames({ label: 'Ambience' })).toEqual({ title: 'Ambience', subtitle: '' });
+  });
+
+  it('gives a fallback title without a plugin', () => {
+    expect(toPluginNames()).toEqual({ title: 'Untitled plugin', subtitle: '' });
+  });
+});
 
 describe('isFilledText', () => {
   it.each(['Gate', ' Gate ', 'a'])('accepts the text %p', (value) => {

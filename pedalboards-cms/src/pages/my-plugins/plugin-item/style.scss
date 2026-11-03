@@ -1,6 +1,6 @@
 @import 'styles/_globals.scss';
 
-// Row of the plugin list: the name on the left, the actions on the right
+// Row of the plugin list: the title and the name on the left, the actions on the right
 .plugin {
   display: flex;
   justify-content: space-between;
@@ -19,6 +19,13 @@
     font-weight: normal;
   }
 
+  .name {
+    margin: 2px 0 0;
+    font-size: 0.875rem;
+    font-family: sans-serif;
+    color: $text-primary-color;
+  }
+
   .controls {
     display: flex;
     .btn {
@@ -27,13 +34,13 @@
   }
 }
 
-// On phones, the name sits above the actions
+// On phones, the title and the name sit above the actions
 @media (max-width: $phone-max-width) {
   .plugin {
     flex-flow: row wrap;
     padding: 10px;
 
-    .title {
+    .names {
       flex: 1 1 100%;
       margin-bottom: 10px;
     }

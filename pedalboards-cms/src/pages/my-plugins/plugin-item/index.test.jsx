@@ -33,10 +33,29 @@ describe('PluginItem', () => {
     jest.restoreAllMocks();
   });
 
-  it('shows the name of the plugin with its three actions', () => {
-    view = renderItem({ id: 'gate', name: 'Gate', homePageUrl: STORE_URL });
+  it('titles the plugin by its label, with its name below, and names its actions by it', () => {
+    view = renderItem({
+      id: 'ambience', label: 'Ambience', name: 'MDA Ambience', homePageUrl: STORE_URL
+    });
+
+    expect(view.container.querySelector('.plugin .title').textContent).toBe('Ambience');
+    expect(view.container.querySelector('.plugin .name').textContent).toBe('MDA Ambience');
+    expect(readActionLabels(view.container))
+      .toEqual(['View Ambience (new tab)', 'Edit Ambience', 'Delete Ambience']);
+  });
+
+  it('shows no second line when the name repeats the label', () => {
+    view = renderItem({ id: 'gate', label: 'Gate', name: ' Gate ' });
 
     expect(view.container.querySelector('.plugin .title').textContent).toBe('Gate');
+    expect(view.container.querySelector('.plugin .name')).toBeNull();
+  });
+
+  it('falls back to the name as the title when the label is blank', () => {
+    view = renderItem({ id: 'gate', label: '   ', name: 'Gate', homePageUrl: STORE_URL });
+
+    expect(view.container.querySelector('.plugin .title').textContent).toBe('Gate');
+    expect(view.container.querySelector('.plugin .name')).toBeNull();
     expect(readActionLabels(view.container))
       .toEqual(['View Gate (new tab)', 'Edit Gate', 'Delete Gate']);
   });
@@ -62,11 +81,12 @@ describe('PluginItem', () => {
     expect(onDelete).toHaveBeenCalledWith('gate');
   });
 
-  it('renders without any props, with a delete button that names no plugin and no link', () => {
+  it('renders without any props, as an untitled plugin with a delete button and no link', () => {
     view = renderItem();
 
-    expect(view.container.querySelector('.plugin .title').textContent).toBe('');
-    expect(readActionLabels(view.container)).toEqual(['Delete']);
+    expect(view.container.querySelector('.plugin .title').textContent).toBe('Untitled plugin');
+    expect(view.container.querySelector('.plugin .name')).toBeNull();
+    expect(readActionLabels(view.container)).toEqual(['Delete Untitled plugin']);
     expect(() => view.container.querySelector('.controls button').click()).not.toThrow();
   });
 
