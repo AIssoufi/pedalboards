@@ -267,6 +267,10 @@ origin ([decision record](docs/decisions/0005-cloudflare-pages-and-d1-worker.md)
   `/plugins` and the page of each plugin. Each page renders one canonical link on
   https://pedalboards.issoufi.fr with no query string, on a preview deployment too, so the
   filters and the pages of the list share one address for search engines.
+- [`manifest.json`](pedalboards-frontend/public/manifest.json) gives the installed app the brand
+  color `#883996` and 192 and 512 px icons, a white effect pedal on that color, which
+  `pnpm generate:icons` in `pedalboards-frontend` writes: the tests of the frontend fail while the
+  committed PNG files differ from the drawing of `scripts/icons.mjs`.
 - Pages answers an unknown path with `index.html`, so deep links such as `/plugin/<id>` load the
   app, except under `/assets/`:
   [`pedalboards-frontend/public/assets/404.html`](pedalboards-frontend/public/assets/404.html)
