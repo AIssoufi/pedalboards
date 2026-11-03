@@ -22,6 +22,8 @@ const FIRST_ROW_CARD_COUNT = 5;
  *
  * @typedef {Object} PluginGridProps
  * @property {boolean} [isLoading=false] - Shows the loader in place of the grid while truthy.
+ * @property {boolean} [isLoaderAnnounced=true] - Exposes the loader as a status unless `false`,
+ *   given by a page whose own status region reads the waiting.
  * @property {Array<import('../plugin').PluginProps>} [plugins=[]] - Plugins to show, one card
  *   each.
  */
@@ -33,8 +35,8 @@ const FIRST_ROW_CARD_COUNT = 5;
  *
  * @param {PluginGridProps} props - Props of the component.
  */
-const PluginGrid = ({ plugins = NO_PLUGINS, isLoading = false }) => {
-  if (isLoading) return <Loader />;
+const PluginGrid = ({ plugins = NO_PLUGINS, isLoading = false, isLoaderAnnounced = true }) => {
+  if (isLoading) return <Loader isAnnounced={isLoaderAnnounced} />;
 
   // The plugins come from the API as it answers: anything but a list shows the empty state
   const pluginList = Array.isArray(plugins) ? plugins : NO_PLUGINS;

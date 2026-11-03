@@ -68,6 +68,19 @@ it('shows the loader in place of the cards while loading', () => {
   expect(screen.queryAllByRole('link')).toHaveLength(0);
 });
 
+it('exposes the loader as a status by default', () => {
+  renderGrid({ isLoading: true });
+
+  expect(screen.getByRole('status').textContent).toBe(LOADER_TEXT);
+});
+
+it('shows the loader without its status when the page announces the waiting', () => {
+  renderGrid({ isLoading: true, isLoaderAnnounced: false });
+
+  expect(screen.getByText(LOADER_TEXT)).toBeDefined();
+  expect(screen.queryByRole('status')).toBeNull();
+});
+
 it('shows the loader for a truthy isLoading that is not a boolean', () => {
   renderGrid({ plugins: PLUGINS, isLoading: 'yes' });
 
