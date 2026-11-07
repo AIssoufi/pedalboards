@@ -17,7 +17,7 @@
   "license": "ISC",
   "devDependencies": {
     "@eslint/js": "^9.39.5",
-    "eslint": "^9.39.5",
+    "eslint": "^10.14.0",
     "eslint-plugin-import-x": "^4.17.1",
     "globals": "^17.13.0"
   }
